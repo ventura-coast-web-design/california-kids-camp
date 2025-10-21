@@ -1,0 +1,34 @@
+// ============================================
+// Base Styles
+// ============================================
+
+@use '../abstracts/variables' as *;
+
+:root {
+  --background: #{$background-light};
+  --foreground: #{$text-light};
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #{$background-dark};
+    --foreground: #{$text-dark};
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
