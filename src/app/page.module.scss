@@ -1,10 +1,132 @@
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
 
+// Color Variables
+$primary-color: #2c5f2d;
+$secondary-color: #97bc62;
+$accent-color: #f7941d;
+$text-dark: #333;
+$text-light: #666;
+$bg-light: #f8f9fa;
+$bg-white: #ffffff;
+
 .page {
   min-height: 100vh;
-  background: var(--background);
-  color: var(--foreground);
+  background: $bg-white;
+  color: $text-dark;
+}
+
+// Navigation
+.navbar {
+  background: $bg-white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: $spacing-md 0;
+}
+
+.navContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+  @include flex-between;
+}
+
+.logo {
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0;
+  }
+}
+
+.navMenu {
+  display: flex;
+  gap: $spacing-lg;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  
+  li a {
+    text-decoration: none;
+    color: $text-dark;
+    font-weight: 500;
+    @include transition(color);
+    
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+// Hero Section
+.hero {
+  height: 600px;
+  position: relative;
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  background-image: 
+    linear-gradient(rgba(44, 95, 45, 0.7), rgba(44, 95, 45, 0.85)),
+    url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%232c5f2d"/><circle cx="50" cy="50" r="30" fill="%2397bc62" opacity="0.1"/></svg>');
+  background-size: cover, 200px 200px;
+  background-position: center, center;
+  @include flex-center;
+}
+
+.heroOverlay {
+  width: 100%;
+  height: 100%;
+  @include flex-center;
+  text-align: center;
+  color: white;
+}
+
+.heroContent {
+  max-width: 800px;
+  padding: 0 $spacing-md;
+}
+
+.heroLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: $spacing-md;
+  opacity: 0.9;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: $spacing-md;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.heroSubtitle {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  margin-bottom: $spacing-xl;
+  opacity: 0.95;
+  font-weight: 400;
+}
+
+.heroButton {
+  display: inline-block;
+  padding: $spacing-md $spacing-xl;
+  background: $accent-color;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  @include transition(all);
+  
+  &:hover {
+    background: darken($accent-color, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 }
 
 // Container
@@ -14,334 +136,543 @@
   padding: 0 $spacing-md;
 }
 
-// Hero Section
-.hero {
-  min-height: 90vh;
-  @include flex-center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+// Section Header
+.sectionHeader {
   text-align: center;
-  padding: $spacing-xl $spacing-md;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h100v100H0z" fill="none"/><path d="M50 10L60 40L90 50L60 60L50 90L40 60L10 50L40 40Z" fill="rgba(255,255,255,0.05)"/></svg>') repeat;
-    opacity: 0.3;
-  }
-}
-
-.heroContent {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-}
-
-.heroTitle {
-  font-size: clamp(2.5rem, 8vw, 4.5rem);
-  font-weight: 800;
-  margin-bottom: $spacing-md;
-  line-height: 1.1;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.heroSubtitle {
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
-  margin-bottom: $spacing-md;
-  font-weight: 600;
-  opacity: 0.95;
-}
-
-.heroDescription {
-  font-size: clamp(1rem, 2vw, 1.25rem);
   margin-bottom: $spacing-xl;
-  opacity: 0.9;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
-.heroCta {
-  display: flex;
-  gap: $spacing-md;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-// Buttons
-.primaryButton,
-.secondaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-md $spacing-xl;
-  border-radius: 50px;
-  font-size: 1.125rem;
+.sectionLabel {
+  font-size: 0.875rem;
   font-weight: 600;
-  text-decoration: none;
-  @include transition(all);
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.primaryButton {
-  background: white;
-  color: #667eea;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  }
-}
-
-.secondaryButton {
-  background: transparent;
-  color: white;
-  border-color: white;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-  }
-}
-
-// Sections
-.section {
-  padding: clamp(3rem, 10vw, 6rem) 0;
-}
-
-.sectionTitle {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: $spacing-lg;
-  color: var(--foreground);
-}
-
-.sectionIntro {
-  font-size: 1.25rem;
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto $spacing-xl;
-  line-height: 1.7;
-  opacity: 0.85;
-}
-
-// Features Grid
-.features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: $spacing-lg;
-  margin-top: $spacing-xl;
-}
-
-.featureCard {
-  background: var(--background);
-  border: 2px solid rgba(102, 126, 234, 0.2);
-  border-radius: 16px;
-  padding: $spacing-xl;
-  text-align: center;
-  @include transition(all);
-  
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
-    border-color: rgba(102, 126, 234, 0.4);
-  }
-  
-  h3 {
-    font-size: 1.5rem;
-    margin: $spacing-md 0;
-    color: #667eea;
-  }
-  
-  p {
-    line-height: 1.6;
-    opacity: 0.8;
-  }
-}
-
-.featureIcon {
-  font-size: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: $primary-color;
   margin-bottom: $spacing-sm;
 }
 
-// Christadelphian Section
-.christadelphianSection {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+.sectionTitle {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  color: $text-dark;
+  margin: 0;
 }
 
-.infoContent {
+// Welcome Section
+.welcomeSection {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: $bg-white;
+}
+
+.welcomeContent {
   max-width: 900px;
   margin: 0 auto;
 }
 
-.infoText {
+.welcomeText {
   font-size: 1.125rem;
   line-height: 1.8;
-  
-  p {
-    margin-bottom: $spacing-lg;
-  }
+  color: $text-light;
+  text-align: center;
+  margin-bottom: $spacing-xl;
 }
 
-.subheading {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: $spacing-xl 0 $spacing-md;
-  color: #667eea;
-}
-
-.beliefsList {
-  list-style: none;
-  padding: 0;
-  
-  li {
-    margin-bottom: $spacing-md;
-    padding-left: $spacing-lg;
-    position: relative;
-    
-    &::before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: #667eea;
-      font-weight: bold;
-      font-size: 1.25rem;
-    }
-    
-    strong {
-      color: #667eea;
-    }
-  }
-}
-
-// Details Grid
-.detailsGrid {
+.welcomeFeatures {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: $spacing-lg;
   margin-top: $spacing-xl;
 }
 
-.detailCard {
-  background: var(--background);
-  border: 2px solid rgba(102, 126, 234, 0.2);
-  border-radius: 16px;
+.welcomeFeature {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: $bg-light;
+  border-radius: 8px;
+  font-weight: 600;
+  color: $text-dark;
+  
+  .featureIcon {
+    width: 40px;
+    height: 40px;
+    background: $primary-color;
+    color: white;
+    border-radius: 50%;
+    @include flex-center;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+  }
+}
+
+// Benefits Section
+.benefitsSection {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: $bg-light;
+}
+
+.benefitsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: $spacing-xl;
+  margin-top: $spacing-xl;
+}
+
+.benefitCard {
+  background: $bg-white;
   padding: $spacing-xl;
+  border-radius: 8px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  @include transition(all);
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
   
   h3 {
     font-size: 1.5rem;
-    margin-bottom: $spacing-md;
-    color: #667eea;
+    margin: $spacing-md 0;
+    color: $primary-color;
   }
   
   p {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin: $spacing-sm 0;
+    line-height: 1.7;
+    color: $text-light;
   }
 }
 
-.detailSubtext {
-  font-size: 0.875rem !important;
-  font-weight: 400 !important;
-  opacity: 0.7;
+.benefitIcon {
+  font-size: 3.5rem;
+  margin-bottom: $spacing-sm;
 }
 
-// CTA Section
-.ctaSection {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+// Christadelphian Section
+.christadelphianSection {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: $bg-white;
+}
+
+.faithContent {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.faithIntro {
   text-align: center;
-  padding: clamp(4rem, 10vw, 6rem) $spacing-md;
+  margin-bottom: $spacing-xl;
+  
+  p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: $text-light;
+  }
 }
 
-.ctaTitle {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
+.beliefsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-lg;
+  margin-top: $spacing-xl;
+}
+
+.beliefCard {
+  background: $bg-light;
+  padding: $spacing-xl;
+  border-radius: 8px;
+  border-left: 4px solid $primary-color;
+  
+  h4 {
+    font-size: 1.25rem;
+    color: $primary-color;
+    margin-bottom: $spacing-sm;
+  }
+  
+  p {
+    color: $text-light;
+    line-height: 1.6;
+  }
+}
+
+// Testimonials Section
+.testimonialsSection {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: $bg-light;
+}
+
+.testimonialsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-xl;
+  margin-top: $spacing-xl;
+}
+
+.testimonialCard {
+  background: $bg-white;
+  padding: $spacing-xl;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.testimonialQuote {
+  font-size: 4rem;
+  color: $secondary-color;
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: $spacing-md;
+  font-family: Georgia, serif;
+}
+
+.testimonialText {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: $text-light;
+  margin-bottom: $spacing-md;
+  font-style: italic;
+}
+
+.testimonialAuthor {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $primary-color;
+}
+
+// FAQ Section
+.faqSection {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: $bg-white;
+}
+
+.faqList {
+  max-width: 900px;
+  margin: 0 auto;
+  margin-top: $spacing-xl;
+}
+
+.faqItem {
+  background: $bg-light;
+  padding: $spacing-xl;
+  border-radius: 8px;
+  margin-bottom: $spacing-md;
+  border-left: 4px solid $accent-color;
+  
+  h4 {
+    font-size: 1.25rem;
+    color: $text-dark;
+    margin-bottom: $spacing-md;
+  }
+  
+  p {
+    color: $text-light;
+    line-height: 1.7;
+  }
+}
+
+// Camp Details Section
+.campDetailsSection {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: $bg-light;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-xl;
+  margin-top: $spacing-xl;
+}
+
+.detailBox {
+  background: $bg-white;
+  padding: $spacing-xl;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  
+  h3 {
+    font-size: 1.25rem;
+    margin: $spacing-md 0;
+    color: $text-dark;
+  }
+}
+
+.detailIcon {
+  font-size: 3rem;
   margin-bottom: $spacing-md;
 }
 
-.ctaText {
+.detailMain {
   font-size: 1.25rem;
-  margin-bottom: $spacing-xl;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-  opacity: 0.95;
+  font-weight: 700;
+  color: $primary-color;
+  margin: $spacing-sm 0;
 }
 
-.ctaButtons {
+.detailSub {
+  font-size: 0.875rem;
+  color: $text-light;
+}
+
+// Contact/Newsletter Section
+.contactSection {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  background: $bg-white;
+}
+
+.contactContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-xl;
+}
+
+.contactInfo {
+  h2 {
+    font-size: 2rem;
+    color: $text-dark;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.contactDescription {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: $text-light;
+  margin-bottom: $spacing-xl;
+}
+
+.contactDetails {
   display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.contactItem {
+  h4 {
+    font-size: 1.125rem;
+    color: $primary-color;
+    margin-bottom: $spacing-sm;
+  }
+  
+  a {
+    color: $accent-color;
+    text-decoration: none;
+    font-weight: 600;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  p {
+    color: $text-light;
+  }
+}
+
+.newsletterBox {
+  background: $bg-light;
+  padding: $spacing-xl;
+  border-radius: 8px;
+  
+  h3 {
+    font-size: 1.5rem;
+    color: $text-dark;
+    margin-bottom: $spacing-md;
+  }
+  
+  p {
+    color: $text-light;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.newsletterForm {
+  display: flex;
+  flex-direction: column;
   gap: $spacing-md;
-  justify-content: center;
-  flex-wrap: wrap;
+  
+  input {
+    padding: $spacing-md;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+    }
+  }
+}
+
+.subscribeButton {
+  padding: $spacing-md $spacing-xl;
+  background: $primary-color;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  @include transition(background);
+  
+  &:hover {
+    background: darken($primary-color, 10%);
+  }
 }
 
 // Footer
 .footer {
-  background: rgba(0, 0, 0, 0.05);
-  padding: $spacing-xl $spacing-md;
-  text-align: center;
+  background: $text-dark;
+  color: white;
+  padding: clamp(3rem, 6vw, 4rem) 0 $spacing-lg;
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-xl;
+  margin-bottom: $spacing-xl;
+  
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: $spacing-md;
+    color: $secondary-color;
+  }
+  
+  h4 {
+    font-size: 1.125rem;
+    margin-bottom: $spacing-md;
+    color: $secondary-color;
+  }
   
   p {
-    margin: $spacing-sm 0;
-  }
-}
-
-.footerSubtext {
-  opacity: 0.7;
-  font-size: 0.875rem;
-}
-
-// Dark mode adjustments
-@media (prefers-color-scheme: dark) {
-  .featureCard,
-  .detailCard {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(102, 126, 234, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin-bottom: $spacing-sm;
   }
   
-  .christadelphianSection {
-    background: rgba(102, 126, 234, 0.1);
-  }
-  
-  .footer {
-    background: rgba(255, 255, 255, 0.05);
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-  .hero {
-    min-height: 80vh;
-    padding: $spacing-lg $spacing-md;
-  }
-  
-  .heroCta,
-  .ctaButtons {
-    flex-direction: column;
-    width: 100%;
+  ul {
+    list-style: none;
+    padding: 0;
     
-    a {
-      width: 100%;
-      max-width: 300px;
+    li {
+      margin-bottom: $spacing-sm;
+      
+      a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        @include transition(color);
+        
+        &:hover {
+          color: $secondary-color;
+        }
+      }
+    }
+  }
+}
+
+.footerColumn {
+  // Styling already in footerGrid
+}
+
+.footerBottom {
+  text-align: center;
+  padding-top: $spacing-lg;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .navMenu {
+    display: none; // For simplicity, hide on mobile (you can add hamburger menu later)
+  }
+  
+  .hero {
+    height: 500px;
+  }
+  
+  .heroTitle {
+    br {
+      display: none;
     }
   }
   
-  .features,
-  .detailsGrid {
+  .welcomeFeatures,
+  .benefitsGrid,
+  .beliefsGrid,
+  .testimonialsGrid,
+  .detailsGrid,
+  .contactContent {
     grid-template-columns: 1fr;
   }
   
-  .section {
-    padding: $spacing-xl 0;
+  .footerGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Dark mode
+@media (prefers-color-scheme: dark) {
+  .page {
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+  
+  .navbar {
+    background: #2a2a2a;
+  }
+  
+  .logo h1,
+  .sectionTitle {
+    color: $secondary-color;
+  }
+  
+  .navMenu li a {
+    color: #e0e0e0;
+  }
+  
+  .welcomeSection,
+  .christadelphianSection,
+  .faqSection,
+  .contactSection {
+    background: #1a1a1a;
+  }
+  
+  .benefitsSection,
+  .testimonialsSection,
+  .campDetailsSection {
+    background: #2a2a2a;
+  }
+  
+  .benefitCard,
+  .testimonialCard,
+  .detailBox {
+    background: #333;
+  }
+  
+  .welcomeFeature,
+  .beliefCard,
+  .faqItem,
+  .newsletterBox {
+    background: #2a2a2a;
+  }
+  
+  .welcomeText,
+  .faithIntro p,
+  .beliefCard p,
+  .benefitCard p,
+  .testimonialText,
+  .faqItem p,
+  .contactDescription,
+  .contactItem p,
+  .newsletterBox p {
+    color: #b0b0b0;
   }
 }
