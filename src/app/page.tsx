@@ -31,7 +31,7 @@ export default function Home() {
             <p className={styles.heroSubtitle}>
               A Faith-Filled Summer Adventure for Young Christadelphians
             </p>
-            <a href="#about" className={styles.heroButton}>Discover More</a>
+            <a href="/register" className={styles.heroButton}>Register Now</a>
           </div>
         </div>
       </section>
@@ -290,6 +290,20 @@ export default function Home() {
                 Ready to register or have questions? We&apos;re here to help! 
                 Contact us for more information about camp dates, pricing, and registration.
               </p>
+              <div style={{ marginBottom: '2rem' }}>
+                <a href="/register" style={{ 
+                  display: 'inline-block',
+                  padding: '1rem 2rem', 
+                  background: '#f7941d',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '50px',
+                  fontWeight: '600',
+                  fontSize: '1.125rem'
+                }}>
+                  Register Now →
+                </a>
+              </div>
               <div className={styles.contactDetails}>
                 <div className={styles.contactItem}>
                   <h4>📧 Email Us</h4>

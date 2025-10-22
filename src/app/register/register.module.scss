@@ -1,0 +1,258 @@
+@use '../../styles/abstracts/variables' as *;
+@use '../../styles/abstracts/mixins' as *;
+
+$primary-color: #2c5f2d;
+$accent-color: #f7941d;
+$error-color: #dc3545;
+$success-color: #28a745;
+
+.registerPage {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: $spacing-xl 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+  
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: $primary-color;
+    margin-bottom: $spacing-sm;
+  }
+  
+  p {
+    font-size: 1.125rem;
+    color: #666;
+  }
+}
+
+.errorMessage {
+  background: #f8d7da;
+  border: 1px solid #f5c2c7;
+  color: $error-color;
+  padding: $spacing-md;
+  border-radius: 8px;
+  margin-bottom: $spacing-lg;
+}
+
+.successMessage {
+  background: #d1e7dd;
+  border: 1px solid #badbcc;
+  color: $success-color;
+  padding: $spacing-md;
+  border-radius: 8px;
+  margin-bottom: $spacing-lg;
+}
+
+.form {
+  background: white;
+  border-radius: 12px;
+  padding: $spacing-xl;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.formSection {
+  margin-bottom: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  border-bottom: 2px solid #f0f0f0;
+  
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    color: $primary-color;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-lg;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  
+  label {
+    font-weight: 600;
+    margin-bottom: $spacing-sm;
+    color: #333;
+    font-size: 0.9375rem;
+  }
+  
+  input,
+  select,
+  textarea {
+    padding: $spacing-md;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    @include transition(border-color);
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+    }
+    
+    &:required {
+      border-left: 4px solid $primary-color;
+    }
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  select {
+    cursor: pointer;
+    background: white;
+  }
+}
+
+.paymentInfo {
+  background: #f0f9ff;
+  border: 2px solid #0ea5e9;
+  border-radius: 8px;
+  padding: $spacing-lg;
+  margin: $spacing-xl 0;
+  text-align: center;
+  
+  h3 {
+    font-size: 1.75rem;
+    color: $primary-color;
+    margin-bottom: $spacing-sm;
+  }
+  
+  p {
+    color: #666;
+    font-size: 0.9375rem;
+  }
+}
+
+.formActions {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-xl;
+}
+
+.submitButton {
+  padding: $spacing-md $spacing-xl;
+  background: $accent-color;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  @include transition(all);
+  min-width: 250px;
+  
+  &:hover:not(:disabled) {
+    background: darken($accent-color, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.backLink {
+  text-align: center;
+  margin-top: $spacing-xl;
+  
+  a {
+    color: $primary-color;
+    text-decoration: none;
+    font-weight: 600;
+    @include transition(color);
+    
+    &:hover {
+      color: darken($primary-color, 10%);
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form {
+    padding: $spacing-lg;
+  }
+  
+  .submitButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .registerPage {
+    background: #1a1a1a;
+  }
+  
+  .form {
+    background: #2a2a2a;
+    color: #e0e0e0;
+  }
+  
+  .formSection {
+    border-bottom-color: #444;
+    
+    h2 {
+      color: #97bc62;
+    }
+  }
+  
+  .formGroup {
+    label {
+      color: #e0e0e0;
+    }
+    
+    input,
+    select,
+    textarea {
+      background: #333;
+      border-color: #555;
+      color: #e0e0e0;
+      
+      &:focus {
+        border-color: #97bc62;
+      }
+    }
+  }
+  
+  .paymentInfo {
+    background: #2a3f4f;
+    border-color: #3b82f6;
+    
+    h3 {
+      color: #97bc62;
+    }
+    
+    p {
+      color: #b0b0b0;
+    }
+  }
+}
+
