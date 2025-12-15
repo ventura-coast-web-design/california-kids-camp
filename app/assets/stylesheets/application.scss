@@ -1,1 +1,15 @@
-// Sassy
+// California Kids Camp - Main Stylesheet
+
+// Import configuration
+@import "variables";
+@import "mixins";
+
+// Import base styles
+@import "base";
+
+// Import components
+@import "header";
+@import "footer";
+
+// Import pages
+@import "home";

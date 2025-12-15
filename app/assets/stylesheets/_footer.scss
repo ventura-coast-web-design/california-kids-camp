@@ -1,0 +1,90 @@
+// Footer styles
+.site-footer {
+  background-color: $background-dark;
+  color: $text-white;
+  padding: $spacing-2xl 0 $spacing-md;
+  margin-top: $spacing-3xl;
+}
+
+.footer-container {
+  @include container;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+}
+
+.footer-section {
+  h3 {
+    color: $text-white;
+    font-size: $font-size-h4;
+    margin-bottom: $spacing-sm;
+  }
+  
+  h4 {
+    color: $secondary-color;
+    font-size: $font-size-large;
+    margin-bottom: $spacing-sm;
+  }
+  
+  p {
+    color: lighten($text-light, 20%);
+    margin-bottom: $spacing-xs;
+    line-height: 1.8;
+  }
+}
+
+.footer-links {
+  @include list-reset;
+  
+  li {
+    margin-bottom: $spacing-xs;
+  }
+  
+  a {
+    color: lighten($text-light, 20%);
+    @include transition(color);
+    
+    &:hover {
+      color: $secondary-color;
+    }
+  }
+}
+
+.social-links {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  
+  a {
+    color: lighten($text-light, 20%);
+    padding: $spacing-xs $spacing-sm;
+    border: 1px solid lighten($text-light, 20%);
+    border-radius: $border-radius-sm;
+    @include transition(all);
+    
+    &:hover {
+      color: $background-white;
+      border-color: $secondary-color;
+      background-color: $secondary-color;
+    }
+  }
+}
+
+.footer-bottom {
+  @include container;
+  text-align: center;
+  padding-top: $spacing-lg;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  
+  p {
+    color: lighten($text-light, 20%);
+    margin: 0;
+  }
+}
+
