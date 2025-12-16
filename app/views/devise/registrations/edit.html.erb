@@ -1,0 +1,133 @@
+<div class="page-header">
+  <div class="text-center">
+    <div class="icon-container mb-4">
+      <i class="fa-solid fa-user-edit text-4xl text-primary"></i>
+    </div>
+    <h1 class="page-title">Edit Account</h1>
+    <p class="page-subtitle">Update your profile information</p>
+  </div>
+</div>
+
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Profile Information</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: 'space-y-6' }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        
+        <div class="form-group">
+          <%= f.label :email, class: "form-label" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
+        </div>
+
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div class="alert alert-info">
+            <p class="text-sm text-gray-700">
+              Currently waiting confirmation for: <strong><%= resource.unconfirmed_email %></strong>
+            </p>
+          </div>
+        <% end %>
+
+        <div class="form-group">
+          <%= f.label :password, class: "form-label" %>
+          <small class="text-sm text-gray-600">(leave blank if you don't want to change it)</small>
+          <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
+          <% if @minimum_password_length %>
+            <small class="text-xs text-gray-500 mt-1 block"><%= @minimum_password_length %> characters minimum</small>
+          <% end %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :password_confirmation, class: "form-label" %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :current_password, class: "form-label" %>
+          <small class="text-sm text-gray-600">(we need your current password to confirm your changes)</small>
+          <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control" %>
+        </div>
+
+        <div class="form-actions">
+          <%= f.submit "Update Account", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="content-section mt-8">
+  <div class="section-header">
+    <h2 class="section-title">Security Settings</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="security-settings p-6 bg-blue-50 border border-blue-200 rounded-lg">
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-blue-900 mb-2 flex items-center">
+            <i class="fa-solid fa-shield-halved mr-2"></i>
+            Two-Factor Authentication (2FA)
+          </h3>
+          <p class="text-blue-800 mb-4">
+            Add an extra layer of security to your account. When enabled, you'll receive a verification code via email each time you sign in.
+          </p>
+          
+          <div class="flex items-center gap-4">
+            <div class="text-sm">
+              Status: 
+              <% if current_user.otp_required_for_login? %>
+                <span class="badge bg-success text-white px-3 py-1 rounded">
+                  <i class="fa-solid fa-check mr-1"></i> Enabled
+                </span>
+              <% else %>
+                <span class="badge bg-warning text-dark px-3 py-1 rounded">
+                  <i class="fa-solid fa-times mr-1"></i> Disabled
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="ml-4">
+          <%= form_with url: users_two_factor_settings_path, method: :patch, data: { turbo: false } do |f| %>
+            <%= hidden_field_tag :enabled, !current_user.otp_required_for_login? %>
+            <% if current_user.otp_required_for_login? %>
+              <%= f.submit "Disable 2FA", class: "btn btn-outline-danger", 
+                  data: { confirm: "Are you sure you want to disable two-factor authentication?" } %>
+            <% else %>
+              <%= f.submit "Enable 2FA", class: "btn btn-primary" %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-section mt-8">
+  <div class="section-header">
+    <h2 class="section-title text-red-600">Danger Zone</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="danger-zone p-6 bg-red-50 border border-red-200 rounded-lg">
+      <h3 class="text-lg font-semibold text-red-800 mb-3">Cancel my account</h3>
+      <p class="text-red-700 mb-4">
+        Unhappy with your experience? You can cancel your account at any time.
+        <strong>This action cannot be undone.</strong>
+      </p>
+      
+      <div class="d-flex gap-3">
+        <%= link_to "Cancel my account", registration_path(resource_name), 
+            data: { confirm: "Are you sure? This action cannot be undone." }, 
+            method: :delete, 
+            class: "btn btn-danger" %>
+        <%= link_to "Back", :back, class: "btn btn-outline" %>
+      </div>
+    </div>
+  </div>
+</div>

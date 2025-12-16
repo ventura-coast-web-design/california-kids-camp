@@ -1,0 +1,213 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>Two-Factor Authentication</h2>
+      <p>Enter the verification code sent to your email</p>
+    </div>
+
+    <%= form_with url: users_otp_verify_path, method: :post, local: true, class: "auth-form" do |f| %>
+      <div class="form-group">
+        <%= label_tag :otp_code, "Verification Code", class: "form-label" %>
+        <%= text_field_tag :otp_code, nil, 
+            class: "form-input otp-input", 
+            placeholder: "Enter 6-digit code",
+            maxlength: 6,
+            autocomplete: "off",
+            autofocus: true,
+            inputmode: "numeric",
+            pattern: "[0-9]{6}" %>
+        <small class="form-hint">
+          Code expires in <%= (User::OTP_EXPIRY_TIME / 60).to_i %> minutes
+        </small>
+      </div>
+
+      <div class="form-actions">
+        <%= button_tag "Verify", type: "submit", class: "btn btn-primary btn-full" %>
+      </div>
+    <% end %>
+
+    <div class="auth-footer">
+      <%= button_to "Resend Code", users_otp_resend_path, 
+          method: :post, 
+          class: "btn btn-link",
+          data: { turbo: false } %>
+      
+      <%= link_to "Cancel", destroy_user_session_path, 
+          method: :delete, 
+          class: "btn btn-link",
+          data: { turbo_method: :delete } %>
+    </div>
+
+    <div class="security-notice">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+      </svg>
+      <span>For your security, never share this code with anyone.</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .auth-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 3rem;
+    width: 100%;
+    max-width: 450px;
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .auth-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+
+  .auth-header p {
+    color: #718096;
+    font-size: 0.95rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .otp-input {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .form-hint {
+    display: block;
+    margin-top: 0.5rem;
+    color: #718096;
+    font-size: 0.875rem;
+  }
+
+  .form-actions {
+    margin-top: 2rem;
+  }
+
+  .btn {
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-full {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .btn-link {
+    background: transparent;
+    color: #667eea;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+  }
+
+  .auth-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .security-notice {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #edf2f7;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #4a5568;
+  }
+
+  .security-notice svg {
+    flex-shrink: 0;
+    color: #667eea;
+  }
+
+  @media (max-width: 640px) {
+    .auth-card {
+      padding: 2rem;
+    }
+
+    .auth-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .otp-input {
+      font-size: 1.25rem;
+      letter-spacing: 0.3rem;
+    }
+  }
+</style>
+

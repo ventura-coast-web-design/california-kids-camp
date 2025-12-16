@@ -1,7 +1,9 @@
 <header class="site-header">
   <div class="header-container">
     <div class="logo">
-      <h1>Kids Camp California</h1>
+      <%= link_to root_path, class: "logo-link" do %>
+        <h1>Kids Camp California</h1>
+      <% end %>
     </div>
     
     <nav class="nav-menu">
@@ -9,8 +11,18 @@
         <li><a href="#home" class="nav-link">Home</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
         <li><a href="#schedule" class="nav-link">Schedule</a></li>
-        <li><a href="#venue" class="nav-link">Venue</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
+        
+        <% if user_signed_in? %>
+          <li class="nav-user-info">
+            <span class="nav-link">Welcome, <%= current_user.name %></span>
+          </li>
+          <li><%= link_to "Settings", users_two_factor_settings_path, class: "nav-link" %></li>
+          <li><%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "nav-link btn-signout", data: { turbo: false } %></li>
+        <% else %>
+          <li><%= link_to "Register", new_user_registration_path, class: "nav-link btn-register" %></li>
+          <li><%= link_to "Sign In", new_user_session_path, class: "nav-link btn-signin" %></li>
+        <% end %>
       </ul>
     </nav>
     
