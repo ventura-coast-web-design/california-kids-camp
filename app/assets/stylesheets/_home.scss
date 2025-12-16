@@ -4,7 +4,9 @@
   .hero-section {
     position: relative;
     height: 600px;
-    background: linear-gradient(135deg, $primary-dark 0%, $primary-color 50%, $primary-light 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     @include flex-center;
     text-align: center;
     color: $text-white;
@@ -36,12 +38,24 @@
   
   .hero-subtitle {
     font-size: $font-size-h3;
-    margin-bottom: $spacing-xl;
+    margin-bottom: $spacing-md;
     font-weight: $font-weight-normal;
     animation: fadeInUp 1s ease 0.2s both;
     
     @include mobile {
       font-size: $font-size-h4;
+    }
+  }
+  
+  .hero-dates {
+    font-size: $font-size-large;
+    margin-bottom: $spacing-xl;
+    font-weight: $font-weight-medium;
+    animation: fadeInUp 1s ease 0.3s both;
+    opacity: 0.95;
+    
+    @include mobile {
+      font-size: $font-size-base;
     }
   }
   
@@ -59,8 +73,8 @@
   }
   
   .hero-overlay {
-    @include overlay(0.2);
-    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    @include overlay(0.5);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%);
   }
   
   // About section
@@ -105,6 +119,46 @@
     background-color: $background-white;
   }
   
+  .camp-overview {
+    margin-bottom: $spacing-xl;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .overview-card {
+    @include card;
+    background: linear-gradient(135deg, lighten($primary-color, 45%), lighten($primary-color, 50%));
+    border-left: 4px solid $primary-color;
+    
+    &.main-details {
+      max-width: 700px;
+      
+      h3 {
+        color: $primary-color;
+        font-size: $font-size-h3;
+        margin-bottom: $spacing-md;
+        text-align: center;
+      }
+      
+      p {
+        font-size: $font-size-large;
+        margin-bottom: $spacing-sm;
+        color: $text-dark;
+        
+        strong {
+          color: $primary-dark;
+        }
+      }
+    }
+  }
+  
+  .daily-schedule-title {
+    text-align: center;
+    color: $primary-color;
+    margin-bottom: $spacing-lg;
+    font-size: $font-size-h3;
+  }
+  
   .schedule-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -145,7 +199,8 @@
     
     &.dates,
     &.topic,
-    &.speaker {
+    &.speaker,
+    &.location {
       strong {
         color: $text-dark;
       }
