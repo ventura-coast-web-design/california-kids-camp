@@ -46,15 +46,15 @@ Rails.application.configure do
   # 1. Letter Opener (gem 'letter_opener') - opens emails in browser
   # 2. Mailcatcher (mailcatcher.me) - local SMTP server
   # 3. Real SMTP (Gmail, SendGrid, etc.)
-  
+
   # Option 1: Letter Opener (uncomment after adding gem)
-  # config.action_mailer.delivery_method = :letter_opener
-  # config.action_mailer.perform_deliveries = true
-  
+  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+
   # Option 2: Mailcatcher
   # config.action_mailer.delivery_method = :smtp
   # config.action_mailer.smtp_settings = { address: 'localhost', port: 1025 }
-  
+
   # Option 3: Gmail/Real SMTP (requires ENV variables)
   # config.action_mailer.delivery_method = :smtp
   # config.action_mailer.smtp_settings = {
