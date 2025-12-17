@@ -1,6 +1,7 @@
 <div class="content-section">
   <div class="section-header">
-    <h2 class="section-title">Account Information</h2>
+    <h2 class="section-title">Admin Registration</h2>
+    <p class="text-gray-600 mt-2">Create an administrator account to manage camp operations</p>
   </div>
   
   <div class="section-content">
@@ -44,8 +45,16 @@
       <% end %>
       
       <div class="auth-links mt-6 text-center">
-        <p class="text-gray-600 mb-3">Already have an account?</p>
+        <p class="text-gray-600 mb-3">Already have an admin account?</p>
         <%= link_to "Sign In", new_session_path(resource_name), class: "btn btn-outline w-full" %>
+        
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <p class="text-gray-600 mb-3">Not an admin? Register here:</p>
+          <div class="space-y-2">
+            <%= link_to "Register as Attendee", new_attendee_path, class: "btn btn-outline w-full" %>
+            <%= link_to "Register as Counsellor", new_counsellor_path, class: "btn btn-outline w-full" %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
