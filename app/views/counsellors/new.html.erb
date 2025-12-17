@@ -1,0 +1,67 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Counsellor Registration</h2>
+    <p class="text-gray-600 mt-2">Register to serve as a counsellor at California Kids Camp</p>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <%= form_with(model: @counsellor, url: counsellors_path, class: 'space-y-6', data: {turbo: false}) do |f| %>
+        <% if @counsellor.errors.any? %>
+          <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 mb-4">
+            <h3 class="font-semibold mb-2"><%= pluralize(@counsellor.errors.count, "error") %> prohibited this registration from being saved:</h3>
+            <ul class="list-disc list-inside">
+              <% @counsellor.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Add your form fields here once you've added them to the migration %>
+        <%# Example fields: %>
+        <%# <div class="form-group"> %>
+        <%#   <%= f.label :name, class: "form-label" %>
+        <%#   <%= f.text_field :name, class: "form-control", required: true %>
+        <%# </div> %>
+        
+        <%# <div class="form-group"> %>
+        <%#   <%= f.label :email, class: "form-label" %>
+        <%#   <%= f.email_field :email, class: "form-control", required: true %>
+        <%# </div> %>
+
+        <%# <div class="form-group"> %>
+        <%#   <%= f.label :phone, class: "form-label" %>
+        <%#   <%= f.telephone_field :phone, class: "form-control", required: true %>
+        <%# </div> %>
+
+        <%# <div class="form-group"> %>
+        <%#   <%= f.label :ecclesia, class: "form-label" %>
+        <%#   <%= f.text_field :ecclesia, class: "form-control" %>
+        <%# </div> %>
+
+        <%# <div class="form-group"> %>
+        <%#   <%= f.label :experience, "Previous Experience", class: "form-label" %>
+        <%#   <%= f.text_area :experience, rows: 4, class: "form-control", placeholder: "Tell us about your experience working with children and youth..." %>
+        <%# </div> %>
+
+        <%# <div class="form-group"> %>
+        <%#   <%= f.label :availability, class: "form-label" %>
+        <%#   <%= f.text_area :availability, rows: 2, class: "form-control", placeholder: "What dates are you available?" %>
+        <%# </div> %>
+        
+        <div class="form-actions">
+          <%= f.submit "Submit Registration", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+      
+      <div class="auth-links mt-6 text-center">
+        <p class="text-gray-600 mb-3">Need to register someone else?</p>
+        <div class="space-y-2">
+          <%= link_to "Register Attendee", new_attendee_path, class: "btn btn-outline w-full" %>
+          <%= link_to "Back to Home", root_path, class: "text-blue-600 hover:text-blue-800 block mt-2" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
