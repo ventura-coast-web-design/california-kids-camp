@@ -1,0 +1,63 @@
+<div class="attendee-form-group border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50">
+  <div class="flex justify-between items-center mb-4">
+    <h4 class="text-lg font-semibold text-gray-700">Child</h4>
+    <% unless f.object.new_record? %>
+      <%= f.hidden_field :_destroy, class: 'destroy-field' %>
+      <button type="button" class="remove-attendee-btn text-red-600 hover:text-red-800">Remove</button>
+    <% else %>
+      <button type="button" class="remove-attendee-btn text-red-600 hover:text-red-800">Remove</button>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-group">
+      <%= f.label :first_name, "First Name", class: "form-label" %>
+      <%= f.text_field :first_name, class: "form-control", required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :last_name, "Last Name", class: "form-label" %>
+      <%= f.text_field :last_name, class: "form-control", required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :date_of_birth, "Date of Birth", class: "form-label" %>
+      <%= f.date_field :date_of_birth, class: "form-control", required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :gender, class: "form-label" %>
+      <%= f.select :gender, options_for_select([['Select...', ''], ['Male', 'Male'], ['Female', 'Female'], ['Other', 'Other']], f.object.gender), {}, class: "form-control" %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :ecclesia, class: "form-label" %>
+      <%= f.text_field :ecclesia, class: "form-control" %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :medical_conditions, class: "form-label" %>
+      <%= f.text_area :medical_conditions, rows: 2, class: "form-control", placeholder: "Any medical conditions we should be aware of..." %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :dietary_restrictions, class: "form-label" %>
+      <%= f.text_area :dietary_restrictions, rows: 2, class: "form-control", placeholder: "Any dietary restrictions..." %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :allergies, class: "form-label" %>
+      <%= f.text_area :allergies, rows: 2, class: "form-control", placeholder: "Any allergies..." %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :special_needs, class: "form-label" %>
+      <%= f.text_area :special_needs, rows: 2, class: "form-control", placeholder: "Any special needs or accommodations required..." %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :notes, "Additional Notes", class: "form-label" %>
+      <%= f.text_area :notes, rows: 2, class: "form-control", placeholder: "Any additional information about this child..." %>
+    </div>
+  </div>
+</div>

@@ -29,3 +29,4 @@ class CounsellorsController < ApplicationController
     params.require(:counsellor).permit()
   end
 end
+

@@ -1,0 +1,318 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Attendee Registration</h2>
+    <p class="text-gray-600 mt-2">Register one or more children/youth to attend California Kids Camp</p>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <%= form_with(model: @attendee_registration, url: attendee_registrations_path, class: 'space-y-8', data: {turbo: false}) do |f| %>
+        <% if @attendee_registration.errors.any? %>
+          <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 mb-4">
+            <h3 class="font-semibold mb-2"><%= pluralize(@attendee_registration.errors.count, "error") %> prohibited this registration from being saved:</h3>
+            <ul class="list-disc list-inside">
+              <% @attendee_registration.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <!-- Guardian 1 Information -->
+        <div class="border-b border-gray-200 pb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Primary Guardian Information</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-group">
+              <%= f.label :guardian_1_name, "Full Name", class: "form-label" %>
+              <%= f.text_field :guardian_1_name, class: "form-control", required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :guardian_1_email, "Email", class: "form-label" %>
+              <%= f.email_field :guardian_1_email, class: "form-control", required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :guardian_1_phone, "Phone", class: "form-label" %>
+              <%= f.telephone_field :guardian_1_phone, class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h4 class="font-semibold mb-2">Address</h4>
+            <div class="grid grid-cols-1 gap-4">
+              <div class="form-group">
+                <%= f.label :guardian_1_address_line_1, "Address Line 1", class: "form-label" %>
+                <%= f.text_field :guardian_1_address_line_1, class: "form-control", required: true %>
+              </div>
+
+              <div class="form-group">
+                <%= f.label :guardian_1_address_line_2, "Address Line 2 (Optional)", class: "form-label" %>
+                <%= f.text_field :guardian_1_address_line_2, class: "form-control" %>
+              </div>
+
+              <div class="grid grid-cols-3 gap-4">
+                <div class="form-group">
+                  <%= f.label :guardian_1_city, "City", class: "form-label" %>
+                  <%= f.text_field :guardian_1_city, class: "form-control", required: true %>
+                </div>
+
+                <div class="form-group">
+                  <%= f.label :guardian_1_state, "State", class: "form-label" %>
+                  <%= f.text_field :guardian_1_state, class: "form-control", required: true, maxlength: 2, placeholder: "CA" %>
+                </div>
+
+                <div class="form-group">
+                  <%= f.label :guardian_1_zip, "ZIP Code", class: "form-label" %>
+                  <%= f.text_field :guardian_1_zip, class: "form-control", required: true %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guardian 2 Information (Optional) -->
+        <div class="border-b border-gray-200 pb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Second Guardian Information (Optional)</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-group">
+              <%= f.label :guardian_2_name, "Full Name", class: "form-label" %>
+              <%= f.text_field :guardian_2_name, class: "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :guardian_2_email, "Email", class: "form-label" %>
+              <%= f.email_field :guardian_2_email, class: "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :guardian_2_phone, "Phone", class: "form-label" %>
+              <%= f.telephone_field :guardian_2_phone, class: "form-control" %>
+            </div>
+          </div>
+
+          <div class="form-group mt-4">
+            <label class="flex items-center">
+              <%= f.check_box :guardian_2_same_address, class: "mr-2" %>
+              <span>Same address as primary guardian</span>
+            </label>
+          </div>
+
+          <div id="guardian-2-address" class="mt-4" style="display: none;">
+            <h4 class="font-semibold mb-2">Address</h4>
+            <div class="grid grid-cols-1 gap-4">
+              <div class="form-group">
+                <%= f.label :guardian_2_address_line_1, "Address Line 1", class: "form-label" %>
+                <%= f.text_field :guardian_2_address_line_1, class: "form-control" %>
+              </div>
+
+              <div class="form-group">
+                <%= f.label :guardian_2_address_line_2, "Address Line 2 (Optional)", class: "form-label" %>
+                <%= f.text_field :guardian_2_address_line_2, class: "form-control" %>
+              </div>
+
+              <div class="grid grid-cols-3 gap-4">
+                <div class="form-group">
+                  <%= f.label :guardian_2_city, "City", class: "form-label" %>
+                  <%= f.text_field :guardian_2_city, class: "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <%= f.label :guardian_2_state, "State", class: "form-label" %>
+                  <%= f.text_field :guardian_2_state, class: "form-control", maxlength: 2, placeholder: "CA" %>
+                </div>
+
+                <div class="form-group">
+                  <%= f.label :guardian_2_zip, "ZIP Code", class: "form-label" %>
+                  <%= f.text_field :guardian_2_zip, class: "form-control" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendees (Children) Section -->
+        <div class="border-b border-gray-200 pb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800">Attending Children/Youth</h3>
+            <button type="button" id="add-attendee-btn" class="btn btn-outline">+ Add Another Child</button>
+          </div>
+
+          <div id="attendees-container">
+            <%= f.fields_for :attendees do |attendee_fields| %>
+              <%= render 'attendee_fields', f: attendee_fields %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Interest in Counselling -->
+        <div class="border-b border-gray-200 pb-6">
+          <div class="form-group">
+            <label class="flex items-center">
+              <%= f.check_box :interest_in_counselling, class: "mr-2" %>
+              <span>I'm interested in serving as a counsellor (you'll receive more information)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="border-b border-gray-200 pb-6">
+          <div class="form-group">
+            <%= f.label :notes, "Additional Notes or Questions", class: "form-label" %>
+            <%= f.text_area :notes, rows: 4, class: "form-control", placeholder: "Any additional information you'd like us to know..." %>
+          </div>
+        </div>
+
+        <!-- Terms Agreement -->
+        <div class="border-b border-gray-200 pb-6">
+          <div class="form-group">
+            <label class="flex items-start">
+              <%= f.check_box :terms_agreement, class: "mr-2 mt-1", required: true %>
+              <span>I agree to the terms and conditions and understand that all information provided is accurate to the best of my knowledge.</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <%= f.submit "Submit Registration", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+      
+      <div class="auth-links mt-6 text-center">
+        <p class="text-gray-600 mb-3">Need to register someone else?</p>
+        <div class="space-y-2">
+          <%= link_to "Register as Counsellor", new_counsellor_path, class: "btn btn-outline w-full" %>
+          <%= link_to "Back to Home", root_path, class: "text-blue-600 hover:text-blue-800 block mt-2" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle Guardian 2 address fields
+  document.addEventListener('DOMContentLoaded', function() {
+    const sameAddressCheckbox = document.querySelector('#attendee_registration_guardian_2_same_address');
+    const guardian2Address = document.getElementById('guardian-2-address');
+    
+    if (sameAddressCheckbox) {
+      sameAddressCheckbox.addEventListener('change', function() {
+        guardian2Address.style.display = this.checked ? 'none' : 'block';
+      });
+      
+      // Set initial state
+      guardian2Address.style.display = sameAddressCheckbox.checked ? 'none' : 'block';
+    }
+  });
+
+  // Dynamic attendee form management
+  let attendeeIndex = <%= @attendee_registration.attendees.size %>;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-attendee-btn');
+    const container = document.getElementById('attendees-container');
+    
+    addButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      const newId = new Date().getTime();
+      const template = `
+        <div class="attendee-form-group border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50">
+          <div class="flex justify-between items-center mb-4">
+            <h4 class="text-lg font-semibold text-gray-700">Child ${attendeeIndex + 1}</h4>
+            <button type="button" class="remove-attendee-btn text-red-600 hover:text-red-800">Remove</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][first_name]" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][last_name]" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" name="attendee_registration[attendees_attributes][${newId}][date_of_birth]" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select name="attendee_registration[attendees_attributes][${newId}][gender]" class="form-control">
+                <option value="">Select...</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Ecclesia</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][ecclesia]" class="form-control" />
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Medical Conditions</label>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][medical_conditions]" rows="2" class="form-control" placeholder="Any medical conditions we should be aware of..."></textarea>
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Dietary Restrictions</label>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][dietary_restrictions]" rows="2" class="form-control" placeholder="Any dietary restrictions or allergies..."></textarea>
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Allergies</label>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][allergies]" rows="2" class="form-control" placeholder="Any allergies..."></textarea>
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Special Needs</label>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][special_needs]" rows="2" class="form-control" placeholder="Any special needs or accommodations required..."></textarea>
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Additional Notes</label>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][notes]" rows="2" class="form-control" placeholder="Any additional information about this child..."></textarea>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      container.insertAdjacentHTML('beforeend', template);
+      attendeeIndex++;
+      
+      // Update child numbers
+      updateChildNumbers();
+    });
+    
+    // Remove attendee handler (event delegation)
+    container.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-attendee-btn')) {
+        e.preventDefault();
+        const attendeeCount = container.querySelectorAll('.attendee-form-group').length;
+        
+        if (attendeeCount > 1) {
+          e.target.closest('.attendee-form-group').remove();
+          updateChildNumbers();
+        } else {
+          alert('You must register at least one child.');
+        }
+      }
+    });
+    
+    function updateChildNumbers() {
+      const attendeeForms = container.querySelectorAll('.attendee-form-group');
+      attendeeForms.forEach((form, index) => {
+        const header = form.querySelector('h4');
+        if (header) {
+          header.textContent = `Child ${index + 1}`;
+        }
+      });
+    }
+  });
+</script>

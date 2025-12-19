@@ -19,8 +19,8 @@ Rails.application.routes.draw do
   patch "users/two_factor_settings", to: "users/two_factor_settings#update"
 
   # Attendee registration (no login, data collection only)
-  resources :attendees, only: [ :create ]
-  get "attendees/register", to: "attendees#new", as: "new_attendee"
+  resources :attendee_registrations, only: [ :create ]
+  get "attendees/register", to: "attendee_registrations#new", as: "new_attendee"
 
   # Counsellor registration (no login, data collection only)
   resources :counsellors, only: [ :create ]
