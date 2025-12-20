@@ -23,7 +23,5 @@ class CreateAttendees < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-
-    add_index :attendees, :attendee_registration_id
   end
 end
