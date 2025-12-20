@@ -10,9 +10,57 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2024_12_16_000001) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_17_061731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "attendee_registrations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "guardian_1_address_line_1", null: false
+    t.string "guardian_1_address_line_2"
+    t.string "guardian_1_city", null: false
+    t.string "guardian_1_email", null: false
+    t.string "guardian_1_name", null: false
+    t.string "guardian_1_phone", null: false
+    t.string "guardian_1_state", null: false
+    t.string "guardian_1_zip", null: false
+    t.string "guardian_2_address_line_1"
+    t.string "guardian_2_address_line_2"
+    t.string "guardian_2_city"
+    t.string "guardian_2_email"
+    t.string "guardian_2_name"
+    t.string "guardian_2_phone"
+    t.boolean "guardian_2_same_address", default: true
+    t.string "guardian_2_state"
+    t.string "guardian_2_zip"
+    t.boolean "interest_in_counselling", default: false
+    t.text "notes"
+    t.boolean "terms_agreement", default: false, null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "attendees", force: :cascade do |t|
+    t.integer "age"
+    t.text "allergies"
+    t.bigint "attendee_registration_id", null: false
+    t.datetime "created_at", null: false
+    t.date "date_of_birth", null: false
+    t.text "dietary_restrictions"
+    t.string "ecclesia"
+    t.string "first_name", null: false
+    t.string "gender"
+    t.string "last_name", null: false
+    t.text "medical_conditions"
+    t.text "notes"
+    t.text "special_needs"
+    t.datetime "updated_at", null: false
+    t.index ["attendee_registration_id"], name: "index_attendees_on_attendee_registration_id"
+  end
+
+  create_table "counsellors", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -31,5 +79,6 @@ ActiveRecord::Schema[8.1].define(version: 2024_12_16_000001) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
-end
 
+  add_foreign_key "attendees", "attendee_registrations"
+end
