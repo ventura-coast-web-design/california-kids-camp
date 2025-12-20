@@ -30,9 +30,60 @@
       <%= f.select :gender, options_for_select([['Select...', ''], ['Male', 'Male'], ['Female', 'Female'], ['Other', 'Other']], f.object.gender), {}, class: "form-control" %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group">
+      <%= f.label :phone, "Phone Number", class: "form-label" %>
+      <%= f.telephone_field :phone, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :email, "Email", class: "form-label" %>
+      <%= f.email_field :email, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :tshirt_size, "T-Shirt Size", class: "form-label" %>
+      <%= f.select :tshirt_size, options_for_select([['Select...', ''], ['Youth S', 'Youth S'], ['Youth M', 'Youth M'], ['Youth L', 'Youth L'], ['Youth XL', 'Youth XL'], ['Adult S', 'Adult S'], ['Adult M', 'Adult M'], ['Adult L', 'Adult L'], ['Adult XL', 'Adult XL'], ['Adult XXL', 'Adult XXL']], f.object.tshirt_size), {}, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
       <%= f.label :ecclesia, class: "form-label" %>
       <%= f.text_field :ecclesia, class: "form-control" %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <label class="flex items-center">
+        <%= f.check_box :piano, class: "mr-2" %>
+        <span>This attendee plays piano</span>
+      </label>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <h5 class="font-semibold mb-2">Address</h5>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :address_line_1, "Address Line 1", class: "form-label" %>
+      <%= f.text_field :address_line_1, class: "form-control" %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :address_line_2, "Address Line 2 (Optional)", class: "form-label" %>
+      <%= f.text_field :address_line_2, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :city, class: "form-label" %>
+      <%= f.text_field :city, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :state, class: "form-label" %>
+      <%= f.text_field :state, class: "form-control", maxlength: 2, placeholder: "CA" %>
+    </div>
+
+    <div class="form-group md:col-span-2">
+      <%= f.label :zip, "ZIP Code", class: "form-label" %>
+      <%= f.text_field :zip, class: "form-control" %>
     </div>
 
     <div class="form-group md:col-span-2">

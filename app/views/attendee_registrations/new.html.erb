@@ -133,6 +133,42 @@
           </div>
         </div>
 
+        <!-- Emergency Contacts -->
+        <div class="border-b border-gray-200 pb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Emergency Contacts</h3>
+          <p class="text-sm text-gray-600 mb-4">Please provide at least one emergency contact (someone other than the guardians listed above).</p>
+          
+          <div class="mb-6">
+            <h4 class="font-semibold mb-3 text-gray-700">Emergency Contact 1 (Required)</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <%= f.label :emergency_contact_1_name, "Full Name", class: "form-label" %>
+                <%= f.text_field :emergency_contact_1_name, class: "form-control", required: true %>
+              </div>
+
+              <div class="form-group">
+                <%= f.label :emergency_contact_1_phone, "Phone Number", class: "form-label" %>
+                <%= f.telephone_field :emergency_contact_1_phone, class: "form-control", required: true %>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-3 text-gray-700">Emergency Contact 2 (Optional)</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-group">
+                <%= f.label :emergency_contact_2_name, "Full Name", class: "form-label" %>
+                <%= f.text_field :emergency_contact_2_name, class: "form-control" %>
+              </div>
+
+              <div class="form-group">
+                <%= f.label :emergency_contact_2_phone, "Phone Number", class: "form-label" %>
+                <%= f.telephone_field :emergency_contact_2_phone, class: "form-control" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Attendees (Children) Section -->
         <div class="border-b border-gray-200 pb-6">
           <div class="flex justify-between items-center mb-4">
@@ -162,6 +198,17 @@
           <div class="form-group">
             <%= f.label :notes, "Additional Notes or Questions", class: "form-label" %>
             <%= f.text_area :notes, rows: 4, class: "form-control", placeholder: "Any additional information you'd like us to know..." %>
+          </div>
+        </div>
+
+        <!-- Medical Consent -->
+        <div class="border-b border-gray-200 pb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Medical Consent</h3>
+          <div class="form-group">
+            <label class="flex items-start">
+              <%= f.check_box :medical_consent, class: "mr-2 mt-1", required: true %>
+              <span>I authorize camp staff to seek and approve emergency medical treatment for any attendee in this registration if required. I understand that every effort will be made to contact the guardians and emergency contacts listed above, but in the event of an emergency where guardians cannot be reached, I give permission for necessary medical care.</span>
+            </label>
           </div>
         </div>
 
@@ -250,9 +297,71 @@
               </select>
             </div>
 
-            <div class="form-group md:col-span-2">
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" name="attendee_registration[attendees_attributes][${newId}][phone]" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" name="attendee_registration[attendees_attributes][${newId}][email]" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">T-Shirt Size</label>
+              <select name="attendee_registration[attendees_attributes][${newId}][tshirt_size]" class="form-control">
+                <option value="">Select...</option>
+                <option value="Youth S">Youth S</option>
+                <option value="Youth M">Youth M</option>
+                <option value="Youth L">Youth L</option>
+                <option value="Youth XL">Youth XL</option>
+                <option value="Adult S">Adult S</option>
+                <option value="Adult M">Adult M</option>
+                <option value="Adult L">Adult L</option>
+                <option value="Adult XL">Adult XL</option>
+                <option value="Adult XXL">Adult XXL</option>
+              </select>
+            </div>
+
+            <div class="form-group">
               <label class="form-label">Ecclesia</label>
               <input type="text" name="attendee_registration[attendees_attributes][${newId}][ecclesia]" class="form-control" />
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="flex items-center">
+                <input type="checkbox" name="attendee_registration[attendees_attributes][${newId}][piano]" value="1" class="mr-2" />
+                <span>This attendee plays piano</span>
+              </label>
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <h5 class="font-semibold mb-2">Address</h5>
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Address Line 1</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][address_line_1]" class="form-control" />
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">Address Line 2 (Optional)</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][address_line_2]" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][city]" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">State</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][state]" class="form-control" maxlength="2" placeholder="CA" />
+            </div>
+
+            <div class="form-group md:col-span-2">
+              <label class="form-label">ZIP Code</label>
+              <input type="text" name="attendee_registration[attendees_attributes][${newId}][zip]" class="form-control" />
             </div>
 
             <div class="form-group md:col-span-2">
@@ -262,7 +371,7 @@
 
             <div class="form-group md:col-span-2">
               <label class="form-label">Dietary Restrictions</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][dietary_restrictions]" rows="2" class="form-control" placeholder="Any dietary restrictions or allergies..."></textarea>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][dietary_restrictions]" rows="2" class="form-control" placeholder="Any dietary restrictions..."></textarea>
             </div>
 
             <div class="form-group md:col-span-2">
