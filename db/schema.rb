@@ -10,12 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_17_061731) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_20_061416) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "attendee_registrations", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "emergency_contact_1_name", null: false
+    t.string "emergency_contact_1_phone", null: false
+    t.string "emergency_contact_2_name"
+    t.string "emergency_contact_2_phone"
     t.string "guardian_1_address_line_1", null: false
     t.string "guardian_1_address_line_2"
     t.string "guardian_1_city", null: false
@@ -34,26 +38,36 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_061731) do
     t.string "guardian_2_state"
     t.string "guardian_2_zip"
     t.boolean "interest_in_counselling", default: false
+    t.boolean "medical_consent", default: false, null: false
     t.text "notes"
     t.boolean "terms_agreement", default: false, null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "attendees", force: :cascade do |t|
+    t.string "address_line_1"
+    t.string "address_line_2"
     t.integer "age"
     t.text "allergies"
     t.bigint "attendee_registration_id", null: false
+    t.string "city"
     t.datetime "created_at", null: false
     t.date "date_of_birth", null: false
     t.text "dietary_restrictions"
     t.string "ecclesia"
+    t.string "email"
     t.string "first_name", null: false
     t.string "gender"
     t.string "last_name", null: false
     t.text "medical_conditions"
     t.text "notes"
+    t.string "phone"
+    t.boolean "piano"
     t.text "special_needs"
+    t.string "state"
+    t.string "tshirt_size"
     t.datetime "updated_at", null: false
+    t.string "zip"
     t.index ["attendee_registration_id"], name: "index_attendees_on_attendee_registration_id"
   end
 
