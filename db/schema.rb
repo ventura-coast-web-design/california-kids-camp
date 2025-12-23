@@ -96,3 +96,4 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_20_061416) do
 
   add_foreign_key "attendees", "attendee_registrations"
 end
+

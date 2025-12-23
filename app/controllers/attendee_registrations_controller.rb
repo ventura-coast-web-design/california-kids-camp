@@ -79,3 +79,4 @@ class AttendeeRegistrationsController < ApplicationController
     )
   end
 end
+

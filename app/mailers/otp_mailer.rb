@@ -16,3 +16,4 @@ class OtpMailer < ApplicationMailer
 end
 
 
+
