@@ -215,3 +215,4 @@ registration = AttendeeRegistration.create!(
   ]
 )
 ```
+

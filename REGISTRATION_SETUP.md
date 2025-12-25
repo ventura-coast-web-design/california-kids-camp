@@ -238,3 +238,4 @@ When an `AttendeeRegistration` is deleted, all associated `Attendee` records are
 - Add file upload for medical documents
 - Add digital signature for terms agreement
 
+

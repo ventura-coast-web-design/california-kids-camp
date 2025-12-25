@@ -321,3 +321,4 @@ db/migrate/
 ---
 
 **The key insight**: One registration form creates **1 parent record + N child records** in a single transaction!
+

@@ -185,3 +185,4 @@ Check the documentation files or let me know if you need any adjustments!
 2. Run `rails db:migrate`
 3. Start your server: `rails server`
 4. Visit `/attendees/register` and try registering multiple kids! 🎉
+
