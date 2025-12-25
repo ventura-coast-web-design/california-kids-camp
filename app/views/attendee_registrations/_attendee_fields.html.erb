@@ -30,24 +30,28 @@
       <%= f.select :gender, options_for_select([['Select...', ''], ['Male', 'Male'], ['Female', 'Female'], ['Other', 'Other']], f.object.gender), {}, class: "form-control" %>
     </div>
 
-    <div class="form-group">
-      <%= f.label :phone, "Phone Number", class: "form-label" %>
-      <%= f.telephone_field :phone, class: "form-control" %>
-    </div>
+    <div class="form-group md:col-span-2">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="form-group">
+          <%= f.label :phone, "Phone Number", class: "form-label" %>
+          <%= f.telephone_field :phone, class: "form-control" %>
+        </div>
 
-    <div class="form-group">
-      <%= f.label :email, "Email", class: "form-label" %>
-      <%= f.email_field :email, class: "form-control" %>
+        <div class="form-group">
+          <%= f.label :email, "Email", class: "form-label" %>
+          <%= f.email_field :email, class: "form-control" %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :ecclesia, class: "form-label" %>
+          <%= f.text_field :ecclesia, class: "form-control" %>
+        </div>
+      </div>
     </div>
 
     <div class="form-group">
       <%= f.label :tshirt_size, "T-Shirt Size", class: "form-label" %>
       <%= f.select :tshirt_size, options_for_select([['Select...', ''], ['Youth S', 'Youth S'], ['Youth M', 'Youth M'], ['Youth L', 'Youth L'], ['Youth XL', 'Youth XL'], ['Adult S', 'Adult S'], ['Adult M', 'Adult M'], ['Adult L', 'Adult L'], ['Adult XL', 'Adult XL'], ['Adult XXL', 'Adult XXL']], f.object.tshirt_size), {}, class: "form-control" %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :ecclesia, class: "form-label" %>
-      <%= f.text_field :ecclesia, class: "form-control" %>
     </div>
 
     <div class="form-group md:col-span-2">
@@ -81,7 +85,7 @@
       <%= f.text_field :state, class: "form-control", maxlength: 2, placeholder: "CA" %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group">
       <%= f.label :zip, "ZIP Code", class: "form-label" %>
       <%= f.text_field :zip, class: "form-control" %>
     </div>
