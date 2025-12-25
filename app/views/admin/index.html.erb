@@ -1,0 +1,121 @@
+<div class="content-section">
+  <div class="container">
+    <div class="section-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 class="section-title" style="margin-bottom: 0;">Admin Dashboard</h2>
+        <%= button_to "Logout", admin_logout_path, method: :delete, class: "btn btn-outline", style: "padding: 0.5rem 1rem;", data: { turbo: false } %>
+      </div>
+    </div>
+    
+    <div class="section-content">
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="attendees" onclick="switchTab('attendees')">
+        Attendees (<%= @attendee_registrations.count %>)
+      </button>
+      <button class="admin-tab" data-tab="counsellors" onclick="switchTab('counsellors')">
+        Counsellors (<%= @counsellors.count %>)
+      </button>
+    </div>
+
+    <!-- Attendees Tab Content -->
+    <div id="attendees-tab" class="admin-tab-content active">
+      <h3 style="margin-bottom: 1.5rem;">Registered Attendees</h3>
+      
+      <% if @attendee_registrations.any? %>
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Registration Date</th>
+                <th>Guardian 1</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Attendees</th>
+                <th>Emergency Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @attendee_registrations.each do |registration| %>
+                <tr>
+                  <td><%= registration.created_at.strftime("%m/%d/%Y") %></td>
+                  <td><%= registration.guardian_1_name %></td>
+                  <td><%= registration.guardian_1_email %></td>
+                  <td><%= registration.guardian_1_phone %></td>
+                  <td>
+                    <% registration.attendees.each do |attendee| %>
+                      <div style="margin-bottom: 0.5rem;">
+                        <strong><%= attendee.first_name %> <%= attendee.last_name %></strong>
+                        <% if attendee.age %> (<%= attendee.age %> years)<% end %>
+                        <% if attendee.gender %> - <%= attendee.gender %><% end %>
+                        <% if attendee.ecclesia %> - <%= attendee.ecclesia %><% end %>
+                      </div>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= registration.emergency_contact_1_name %><br>
+                    <%= registration.emergency_contact_1_phone %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-600">No attendee registrations yet.</p>
+      <% end %>
+    </div>
+
+    <!-- Counsellors Tab Content -->
+    <div id="counsellors-tab" class="admin-tab-content">
+      <h3 style="margin-bottom: 1.5rem;">Registered Counsellors</h3>
+      
+      <% if @counsellors.any? %>
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Registration Date</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @counsellors.each do |counsellor| %>
+                <tr>
+                  <td><%= counsellor.created_at.strftime("%m/%d/%Y") %></td>
+                  <td>
+                    <em>No fields configured yet</em>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-600">No counsellor registrations yet.</p>
+      <% end %>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.admin-tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Add active class to selected tab
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+  }
+</script>
+

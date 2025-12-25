@@ -26,6 +26,12 @@ Rails.application.routes.draw do
   resources :counsellors, only: [ :create ]
   get "counsellors/register", to: "counsellors#new", as: "new_counsellor"
 
+  # Admin routes (password protected)
+  get "admin/login", to: "admin#login", as: "admin_login"
+  post "admin/authenticate", to: "admin#authenticate", as: "admin_authenticate"
+  delete "admin/logout", to: "admin#logout", as: "admin_logout"
+  get "admin", to: "admin#index", as: "admin"
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check

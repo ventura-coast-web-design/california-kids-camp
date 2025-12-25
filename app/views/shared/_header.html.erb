@@ -21,8 +21,8 @@
           <li><%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "nav-link btn-signout", data: { turbo: false } %></li>
         <% else %>
           <li><%= link_to "Register", new_user_registration_path, class: "nav-link btn-register" %></li>
-          <li><%= link_to "Sign In", new_user_session_path, class: "nav-link btn-signin" %></li>
         <% end %>
+        <li><%= link_to "Admin", admin_login_path, class: "nav-link" %></li>
       </ul>
     </nav>
     

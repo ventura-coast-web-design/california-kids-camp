@@ -1,0 +1,34 @@
+<div class="content-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Admin Login</h2>
+      <p class="text-gray-600 mt-2">Enter password to access admin area</p>
+    </div>
+    
+    <div class="section-content">
+      <div class="form-container" style="max-width: 400px; margin: 0 auto;">
+      <% if flash[:alert] %>
+        <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 mb-4">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <%= form_with url: admin_authenticate_path, method: :post, class: 'space-y-6', data: {turbo: false} do |f| %>
+        <div class="form-group">
+          <%= f.label :password, "Password", class: "form-label" %>
+          <%= f.password_field :password, class: "form-control", required: true, autofocus: true %>
+        </div>
+        
+        <div class="form-actions">
+          <%= f.submit "Login", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+      
+      <div class="auth-links mt-6 text-center">
+        <%= link_to "Back to Home", root_path, class: "text-blue-600 hover:text-blue-800" %>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+

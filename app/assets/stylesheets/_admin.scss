@@ -1,0 +1,204 @@
+// Admin styles
+
+.admin-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid $border-color;
+  margin-bottom: $spacing-lg;
+  
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.admin-tab {
+  padding: $spacing-sm $spacing-md;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $text-light;
+  transition: all $transition-base;
+  
+  &:hover {
+    color: $primary-color;
+  }
+  
+  &.active {
+    color: $primary-color;
+    border-bottom-color: $primary-color;
+  }
+}
+
+.admin-tab-content {
+  display: none;
+  
+  &.active {
+    display: block;
+  }
+}
+
+.admin-table-container {
+  overflow-x: auto;
+  margin-top: $spacing-md;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $background-white;
+  box-shadow: $shadow-md;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  
+  thead {
+    background-color: $primary-color;
+    color: $text-white;
+    
+    th {
+      padding: $spacing-sm $spacing-md;
+      text-align: left;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-small;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  tbody {
+    tr {
+      border-bottom: 1px solid $border-color;
+      transition: background-color $transition-fast;
+      
+      &:hover {
+        background-color: $background-light;
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      td {
+        padding: $spacing-md;
+        font-size: $font-size-base;
+        color: $text-dark;
+        vertical-align: top;
+      }
+    }
+  }
+  
+  @include mobile {
+    font-size: $font-size-small;
+    
+    thead th,
+    tbody td {
+      padding: $spacing-xs $spacing-sm;
+    }
+  }
+}
+
+// Form styles (if not already defined)
+.form-container {
+  background: $background-white;
+  padding: $spacing-xl;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  
+  @include mobile {
+    padding: $spacing-md;
+  }
+}
+
+.form-group {
+  margin-bottom: $spacing-md;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: $spacing-xs;
+  font-weight: $font-weight-semibold;
+  color: $text-dark;
+  font-size: $font-size-base;
+}
+
+.form-control {
+  width: 100%;
+  padding: $spacing-sm;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-md;
+  font-size: $font-size-base;
+  font-family: $font-primary;
+  transition: border-color $transition-fast;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+}
+
+.form-actions {
+  margin-top: $spacing-lg;
+}
+
+.btn {
+  display: inline-block;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  transition: all $transition-base;
+  border: 2px solid transparent;
+  
+  &.btn-primary {
+    background-color: $primary-color;
+    color: $text-white;
+    border-color: $primary-color;
+    
+    &:hover {
+      background-color: $primary-dark;
+      border-color: $primary-dark;
+    }
+  }
+  
+  &.btn-outline {
+    background-color: transparent;
+    color: $primary-color;
+    border-color: $primary-color;
+    
+    &:hover {
+      background-color: $primary-color;
+      color: $text-white;
+    }
+  }
+  
+  &.w-full {
+    width: 100%;
+  }
+}
+
+.content-section {
+  padding: $spacing-xl 0;
+  
+  @include mobile {
+    padding: $spacing-md 0;
+  }
+}
+
+.section-header {
+  margin-bottom: $spacing-lg;
+}
+
+.section-content {
+  margin-top: $spacing-lg;
+}
+
+.text-gray-600 {
+  color: $text-light;
+}
+
