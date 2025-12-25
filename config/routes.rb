@@ -2,10 +2,19 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Devise routes with custom controllers (for admins only)
+  # Registration disabled - users should register as attendees or counsellors instead
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
-  }
+  }, skip: [:registrations]
+  
+  # Only allow edit/update/destroy for existing users, not new registrations
+  devise_scope :user do
+    get "users/edit", to: "users/registrations#edit", as: :edit_user_registration
+    patch "users", to: "users/registrations#update", as: :user_registration
+    put "users", to: "users/registrations#update"
+    delete "users", to: "users/registrations#destroy"
+  end
 
   # OTP verification routes
   namespace :users do

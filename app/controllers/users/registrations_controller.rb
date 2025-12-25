@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
-  before_action :configure_permitted_parameters, only: [:create, :update]
-
-  # GET /resource/sign_up
-  # def new
-  #   super
-  # end
+  before_action :configure_permitted_parameters, only: [:update]
+  before_action :prevent_registration, only: [:new, :create]
 
   # POST /resource
   def create
@@ -82,7 +78,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     root_path
   end
 
-  # private
+  private
+
+  def prevent_registration
+    redirect_to new_attendee_path, alert: "User registration is not available. Please register as an attendee or counsellor."
+  end
 
   # def user_params
   #   params.require(:user).permit(:name, :role, :email, :ecclesia, :encrypted_password)
