@@ -6,8 +6,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
-  }, skip: [:registrations]
-  
+  }, skip: [ :registrations ]
+
   # Only allow edit/update/destroy for existing users, not new registrations
   devise_scope :user do
     get "users/edit", to: "users/registrations#edit", as: :edit_user_registration

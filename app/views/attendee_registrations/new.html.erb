@@ -22,7 +22,7 @@
         <div class="border-b border-gray-200 pb-6">
           <h3 class="text-xl font-semibold mb-4 text-gray-800">Primary Guardian Information</h3>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="form-group">
               <%= f.label :guardian_1_name, "Full Name", class: "form-label" %>
               <%= f.text_field :guardian_1_name, class: "form-control", required: true %>
@@ -76,7 +76,7 @@
         <div class="border-b border-gray-200 pb-6">
           <h3 class="text-xl font-semibold mb-4 text-gray-800">Second Guardian Information (Optional)</h3>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="form-group">
               <%= f.label :guardian_2_name, "Full Name", class: "form-label" %>
               <%= f.text_field :guardian_2_name, class: "form-control" %>
@@ -297,14 +297,23 @@
               </select>
             </div>
 
-            <div class="form-group">
-              <label class="form-label">Phone Number</label>
-              <input type="tel" name="attendee_registration[attendees_attributes][${newId}][phone]" class="form-control" />
-            </div>
+            <div class="form-group md:col-span-2">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Phone Number</label>
+                  <input type="tel" name="attendee_registration[attendees_attributes][${newId}][phone]" class="form-control" />
+                </div>
 
-            <div class="form-group">
-              <label class="form-label">Email</label>
-              <input type="email" name="attendee_registration[attendees_attributes][${newId}][email]" class="form-control" />
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" name="attendee_registration[attendees_attributes][${newId}][email]" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Ecclesia</label>
+                  <input type="text" name="attendee_registration[attendees_attributes][${newId}][ecclesia]" class="form-control" />
+                </div>
+              </div>
             </div>
 
             <div class="form-group">
@@ -321,11 +330,6 @@
                 <option value="Adult XL">Adult XL</option>
                 <option value="Adult XXL">Adult XXL</option>
               </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Ecclesia</label>
-              <input type="text" name="attendee_registration[attendees_attributes][${newId}][ecclesia]" class="form-control" />
             </div>
 
             <div class="form-group md:col-span-2">
@@ -359,7 +363,7 @@
               <input type="text" name="attendee_registration[attendees_attributes][${newId}][state]" class="form-control" maxlength="2" placeholder="CA" />
             </div>
 
-            <div class="form-group md:col-span-2">
+            <div class="form-group">
               <label class="form-label">ZIP Code</label>
               <input type="text" name="attendee_registration[attendees_attributes][${newId}][zip]" class="form-control" />
             </div>

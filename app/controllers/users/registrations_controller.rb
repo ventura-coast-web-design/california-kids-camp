@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
-  before_action :configure_permitted_parameters, only: [:update]
-  before_action :prevent_registration, only: [:new, :create]
+  before_action :configure_permitted_parameters, only: [ :update ]
+  before_action :prevent_registration, only: [ :new, :create ]
 
   # POST /resource
   def create
@@ -14,7 +14,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if resource.active_for_authentication?
         set_flash_message! :notice, :signed_up
         sign_up(resource_name, resource)
-        
+
         # Generate and send OTP for new users if 2FA is enabled
         if resource.otp_required?
           resource.generate_otp
@@ -64,8 +64,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # If you have extra params to permit, append them to the sanitizer.
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :role, :ecclesia])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name, :role, :ecclesia])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :name, :role, :ecclesia ])
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :role, :ecclesia ])
   end
 
   # The path used after sign up.
