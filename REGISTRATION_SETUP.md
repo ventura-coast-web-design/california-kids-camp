@@ -239,3 +239,4 @@ When an `AttendeeRegistration` is deleted, all associated `Attendee` records are
 - Add digital signature for terms agreement
 
 
+

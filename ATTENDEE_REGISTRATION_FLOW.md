@@ -216,3 +216,4 @@ registration = AttendeeRegistration.create!(
 )
 ```
 
+

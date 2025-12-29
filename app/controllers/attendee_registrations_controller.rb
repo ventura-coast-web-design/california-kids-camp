@@ -81,3 +81,4 @@ class AttendeeRegistrationsController < ApplicationController
 end
 
 
+
