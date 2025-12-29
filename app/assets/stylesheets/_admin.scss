@@ -52,6 +52,7 @@
   box-shadow: $shadow-md;
   border-radius: $border-radius-md;
   overflow: hidden;
+  min-width: 100%;
   
   thead {
     background-color: $primary-color;
@@ -64,6 +65,10 @@
       font-size: $font-size-small;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
   }
   
@@ -85,6 +90,18 @@
         font-size: $font-size-base;
         color: $text-dark;
         vertical-align: top;
+        word-wrap: break-word;
+        max-width: 200px;
+        
+        strong {
+          font-weight: $font-weight-bold;
+          color: $primary-color;
+        }
+        
+        em {
+          color: $text-light;
+          font-style: italic;
+        }
       }
     }
   }
@@ -95,6 +112,7 @@
     thead th,
     tbody td {
       padding: $spacing-xs $spacing-sm;
+      max-width: 150px;
     }
   }
 }
@@ -201,4 +219,5 @@
 .text-gray-600 {
   color: $text-light;
 }
+
 

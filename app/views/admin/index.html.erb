@@ -11,7 +11,7 @@
     <!-- Tabs -->
     <div class="admin-tabs">
       <button class="admin-tab active" data-tab="attendees" onclick="switchTab('attendees')">
-        Attendees (<%= @attendee_registrations.count %>)
+        Attendees (<%= @attendees.count %>)
       </button>
       <button class="admin-tab" data-tab="counsellors" onclick="switchTab('counsellors')">
         Counsellors (<%= @counsellors.count %>)
@@ -22,47 +22,114 @@
     <div id="attendees-tab" class="admin-tab-content active">
       <h3 style="margin-bottom: 1.5rem;">Registered Attendees</h3>
       
-      <% if @attendee_registrations.any? %>
-        <div class="admin-table-container">
+      <% if @attendees.any? %>
+        <div class="admin-table-container" style="overflow-x: auto;">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Registration Date</th>
-                <th>Guardian 1</th>
-                <th>Email</th>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
+                <th>Gender</th>
                 <th>Phone</th>
-                <th>Attendees</th>
-                <th>Emergency Contact</th>
+                <th>Email</th>
+                <th>T-Shirt Size</th>
+                <th>Ecclesia</th>
+                <th>Piano</th>
+                <th>Address</th>
+                <th>Medical Conditions</th>
+                <th>Dietary Restrictions</th>
+                <th>Allergies</th>
+                <th>Special Needs</th>
+                <th>Notes</th>
+                <th>Guardian 1</th>
+                <th>Guardian 1 Contact</th>
+                <th>Guardian 2</th>
+                <th>Guardian 2 Contact</th>
+                <th>Emergency Contact 1</th>
+                <th>Emergency Contact 2</th>
+                <th>Registration Date</th>
               </tr>
             </thead>
             <tbody>
-              <% @attendee_registrations.each do |registration| %>
+              <% @attendees.each do |attendee| %>
+                <% registration = attendee.attendee_registration %>
                 <tr>
-                  <td><%= registration.created_at.strftime("%m/%d/%Y") %></td>
-                  <td><%= registration.guardian_1_name %></td>
-                  <td><%= registration.guardian_1_email %></td>
-                  <td><%= registration.guardian_1_phone %></td>
+                  <td><strong><%= attendee.first_name %> <%= attendee.last_name %></strong></td>
+                  <td><%= attendee.date_of_birth&.strftime("%m/%d/%Y") %></td>
+                  <td><%= attendee.age %></td>
+                  <td><%= attendee.gender %></td>
+                  <td><%= attendee.phone %></td>
+                  <td><%= attendee.email %></td>
+                  <td><%= attendee.tshirt_size %></td>
+                  <td><%= attendee.ecclesia %></td>
+                  <td><%= attendee.piano ? "Yes" : "No" %></td>
                   <td>
-                    <% registration.attendees.each do |attendee| %>
-                      <div style="margin-bottom: 0.5rem;">
-                        <strong><%= attendee.first_name %> <%= attendee.last_name %></strong>
-                        <% if attendee.age %> (<%= attendee.age %> years)<% end %>
-                        <% if attendee.gender %> - <%= attendee.gender %><% end %>
-                        <% if attendee.ecclesia %> - <%= attendee.ecclesia %><% end %>
-                      </div>
+                    <% if attendee.address_line_1.present? %>
+                      <%= attendee.address_line_1 %><br>
+                      <% if attendee.address_line_2.present? %><%= attendee.address_line_2 %><br><% end %>
+                      <%= [attendee.city, attendee.state, attendee.zip].compact.join(", ") %>
+                    <% else %>
+                      <em>Same as Guardian</em>
+                    <% end %>
+                  </td>
+                  <td><%= attendee.medical_conditions %></td>
+                  <td><%= attendee.dietary_restrictions %></td>
+                  <td><%= attendee.allergies %></td>
+                  <td><%= attendee.special_needs %></td>
+                  <td><%= attendee.notes %></td>
+                  <td>
+                    <%= registration.guardian_1_name %><br>
+                    <%= registration.guardian_1_email %><br>
+                    <%= registration.guardian_1_phone %>
+                  </td>
+                  <td>
+                    <%= registration.guardian_1_address_line_1 %><br>
+                    <% if registration.guardian_1_address_line_2.present? %><%= registration.guardian_1_address_line_2 %><br><% end %>
+                    <%= registration.guardian_1_city %>, <%= registration.guardian_1_state %> <%= registration.guardian_1_zip %>
+                  </td>
+                  <td>
+                    <% if registration.guardian_2_name.present? %>
+                      <%= registration.guardian_2_name %><br>
+                      <%= registration.guardian_2_email %><br>
+                      <%= registration.guardian_2_phone %>
+                    <% else %>
+                      <em>N/A</em>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if registration.guardian_2_name.present? %>
+                      <% if registration.guardian_2_same_address %>
+                        <em>Same as Guardian 1</em>
+                      <% else %>
+                        <%= registration.guardian_2_address_line_1 %><br>
+                        <% if registration.guardian_2_address_line_2.present? %><%= registration.guardian_2_address_line_2 %><br><% end %>
+                        <%= registration.guardian_2_city %>, <%= registration.guardian_2_state %> <%= registration.guardian_2_zip %>
+                      <% end %>
+                    <% else %>
+                      <em>N/A</em>
                     <% end %>
                   </td>
                   <td>
                     <%= registration.emergency_contact_1_name %><br>
                     <%= registration.emergency_contact_1_phone %>
                   </td>
+                  <td>
+                    <% if registration.emergency_contact_2_name.present? %>
+                      <%= registration.emergency_contact_2_name %><br>
+                      <%= registration.emergency_contact_2_phone %>
+                    <% else %>
+                      <em>N/A</em>
+                    <% end %>
+                  </td>
+                  <td><%= registration.created_at.strftime("%m/%d/%Y") %></td>
                 </tr>
               <% end %>
             </tbody>
           </table>
         </div>
       <% else %>
-        <p class="text-gray-600">No attendee registrations yet.</p>
+        <p class="text-gray-600">No attendees registered yet.</p>
       <% end %>
     </div>
 

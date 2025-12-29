@@ -6,7 +6,7 @@ class AdminController < ApplicationController
   before_action :require_admin_password, except: [ :login, :authenticate, :logout ]
 
   def index
-    @attendee_registrations = AttendeeRegistration.includes(:attendees).order(created_at: :desc)
+    @attendees = Attendee.includes(:attendee_registration).order(created_at: :desc)
     @counsellors = Counsellor.order(created_at: :desc)
   end
 
