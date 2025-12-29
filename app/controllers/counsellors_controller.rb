@@ -24,9 +24,18 @@ class CounsellorsController < ApplicationController
   private
 
   def counsellor_params
-    # Add your permitted parameters here once you've added fields to the migration
-    # Example: params.require(:counsellor).permit(:name, :email, :phone, :ecclesia, :experience, :references)
-    params.require(:counsellor).permit()
+    params.require(:counsellor).permit(
+      :counsellor_1_first_name, :counsellor_1_last_name,
+      :counsellor_1_address_line_1, :counsellor_1_city,
+      :counsellor_1_state_province_region, :counsellor_1_postal_code,
+      :counsellor_1_country, :counsellor_1_phone, :counsellor_1_email,
+      :counsellor_1_ecclesia, :counsellor_1_tshirt_size, :counsellor_1_piano,
+      :counsellor_2_first_name, :counsellor_2_last_name,
+      :counsellor_2_address_line_1, :counsellor_2_city,
+      :counsellor_2_state_province_region, :counsellor_2_postal_code,
+      :counsellor_2_country, :counsellor_2_phone, :counsellor_2_email,
+      :counsellor_2_ecclesia, :counsellor_2_tshirt_size, :counsellor_2_piano
+    )
   end
 end
 

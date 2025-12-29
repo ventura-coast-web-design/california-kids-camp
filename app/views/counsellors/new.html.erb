@@ -1,12 +1,16 @@
 <div class="content-section">
   <div class="section-header">
-    <h2 class="section-title">Counsellor Registration</h2>
-    <p class="text-gray-600 mt-2">Register to serve as a counsellor at California Kids Camp</p>
+    <h2 class="section-title">VOLUNTEER NOW! SPACE IS LIMITED!</h2>
+    <div class="text-gray-600 mt-4 space-y-2">
+      <p>Please sign up to volunteer no later than April 15th.</p>
+      <p>To be a counselor, you must be a baptized member in good standing and fellowship exclusively based on the BASF. If you would like to volunteer as a counselor, please fill out the form below</p>
+      <p>For more information on what the counselling experience is like, please refer to <%= link_to "our counselor FAQs", "#", class: "text-blue-600 hover:text-blue-800" %>.</p>
+    </div>
   </div>
   
   <div class="section-content">
     <div class="form-container">
-      <%= form_with(model: @counsellor, url: counsellors_path, class: 'space-y-6', data: {turbo: false}) do |f| %>
+      <%= form_with(model: @counsellor, url: counsellors_path, class: 'space-y-8', data: {turbo: false}) do |f| %>
         <% if @counsellor.errors.any? %>
           <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 mb-4">
             <h3 class="font-semibold mb-2"><%= pluralize(@counsellor.errors.count, "error") %> prohibited this registration from being saved:</h3>
@@ -18,37 +22,165 @@
           </div>
         <% end %>
 
-        <%# Add your form fields here once you've added them to the migration %>
-        <%# Example fields: %>
-        <%# <div class="form-group"> %>
-        <%#   <%= f.label :name, class: "form-label" %>
-        <%#   <%= f.text_field :name, class: "form-control", required: true %>
-        <%# </div> %>
-        
-        <%# <div class="form-group"> %>
-        <%#   <%= f.label :email, class: "form-label" %>
-        <%#   <%= f.email_field :email, class: "form-control", required: true %>
-        <%# </div> %>
+        <!-- Counselor 1 Information -->
+        <div class="border-b border-gray-200 pb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Counselor 1's Information:</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <%= f.label :counsellor_1_first_name, "Counselor 1 Name", class: "form-label" %>
+              <div class="grid grid-cols-2 gap-2">
+                <%= f.text_field :counsellor_1_first_name, class: "form-control", placeholder: "First", required: true %>
+                <%= f.text_field :counsellor_1_last_name, class: "form-control", placeholder: "Last", required: true %>
+              </div>
+            </div>
+          </div>
 
-        <%# <div class="form-group"> %>
-        <%#   <%= f.label :phone, class: "form-label" %>
-        <%#   <%= f.telephone_field :phone, class: "form-control", required: true %>
-        <%# </div> %>
+          <div class="form-group mb-4">
+            <%= f.label :counsellor_1_address_line_1, "Counselor 1 Address", class: "form-label" %>
+            <div class="space-y-4">
+              <%= f.text_field :counsellor_1_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true %>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <%= f.text_field :counsellor_1_city, class: "form-control", placeholder: "City", required: true %>
+                <%= f.text_field :counsellor_1_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
+                <%= f.text_field :counsellor_1_postal_code, class: "form-control", placeholder: "Postal Code", required: true %>
+                <%= f.select :counsellor_1_country, options_for_select([
+                  ['United States of America', 'United States of America'],
+                  ['Canada', 'Canada'],
+                  ['Mexico', 'Mexico'],
+                  ['United Kingdom', 'United Kingdom'],
+                  ['Australia', 'Australia'],
+                  ['New Zealand', 'New Zealand'],
+                  ['Other', 'Other']
+                ], @counsellor.counsellor_1_country || 'United States of America'), {}, { class: "form-control", required: true } %>
+              </div>
+            </div>
+          </div>
 
-        <%# <div class="form-group"> %>
-        <%#   <%= f.label :ecclesia, class: "form-label" %>
-        <%#   <%= f.text_field :ecclesia, class: "form-control" %>
-        <%# </div> %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <%= f.label :counsellor_1_phone, "Counselor 1 Home/Cell Phone", class: "form-label" %>
+              <%= f.telephone_field :counsellor_1_phone, class: "form-control", required: true %>
+            </div>
 
-        <%# <div class="form-group"> %>
-        <%#   <%= f.label :experience, "Previous Experience", class: "form-label" %>
-        <%#   <%= f.text_area :experience, rows: 4, class: "form-control", placeholder: "Tell us about your experience working with children and youth..." %>
-        <%# </div> %>
+            <div class="form-group">
+              <%= f.label :counsellor_1_email, "Counselor 1 Email", class: "form-label" %>
+              <%= f.email_field :counsellor_1_email, class: "form-control", required: true %>
+            </div>
+          </div>
 
-        <%# <div class="form-group"> %>
-        <%#   <%= f.label :availability, class: "form-label" %>
-        <%#   <%= f.text_area :availability, rows: 2, class: "form-control", placeholder: "What dates are you available?" %>
-        <%# </div> %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <%= f.label :counsellor_1_ecclesia, "Counselor 1's Ecclesia", class: "form-label" %>
+              <%= f.text_field :counsellor_1_ecclesia, class: "form-control", required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :counsellor_1_tshirt_size, "Counselor 1 T-Shirt Size", class: "form-label" %>
+              <%= f.select :counsellor_1_tshirt_size, options_for_select([
+                ['Choose...', ''],
+                ['Youth S', 'Youth S'],
+                ['Youth M', 'Youth M'],
+                ['Youth L', 'Youth L'],
+                ['Youth XL', 'Youth XL'],
+                ['Adult S', 'Adult S'],
+                ['Adult M', 'Adult M'],
+                ['Adult L', 'Adult L'],
+                ['Adult XL', 'Adult XL'],
+                ['Adult XXL', 'Adult XXL']
+              ], @counsellor.counsellor_1_tshirt_size), {}, { class: "form-control", required: true } %>
+            </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <%= f.label :counsellor_1_piano, "Counselor 1 plays the piano and would be willing to play a couple hymns", class: "form-label" %>
+            <%= f.select :counsellor_1_piano, options_for_select([
+              ['Choose...', ''],
+              ['Yes', 'Yes'],
+              ['No', 'No']
+            ], @counsellor.counsellor_1_piano), {}, { class: "form-control", required: true } %>
+          </div>
+        </div>
+
+        <!-- Counselor 2 Information -->
+        <div class="border-b border-gray-200 pb-6">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Counselor 2's Information:</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <%= f.label :counsellor_2_first_name, "Counselor 2 Name", class: "form-label" %>
+              <div class="grid grid-cols-2 gap-2">
+                <%= f.text_field :counsellor_2_first_name, class: "form-control", placeholder: "First", required: true %>
+                <%= f.text_field :counsellor_2_last_name, class: "form-control", placeholder: "Last", required: true %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <%= f.label :counsellor_2_address_line_1, "Counselor 2 Address", class: "form-label" %>
+            <div class="space-y-4">
+              <%= f.text_field :counsellor_2_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true %>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <%= f.text_field :counsellor_2_city, class: "form-control", placeholder: "City", required: true %>
+                <%= f.text_field :counsellor_2_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
+                <%= f.text_field :counsellor_2_postal_code, class: "form-control", placeholder: "Postal Code", required: true %>
+                <%= f.select :counsellor_2_country, options_for_select([
+                  ['United States of America', 'United States of America'],
+                  ['Canada', 'Canada'],
+                  ['Mexico', 'Mexico'],
+                  ['United Kingdom', 'United Kingdom'],
+                  ['Australia', 'Australia'],
+                  ['New Zealand', 'New Zealand'],
+                  ['Other', 'Other']
+                ], @counsellor.counsellor_2_country || 'United States of America'), {}, { class: "form-control", required: true } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <%= f.label :counsellor_2_phone, "Counselor 2 Home/Cell Phone", class: "form-label" %>
+              <%= f.telephone_field :counsellor_2_phone, class: "form-control", required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :counsellor_2_email, "Counselor 2 Email", class: "form-label" %>
+              <%= f.email_field :counsellor_2_email, class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <%= f.label :counsellor_2_ecclesia, "Counselor 2's Ecclesia", class: "form-label" %>
+              <%= f.text_field :counsellor_2_ecclesia, class: "form-control", required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :counsellor_2_tshirt_size, "Counselor 2 T-Shirt Size", class: "form-label" %>
+              <%= f.select :counsellor_2_tshirt_size, options_for_select([
+                ['Choose...', ''],
+                ['Youth S', 'Youth S'],
+                ['Youth M', 'Youth M'],
+                ['Youth L', 'Youth L'],
+                ['Youth XL', 'Youth XL'],
+                ['Adult S', 'Adult S'],
+                ['Adult M', 'Adult M'],
+                ['Adult L', 'Adult L'],
+                ['Adult XL', 'Adult XL'],
+                ['Adult XXL', 'Adult XXL']
+              ], @counsellor.counsellor_2_tshirt_size), {}, { class: "form-control", required: true } %>
+            </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <%= f.label :counsellor_2_piano, "Counselor 2 plays the piano and would be willing to play a couple hymns", class: "form-label" %>
+            <%= f.select :counsellor_2_piano, options_for_select([
+              ['Choose...', ''],
+              ['Yes', 'Yes'],
+              ['No', 'No']
+            ], @counsellor.counsellor_2_piano), {}, { class: "form-control", required: true } %>
+          </div>
+        </div>
         
         <div class="form-actions">
           <%= f.submit "Submit Registration", class: "btn btn-primary w-full" %>
@@ -65,5 +197,3 @@
     </div>
   </div>
 </div>
-
-
