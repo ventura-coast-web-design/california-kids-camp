@@ -17,19 +17,12 @@
 }
 
 .logo {
-  h1 {
-    font-size: $font-size-h3;
-    color: $primary-color;
-    margin: 0;
-    
-    @include mobile {
-      font-size: 18px;
-      line-height: 1.2;
-    }
-    
-    @media (max-width: 400px) {
-      font-size: 16px;
-    }
+  width: 120px;
+  height: 120px;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 }
 
