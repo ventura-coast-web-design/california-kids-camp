@@ -49,6 +49,10 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # Info pages
+  get "attendee_info", to: "home#attendee_info", as: "attendee_info"
+  get "counsellor_info", to: "home#counsellor_info", as: "counsellor_info"
+
   # Defines the root path route ("/")
   root "home#index"
 end
