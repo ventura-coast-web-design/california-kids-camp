@@ -2,24 +2,16 @@
   <div class="header-container">
     <div class="logo">
       <%= link_to root_path, class: "logo-link" do %>
-        <h1>Kids Camp California</h1>
+        <img src="<%= asset_path('logo-black.png') %>" alt="California Christadelphian Kids Camp" class="logo-image">
       <% end %>
     </div>
     
     <nav class="nav-menu">
       <ul class="nav-list">
-        <li><a href="#home" class="nav-link">Home</a></li>
-        <li><a href="#about" class="nav-link">About</a></li>
-        <li><a href="#schedule" class="nav-link">Schedule</a></li>
-        <li><a href="#contact" class="nav-link">Contact</a></li>
-        
-        <% if user_signed_in? %>
-          <li class="nav-user-info">
-            <span class="nav-link">Welcome, <%= current_user.name %></span>
-          </li>
-          <li><%= link_to "Settings", users_two_factor_settings_path, class: "nav-link" %></li>
-          <li><%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "nav-link btn-signout", data: { turbo: false } %></li>
-        <% end %>
+        <li><%= link_to "Home", root_path, class: "nav-link" %></li>
+        <li><%= link_to "About", "/#about", class: "nav-link" %></li>
+        <li><%= link_to "Schedule", "/#schedule", class: "nav-link" %></li>
+        <li><%= link_to "Contact", "/#contact", class: "nav-link" %></li>
         <li><%= link_to "Register", new_attendee_path, class: "nav-link btn-register" %></li>
         <li><%= link_to "Admin", admin_login_path, class: "nav-link" %></li>
       </ul>
