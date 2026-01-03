@@ -183,6 +183,8 @@
   padding: $spacing-xs $spacing-md;
   border-radius: 6px;
   font-weight: $font-weight-semibold;
+  border: none;
+  cursor: pointer;
   
   &:hover {
     color: white !important;
@@ -201,6 +203,117 @@
     
     &:hover {
       background: linear-gradient(135deg, darken($primary-color, 5%) 0%, darken($primary-color, 15%) 100%);
+    }
+  }
+}
+
+// Dropdown styles
+.dropdown-container {
+  position: relative;
+  
+  @include mobile {
+    width: 100%;
+  }
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  .dropdown-arrow {
+    font-size: $font-size-small;
+    transition: transform $transition-base;
+  }
+  
+  &[aria-expanded="true"] {
+    .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.dropdown-menu {
+  @include list-reset;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: $spacing-xs;
+  background-color: $background-white;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-lg;
+  min-width: 220px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity $transition-base, transform $transition-base, visibility $transition-base;
+  z-index: $z-index-dropdown;
+  
+  @include mobile {
+    position: static;
+    margin-top: 0;
+    border: none;
+    border-top: 1px solid $border-color;
+    border-radius: 0;
+    box-shadow: none;
+    min-width: auto;
+    max-height: 0;
+    overflow: hidden;
+    transform: none;
+    transition: max-height $transition-base;
+  }
+  
+  &.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    
+    @include mobile {
+      max-height: 200px;
+    }
+  }
+}
+
+.dropdown-item {
+  @include link-reset;
+  display: block;
+  padding: $spacing-sm $spacing-md;
+  color: $text-dark;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-base;
+  transition: background-color $transition-fast, color $transition-fast;
+  
+  &:hover,
+  &:focus {
+    background-color: $background-light;
+    color: $primary-color;
+  }
+  
+  &:first-child {
+    border-top-left-radius: $border-radius-md;
+    border-top-right-radius: $border-radius-md;
+    
+    @include mobile {
+      border-radius: 0;
+    }
+  }
+  
+  &:last-child {
+    border-bottom-left-radius: $border-radius-md;
+    border-bottom-right-radius: $border-radius-md;
+    
+    @include mobile {
+      border-radius: 0;
+    }
+  }
+  
+  @include mobile {
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1px solid $border-color;
+    
+    &:last-child {
+      border-bottom: none;
     }
   }
 }
