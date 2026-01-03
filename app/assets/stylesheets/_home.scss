@@ -275,6 +275,145 @@
     }
   }
   
+  // Venue directions section
+  .venue-directions-section {
+    background-color: $background-white;
+  }
+  
+  .venue-directions-content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .venue-map {
+    margin-bottom: $spacing-xl;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+    box-shadow: $shadow-lg;
+    
+    @include mobile {
+      margin-bottom: $spacing-lg;
+    }
+    
+    iframe {
+      display: block;
+      width: 100%;
+      border: none;
+      
+      @include mobile {
+        height: 300px;
+      }
+    }
+  }
+  
+  .camp-address {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+    
+    p {
+      font-size: $font-size-large;
+      color: $text-dark;
+      
+      strong {
+        color: $primary-color;
+        font-weight: $font-weight-semibold;
+      }
+    }
+  }
+  
+  .directions-dropdowns {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+  
+  .direction-dropdown {
+    @include card;
+    border: 1px solid $border-color;
+    
+    .direction-toggle {
+      @include button-reset;
+      @include flex-between;
+      width: 100%;
+      padding: $spacing-md;
+      text-align: left;
+      font-size: $font-size-large;
+      font-weight: $font-weight-semibold;
+      color: $text-dark;
+      background-color: transparent;
+      cursor: pointer;
+      @include transition(background-color);
+      
+      &:hover {
+        background-color: $background-light;
+      }
+      
+      .dropdown-icon {
+        @include transition(transform);
+        color: $primary-color;
+        font-size: $font-size-small;
+        margin-left: $spacing-sm;
+      }
+      
+      &[aria-expanded="true"] {
+        .dropdown-icon {
+          transform: rotate(180deg);
+        }
+      }
+    }
+    
+    .direction-content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 $spacing-md;
+      @include transition(max-height);
+    }
+    
+    &.active {
+      .direction-content {
+        max-height: 1000px;
+        padding: 0 $spacing-md $spacing-md;
+      }
+    }
+  }
+  
+  .direction-steps {
+    margin: $spacing-md 0 0;
+    padding-left: $spacing-lg;
+    color: $text-light;
+    
+    @include mobile {
+      padding-left: $spacing-md;
+    }
+    
+    li {
+      margin-bottom: $spacing-sm;
+      line-height: 1.8;
+      font-size: $font-size-base;
+      
+      .distance,
+      .time {
+        color: $text-light;
+        font-size: $font-size-small;
+        margin-left: $spacing-xs;
+        white-space: nowrap;
+      }
+      
+      .distance {
+        font-weight: $font-weight-medium;
+        color: $primary-color;
+      }
+      
+      &.end-step {
+        color: $primary-color;
+        font-weight: $font-weight-semibold;
+        margin-top: $spacing-sm;
+        padding-top: $spacing-sm;
+        border-top: 1px solid $border-color;
+      }
+    }
+  }
+  
   // Call to action section
   .cta-section {
     background: linear-gradient(135deg, $primary-color, $primary-light);
