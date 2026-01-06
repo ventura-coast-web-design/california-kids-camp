@@ -1,0 +1,41 @@
+#!/bin/bash -e
+
+# Script to create additional databases needed for Rails 8 solid_cache, solid_queue, and solid_cable
+# Run this after deploying to Fly.io and connecting to your PostgreSQL instance
+
+echo "Creating additional databases for solid_cache, solid_queue, and solid_cable..."
+
+# Extract database name from DATABASE_URL
+DATABASE_URL="${DATABASE_URL:-}"
+if [ -z "$DATABASE_URL" ]; then
+  echo "Error: DATABASE_URL environment variable is not set"
+  exit 1
+fi
+
+# Parse the database name from DATABASE_URL
+# Format: postgres://user:pass@host:port/dbname
+DB_NAME=$(echo "$DATABASE_URL" | sed -n 's/.*\/\([^?]*\).*/\1/p')
+
+if [ -z "$DB_NAME" ]; then
+  echo "Error: Could not parse database name from DATABASE_URL"
+  exit 1
+fi
+
+# Create base URL without database name
+BASE_URL=$(echo "$DATABASE_URL" | sed 's/\/[^\/]*$/\/postgres/')
+
+# Create the additional databases
+echo "Creating cache database..."
+psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_cache;" 2>/dev/null || echo "Cache database may already exist"
+
+echo "Creating queue database..."
+psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_queue;" 2>/dev/null || echo "Queue database may already exist"
+
+echo "Creating cable database..."
+psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_cable;" 2>/dev/null || echo "Cable database may already exist"
+
+echo "Done! Now run migrations:"
+echo "  bin/rails db:migrate:cache"
+echo "  bin/rails db:migrate:queue"
+echo "  bin/rails db:migrate:cable"
+
