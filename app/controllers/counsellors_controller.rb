@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class CounsellorsController < ApplicationController
-  skip_before_action :check_otp_requirement, only: [ :new, :create ]
-
   # GET /counsellors/register
   def new
     @counsellor = Counsellor.new

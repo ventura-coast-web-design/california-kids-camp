@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class AttendeeRegistrationsController < ApplicationController
-  skip_before_action :check_otp_requirement, only: [ :new, :create ]
-
   # GET /attendees/register
   def new
     @attendee_registration = AttendeeRegistration.new

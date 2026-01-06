@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class AdminController < ApplicationController
-  skip_before_action :check_otp_requirement
-
   before_action :require_admin_password, except: [ :login, :authenticate, :logout ]
 
   def index
