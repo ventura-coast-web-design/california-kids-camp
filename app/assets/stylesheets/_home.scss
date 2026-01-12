@@ -109,6 +109,13 @@
   }
   
   .about-image {
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: $border-radius-lg;
+      box-shadow: $shadow-lg;
+    }
+    
     @include mobile {
       order: -1;
     }
@@ -228,6 +235,15 @@
     @include mobile {
       grid-template-columns: 1fr;
       gap: $spacing-lg;
+    }
+  }
+  
+  .venue-image {
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: $border-radius-lg;
+      box-shadow: $shadow-lg;
     }
   }
   
