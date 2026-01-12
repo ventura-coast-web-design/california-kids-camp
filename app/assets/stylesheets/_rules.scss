@@ -1,0 +1,129 @@
+// Rules page styles
+.rules-page {
+  .info-section {
+    padding: $spacing-2xl 0;
+    background-color: $background-light;
+    
+    @include mobile {
+      padding: $spacing-xl 0;
+    }
+  }
+  
+  .page-title {
+    text-align: center;
+    font-size: $font-size-h1;
+    color: $primary-color;
+    margin-bottom: $spacing-xl;
+    
+    @include mobile {
+      font-size: $font-size-h2;
+    }
+  }
+  
+  .info-card {
+    @include card;
+    background-color: $background-white;
+    margin-bottom: $spacing-lg;
+    padding: $spacing-lg;
+    
+    @include mobile {
+      padding: $spacing-md;
+    }
+    
+    &.highlight {
+      border-left: 4px solid $secondary-color;
+      background: linear-gradient(135deg, lighten($secondary-color, 45%), lighten($secondary-color, 50%));
+    }
+  }
+  
+  .section-heading {
+    color: $primary-color;
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-md;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid $primary-color;
+    padding-bottom: $spacing-xs;
+    
+    @include mobile {
+      font-size: $font-size-h4;
+    }
+  }
+  
+  .intro-text {
+    font-size: $font-size-large;
+    color: $text-dark;
+    line-height: 1.8;
+    margin-bottom: $spacing-md;
+    
+    strong {
+      color: $primary-dark;
+      font-weight: $font-weight-semibold;
+    }
+  }
+  
+  .rules-list {
+    list-style: none;
+    margin: $spacing-md 0;
+    padding-left: 0;
+    
+    li {
+      padding: $spacing-sm 0;
+      font-size: $font-size-base;
+      color: $text-dark;
+      line-height: 1.8;
+      border-bottom: 1px solid $border-color;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      strong {
+        color: $primary-dark;
+        font-weight: $font-weight-semibold;
+      }
+    }
+  }
+  
+  .nested-list {
+    list-style: disc;
+    margin: $spacing-xs 0 $spacing-xs $spacing-lg;
+    padding-left: $spacing-md;
+    
+    li {
+      padding: $spacing-xs 0;
+      border-bottom: none;
+      color: $text-dark;
+      
+      strong {
+        color: $primary-dark;
+        font-weight: $font-weight-semibold;
+      }
+    }
+  }
+  
+  .conclusion-text {
+    font-size: $font-size-large;
+    color: $text-dark;
+    line-height: 1.8;
+    margin-bottom: $spacing-md;
+    font-weight: $font-weight-medium;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  p {
+    color: $text-dark;
+    font-size: $font-size-base;
+    line-height: 1.8;
+    margin-bottom: $spacing-sm;
+    
+    strong {
+      color: $text-dark;
+      font-weight: $font-weight-semibold;
+    }
+  }
+}
+

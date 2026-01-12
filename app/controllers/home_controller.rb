@@ -7,5 +7,8 @@ class HomeController < ApplicationController
 
   def counsellor_info
   end
+
+  def rules
+  end
 end
 
