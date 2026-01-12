@@ -1,4 +1,8 @@
 // Header styles
+@use "sass:color";
+@use "variables" as *;
+@use "mixins" as *;
+
 .site-header {
   background-color: $background-white;
   box-shadow: $shadow-sm;
@@ -178,7 +182,7 @@
 
 .btn-register,
 .btn-signin {
-  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
   color: white !important;
   padding: $spacing-xs $spacing-md;
   border-radius: 6px;
@@ -188,7 +192,7 @@
   
   &:hover {
     color: white !important;
-    background: linear-gradient(135deg, darken($primary-color, 5%) 0%, darken($primary-color, 15%) 100%);
+    background: linear-gradient(135deg, color.adjust($primary-color, $lightness: -5%) 0%, color.adjust($primary-color, $lightness: -15%) 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
@@ -202,7 +206,7 @@
     text-align: center;
     
     &:hover {
-      background: linear-gradient(135deg, darken($primary-color, 5%) 0%, darken($primary-color, 15%) 100%);
+      background: linear-gradient(135deg, color.adjust($primary-color, $lightness: -5%) 0%, color.adjust($primary-color, $lightness: -15%) 100%);
     }
   }
 }

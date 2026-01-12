@@ -1,19 +1,19 @@
 // California Kids Camp - Main Stylesheet
 
 // Import configuration
-@import "variables";
-@import "mixins";
+@use "variables" as *;
+@use "mixins" as *;
 
 // Import base styles
-@import "base";
+@use "base";
 
 // Import components
-@import "header";
-@import "footer";
+@use "header";
+@use "footer";
 
 // Import pages
-@import "home";
-@import "admin";
-@import "attendee_info";
-@import "counsellor_info";
-@import "rules";
+@use "home";
+@use "admin";
+@use "attendee_info";
+@use "counsellor_info";
+@use "rules";

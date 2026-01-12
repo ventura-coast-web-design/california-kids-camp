@@ -1,4 +1,8 @@
 // Home page styles
+@use "sass:color";
+@use "variables" as *;
+@use "mixins" as *;
+
 .home-page {
   // Hero section
   .hero-section {
@@ -134,7 +138,7 @@
   
   .overview-card {
     @include card;
-    background: linear-gradient(135deg, lighten($primary-color, 45%), lighten($primary-color, 50%));
+    background: linear-gradient(135deg, color.adjust($primary-color, $lightness: 45%), color.adjust($primary-color, $lightness: 50%));
     border-left: 4px solid $primary-color;
     
     &.main-details {
@@ -188,7 +192,7 @@
   }
   
   .card-image {
-    margin: -$spacing-lg -$spacing-lg $spacing-md;
+    margin: -$spacing-lg (-$spacing-lg) $spacing-md;
     border-radius: $border-radius-lg $border-radius-lg 0 0;
     overflow: hidden;
   }

@@ -1,4 +1,8 @@
 // Rules page styles
+@use "sass:color";
+@use "variables" as *;
+@use "mixins" as *;
+
 .rules-page {
   .info-section {
     padding: $spacing-2xl 0;
@@ -32,7 +36,7 @@
     
     &.highlight {
       border-left: 4px solid $secondary-color;
-      background: linear-gradient(135deg, lighten($secondary-color, 45%), lighten($secondary-color, 50%));
+      background: linear-gradient(135deg, color.adjust($secondary-color, $lightness: 45%), color.adjust($secondary-color, $lightness: 50%));
     }
   }
   

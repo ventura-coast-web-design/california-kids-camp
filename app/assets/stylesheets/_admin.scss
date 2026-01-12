@@ -1,4 +1,6 @@
 // Admin styles
+@use "variables" as *;
+@use "mixins" as *;
 
 .admin-tabs {
   display: flex;

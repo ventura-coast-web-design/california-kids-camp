@@ -1,4 +1,8 @@
 // Attendee Info page styles
+@use "sass:color";
+@use "variables" as *;
+@use "mixins" as *;
+
 .attendee-info-page {
   .info-section {
     padding: $spacing-2xl 0;
@@ -32,7 +36,7 @@
     
     &.highlight {
       border-left: 4px solid $secondary-color;
-      background: linear-gradient(135deg, lighten($secondary-color, 45%), lighten($secondary-color, 50%));
+      background: linear-gradient(135deg, color.adjust($secondary-color, $lightness: 45%), color.adjust($secondary-color, $lightness: 50%));
     }
   }
   
@@ -98,7 +102,7 @@
   .note {
     margin-top: $spacing-md;
     padding: $spacing-md;
-    background-color: lighten($primary-color, 50%);
+    background-color: color.adjust($primary-color, $lightness: 50%);
     border-left: 4px solid $primary-color;
     border-radius: $border-radius-sm;
     font-style: italic;
@@ -108,7 +112,7 @@
   .important-note {
     margin-top: $spacing-md;
     padding: $spacing-md;
-    background-color: lighten($secondary-color, 40%);
+    background-color: color.adjust($secondary-color, $lightness: 40%);
     border-left: 4px solid $secondary-color;
     border-radius: $border-radius-sm;
     color: $text-dark;

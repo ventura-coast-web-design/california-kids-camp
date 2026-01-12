@@ -1,4 +1,6 @@
 // Responsive breakpoints
+@use "variables" as *;
+
 @mixin mobile {
   @media (max-width: #{$breakpoint-tablet - 1px}) {
     @content;
