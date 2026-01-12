@@ -1,0 +1,206 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Complete Payment</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <!-- Payment Summary -->
+      <div class="border-b border-gray-200 pb-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">Registration Summary</h3>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-gray-700">Number of children:</span>
+            <span class="font-semibold"><%= @child_count %></span>
+          </div>
+          <div class="flex justify-between items-center text-lg font-semibold pt-2 border-t border-gray-200">
+            <span>Total Amount:</span>
+            <span class="text-blue-600">$<%= sprintf('%.2f', @amount) %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <div class="border-b border-gray-200 pb-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">Payment Information</h3>
+        
+        <form id="payment-form">
+          <div id="card-element" class="mb-4">
+            <!-- Stripe Elements will create form elements here -->
+          </div>
+          
+          <!-- Display form errors -->
+          <div id="card-errors" role="alert" class="text-red-600 mb-4"></div>
+          
+          <div class="form-actions">
+            <button type="submit" id="submit-button" class="btn btn-primary w-full">
+              <span id="button-text">Pay $<%= sprintf('%.2f', @amount) %></span>
+              <span id="spinner" class="hidden">Processing...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="mt-6 text-center">
+        <%= link_to "Back to Registration", new_attendee_path, class: "text-blue-600 hover:text-blue-800" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  // Initialize Stripe
+  const stripe = Stripe('<%= @stripe_publishable_key %>');
+  
+  // Get registration ID
+  const registrationId = <%= @attendee_registration.id %>;
+  
+  // Create payment intent and set up Stripe Elements
+  let elements;
+  let cardElement;
+  
+  async function initializePayment() {
+    try {
+      // Check if Stripe is properly initialized
+      if (!stripe || !stripe._apiKey) {
+        document.getElementById('card-errors').textContent = 'Payment system is not properly configured. Please contact support.';
+        return;
+      }
+      
+      // Create payment intent
+      const response = await fetch(`/attendee_registrations/${registrationId}/create_payment_intent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create payment intent');
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        document.getElementById('card-errors').textContent = data.error;
+        return;
+      }
+      
+      if (!data.clientSecret) {
+        document.getElementById('card-errors').textContent = 'Failed to initialize payment. Please try again.';
+        return;
+      }
+      
+      // Initialize Stripe Elements
+      elements = stripe.elements({ clientSecret: data.clientSecret });
+      cardElement = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#32325d',
+            '::placeholder': {
+              color: '#aab7c4',
+            },
+          },
+          invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a',
+          },
+        },
+      });
+      
+      cardElement.mount('#card-element');
+      
+      // Handle real-time validation errors
+      cardElement.on('change', function(event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+          displayError.textContent = event.error.message;
+        } else {
+          displayError.textContent = '';
+        }
+      });
+      
+      // Handle form submission
+      const form = document.getElementById('payment-form');
+      form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+        
+        // Disable button and show spinner
+        submitButton.disabled = true;
+        buttonText.classList.add('hidden');
+        spinner.classList.remove('hidden');
+        
+        // Confirm payment with Stripe
+        const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              email: '<%= @attendee_registration.guardian_1_email %>',
+              name: '<%= @attendee_registration.guardian_1_name %>',
+            },
+          },
+        });
+        
+        if (error) {
+          // Show error to customer
+          document.getElementById('card-errors').textContent = error.message;
+          submitButton.disabled = false;
+          buttonText.classList.remove('hidden');
+          spinner.classList.add('hidden');
+        } else {
+          // Payment succeeded
+          if (paymentIntent.status === 'succeeded') {
+            // Redirect to success page
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/attendee_registrations/${registrationId}/payment_success`;
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'authenticity_token';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+            
+            const paymentIntentInput = document.createElement('input');
+            paymentIntentInput.type = 'hidden';
+            paymentIntentInput.name = 'payment_intent_id';
+            paymentIntentInput.value = paymentIntent.id;
+            form.appendChild(paymentIntentInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error initializing payment:', error);
+      document.getElementById('card-errors').textContent = 'An error occurred. Please refresh the page and try again.';
+    }
+  }
+  
+  // Initialize when page loads
+  document.addEventListener('DOMContentLoaded', initializePayment);
+</script>
+
+<style>
+  #card-element {
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+  }
+  
+  #card-element:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+</style>
+

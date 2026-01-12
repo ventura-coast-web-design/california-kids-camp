@@ -1,0 +1,93 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Registration Confirmed!</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <!-- Success Message -->
+      <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="text-2xl font-bold">Thank You!</h3>
+        </div>
+        <p class="text-lg">Your registration and payment have been successfully completed. We'll be in touch soon with more information about the camp.</p>
+      </div>
+
+      <!-- Registration Summary -->
+      <div class="border-b border-gray-200 pb-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">Registration Summary</h3>
+        
+        <div class="space-y-4">
+          <!-- Payment Information -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold mb-2 text-gray-700">Payment Information</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <span class="text-gray-600">Amount Paid:</span>
+              <span class="font-semibold">$<%= sprintf('%.2f', @attendee_registration.amount_paid) %></span>
+              <span class="text-gray-600">Payment Status:</span>
+              <span class="font-semibold text-green-600">Completed</span>
+              <span class="text-gray-600">Registration ID:</span>
+              <span class="font-mono text-sm">#<%= @attendee_registration.id %></span>
+            </div>
+          </div>
+
+          <!-- Guardian Information -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold mb-2 text-gray-700">Primary Guardian</h4>
+            <p class="text-gray-800"><strong><%= @attendee_registration.guardian_1_name %></strong></p>
+            <p class="text-gray-600"><%= @attendee_registration.guardian_1_email %></p>
+            <p class="text-gray-600"><%= @attendee_registration.guardian_1_phone %></p>
+          </div>
+
+          <!-- Registered Children -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold mb-3 text-gray-700">Registered Children (<%= @attendee_registration.attendees.count %>)</h4>
+            <div class="space-y-3">
+              <% @attendee_registration.attendees.each_with_index do |attendee, index| %>
+                <div class="border-l-4 border-blue-500 pl-3">
+                  <p class="font-semibold text-gray-800">
+                    <%= index + 1 %>. <%= attendee.first_name %> <%= attendee.last_name %>
+                  </p>
+                  <p class="text-sm text-gray-600">
+                    Date of Birth: <%= attendee.date_of_birth.strftime('%B %d, %Y') %>
+                    <% if attendee.age %> (Age: <%= attendee.age %>)<% end %>
+                  </p>
+                  <% if attendee.gender.present? %>
+                    <p class="text-sm text-gray-600">Gender: <%= attendee.gender %></p>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Emergency Contact -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold mb-2 text-gray-700">Emergency Contact</h4>
+            <p class="text-gray-800"><strong><%= @attendee_registration.emergency_contact_1_name %></strong></p>
+            <p class="text-gray-600"><%= @attendee_registration.emergency_contact_1_phone %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="border-b border-gray-200 pb-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">What's Next?</h3>
+        <ul class="list-disc list-inside space-y-2 text-gray-700">
+          <li>You will receive a confirmation email at <strong><%= @attendee_registration.guardian_1_email %></strong></li>
+          <li>We'll be in touch with additional camp information and details</li>
+          <li>If you have any questions, please contact us using the information on our <a href="<%= attendee_info_path %>" class="text-blue-600 hover:text-blue-800 underline">Attendee Information</a> page</li>
+        </ul>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <%= link_to "Back to Home", root_path, class: "btn btn-outline flex-1" %>
+        <%= link_to "View Attendee Information", attendee_info_path, class: "btn btn-primary flex-1" %>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_29_002217) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_11_222212) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "attendee_registrations", force: :cascade do |t|
+    t.decimal "amount_paid", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.string "emergency_contact_1_name", null: false
     t.string "emergency_contact_1_phone", null: false
@@ -40,6 +41,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_29_002217) do
     t.boolean "interest_in_counselling", default: false
     t.boolean "medical_consent", default: false, null: false
     t.text "notes"
+    t.string "payment_status", default: "pending"
+    t.string "stripe_payment_intent_id"
     t.boolean "terms_agreement", default: false, null: false
     t.datetime "updated_at", null: false
   end
