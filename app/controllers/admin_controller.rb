@@ -16,7 +16,7 @@ class AdminController < ApplicationController
 
   def authenticate
     password = params[:password]
-    admin_password = ENV.fetch("ADMIN_PASSWORD", "test")
+    admin_password = ENV.fetch("ADMIN_PASSWORD", "CampArnaz2026")
 
     if password == admin_password
       session[:admin_authenticated] = true
