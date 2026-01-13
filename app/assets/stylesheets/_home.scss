@@ -39,6 +39,18 @@
       font-size: $font-size-h1 * 0.7;
     }
   }
+
+  .hero-speakers {
+    font-size: $font-size-h2;
+    color: $text-white;
+    margin-bottom: $spacing-md;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 1s ease;
+    
+    @include mobile {
+      font-size: $font-size-h1 * 0.7;
+    }
+  }
   
   .hero-subtitle {
     font-size: $font-size-h3;
