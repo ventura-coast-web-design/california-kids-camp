@@ -1,20 +1,20 @@
 <div class="content-section">
   <div class="section-header">
     <h2 class="section-title">VOLUNTEER NOW! SPACE IS LIMITED!</h2>
-    <div class="text-gray-600 mt-4 space-y-2">
-      <p>Please sign up to volunteer no later than April 15th.</p>
-      <p>To be a counselor, you must be a baptized member in good standing and fellowship exclusively based on the BASF. If you would like to volunteer as a counselor, please fill out the form below</p>
-      <p>For more information on what the counselling experience is like, please refer to <%= link_to "our counselor FAQs", counsellor_info_path, class: "text-blue-600 hover:text-blue-800" %>.</p>
+    <div style="color: #6b7280; margin-top: 16px;">
+      <p style="margin-bottom: 8px;">Please sign up to volunteer no later than April 15th.</p>
+      <p style="margin-bottom: 8px;">To be a counselor, you must be a baptized member in good standing and fellowship exclusively based on the BASF. If you would like to volunteer as a counselor, please fill out the form below</p>
+      <p>For more information on what the counselling experience is like, please refer to <%= link_to "our counselor FAQs", counsellor_info_path, style: "color: #2563eb;" %>.</p>
     </div>
   </div>
   
   <div class="section-content">
     <div class="form-container">
-      <%= form_with(model: @counsellor, url: counsellors_path, class: 'space-y-8', data: {turbo: false}) do |f| %>
+      <%= form_with(model: @counsellor, url: counsellors_path, data: {turbo: false}) do |f| %>
         <% if @counsellor.errors.any? %>
-          <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 mb-4">
-            <h3 class="font-semibold mb-2"><%= pluralize(@counsellor.errors.count, "error") %> prohibited this registration from being saved:</h3>
-            <ul class="list-disc list-inside">
+          <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <h3 style="font-weight: 600; margin-bottom: 8px;"><%= pluralize(@counsellor.errors.count, "error") %> prohibited this registration from being saved:</h3>
+            <ul style="list-style-type: disc; list-style-position: inside;">
               <% @counsellor.errors.full_messages.each do |message| %>
                 <li><%= message %></li>
               <% end %>
@@ -23,27 +23,31 @@
         <% end %>
 
         <!-- Counselor 1 Information -->
-        <div class="border-b border-gray-200 pb-6">
-          <h3 class="text-xl font-semibold mb-4 text-gray-800">Counselor 1's Information:</h3>
+        <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Counselor 1's Information:</h3>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
-              <%= f.label :counsellor_1_first_name, "Counselor 1 Name", class: "form-label" %>
-              <div class="grid grid-cols-2 gap-2">
-                <%= f.text_field :counsellor_1_first_name, class: "form-control", placeholder: "First", required: true %>
-                <%= f.text_field :counsellor_1_last_name, class: "form-control", placeholder: "Last", required: true %>
-              </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <%= f.label :counsellor_1_first_name, "Counselor 1 Name", class: "form-label" %>
+            <div class="form-grid form-grid-2">
+              <%= f.text_field :counsellor_1_first_name, class: "form-control", placeholder: "First", required: true %>
+              <%= f.text_field :counsellor_1_last_name, class: "form-control", placeholder: "Last", required: true %>
             </div>
           </div>
 
-          <div class="form-group mb-4">
+          <div class="form-group" style="margin-bottom: 12px;">
             <%= f.label :counsellor_1_address_line_1, "Counselor 1 Address", class: "form-label" %>
-            <div class="space-y-4">
-              <%= f.text_field :counsellor_1_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true %>
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <%= f.text_field :counsellor_1_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true, style: "margin-bottom: 12px;" %>
+            <div class="form-grid form-grid-4">
+              <div class="form-group">
                 <%= f.text_field :counsellor_1_city, class: "form-control", placeholder: "City", required: true %>
+              </div>
+              <div class="form-group">
                 <%= f.text_field :counsellor_1_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
+              </div>
+              <div class="form-group">
                 <%= f.text_field :counsellor_1_postal_code, class: "form-control", placeholder: "Postal Code", required: true %>
+              </div>
+              <div class="form-group">
                 <%= f.select :counsellor_1_country, options_for_select([
                   ['United States of America', 'United States of America'],
                   ['Canada', 'Canada'],
@@ -57,7 +61,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
               <%= f.label :counsellor_1_phone, "Counselor 1 Home/Cell Phone", class: "form-label" %>
               <%= f.telephone_field :counsellor_1_phone, class: "form-control", required: true %>
@@ -69,7 +73,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
               <%= f.label :counsellor_1_ecclesia, "Counselor 1's Ecclesia", class: "form-label" %>
               <%= f.text_field :counsellor_1_ecclesia, class: "form-control", required: true %>
@@ -92,7 +96,7 @@
             </div>
           </div>
 
-          <div class="form-group mb-4">
+          <div class="form-group" style="margin-bottom: 12px;">
             <%= f.label :counsellor_1_piano, "Counselor 1 plays the piano and would be willing to play a couple hymns", class: "form-label" %>
             <%= f.select :counsellor_1_piano, options_for_select([
               ['Choose...', ''],
@@ -103,27 +107,31 @@
         </div>
 
         <!-- Counselor 2 Information -->
-        <div class="border-b border-gray-200 pb-6">
-          <h3 class="text-xl font-semibold mb-4 text-gray-800">Counselor 2's Information:</h3>
+        <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Counselor 2's Information:</h3>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div class="form-group">
-              <%= f.label :counsellor_2_first_name, "Counselor 2 Name", class: "form-label" %>
-              <div class="grid grid-cols-2 gap-2">
-                <%= f.text_field :counsellor_2_first_name, class: "form-control", placeholder: "First", required: true %>
-                <%= f.text_field :counsellor_2_last_name, class: "form-control", placeholder: "Last", required: true %>
-              </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <%= f.label :counsellor_2_first_name, "Counselor 2 Name", class: "form-label" %>
+            <div class="form-grid form-grid-2">
+              <%= f.text_field :counsellor_2_first_name, class: "form-control", placeholder: "First", required: true %>
+              <%= f.text_field :counsellor_2_last_name, class: "form-control", placeholder: "Last", required: true %>
             </div>
           </div>
 
-          <div class="form-group mb-4">
+          <div class="form-group" style="margin-bottom: 12px;">
             <%= f.label :counsellor_2_address_line_1, "Counselor 2 Address", class: "form-label" %>
-            <div class="space-y-4">
-              <%= f.text_field :counsellor_2_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true %>
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <%= f.text_field :counsellor_2_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true, style: "margin-bottom: 12px;" %>
+            <div class="form-grid form-grid-4">
+              <div class="form-group">
                 <%= f.text_field :counsellor_2_city, class: "form-control", placeholder: "City", required: true %>
+              </div>
+              <div class="form-group">
                 <%= f.text_field :counsellor_2_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
+              </div>
+              <div class="form-group">
                 <%= f.text_field :counsellor_2_postal_code, class: "form-control", placeholder: "Postal Code", required: true %>
+              </div>
+              <div class="form-group">
                 <%= f.select :counsellor_2_country, options_for_select([
                   ['United States of America', 'United States of America'],
                   ['Canada', 'Canada'],
@@ -137,7 +145,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
               <%= f.label :counsellor_2_phone, "Counselor 2 Home/Cell Phone", class: "form-label" %>
               <%= f.telephone_field :counsellor_2_phone, class: "form-control", required: true %>
@@ -149,7 +157,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
               <%= f.label :counsellor_2_ecclesia, "Counselor 2's Ecclesia", class: "form-label" %>
               <%= f.text_field :counsellor_2_ecclesia, class: "form-control", required: true %>
@@ -172,7 +180,7 @@
             </div>
           </div>
 
-          <div class="form-group mb-4">
+          <div class="form-group" style="margin-bottom: 12px;">
             <%= f.label :counsellor_2_piano, "Counselor 2 plays the piano and would be willing to play a couple hymns", class: "form-label" %>
             <%= f.select :counsellor_2_piano, options_for_select([
               ['Choose...', ''],
@@ -187,11 +195,11 @@
         </div>
       <% end %>
       
-      <div class="auth-links mt-6 text-center">
-        <p class="text-gray-600 mb-3">Need to register someone else?</p>
-        <div class="space-y-2">
+      <div style="margin-top: 24px; text-align: center;">
+        <p style="color: #6b7280; margin-bottom: 12px;">Need to register someone else?</p>
+        <div>
           <%= link_to "Register Attendee", new_attendee_path, class: "btn btn-outline w-full" %>
-          <%= link_to "Back to Home", root_path, class: "text-blue-600 hover:text-blue-800 block mt-2" %>
+          <%= link_to "Back to Home", root_path, style: "color: #2563eb; display: block; margin-top: 8px;" %>
         </div>
       </div>
     </div>
