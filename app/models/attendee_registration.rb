@@ -7,7 +7,20 @@ class AttendeeRegistration < ApplicationRecord
   validates :guardian_1_name, :guardian_1_email, :guardian_1_phone, presence: true
   validates :guardian_1_address_line_1, :guardian_1_city, :guardian_1_state, :guardian_1_zip, presence: true
   validates :guardian_1_email, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :guardian_1_phone, format: { with: /\A[\d\s\-\(\)\+\.]+\z/, message: "must be a valid phone number" }
+  validates :guardian_1_state, length: { is: 2, message: "must be 2 characters (e.g., CA)" }
+  validates :guardian_1_zip, format: { with: /\A\d{5}(-\d{4})?\z/, message: "must be a valid ZIP code" }
+  
+  # Guardian 2 validations (if provided)
+  validates :guardian_2_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :guardian_2_phone, format: { with: /\A[\d\s\-\(\)\+\.]+\z/, message: "must be a valid phone number" }, allow_blank: true
+  validates :guardian_2_state, length: { is: 2, message: "must be 2 characters" }, allow_blank: true, if: -> { guardian_2_address_line_1.present? }
+  validates :guardian_2_zip, format: { with: /\A\d{5}(-\d{4})?\z/, message: "must be a valid ZIP code" }, allow_blank: true, if: -> { guardian_2_address_line_1.present? }
+  
   validates :emergency_contact_1_name, :emergency_contact_1_phone, presence: true
+  validates :emergency_contact_1_phone, format: { with: /\A[\d\s\-\(\)\+\.]+\z/, message: "must be a valid phone number" }
+  validates :emergency_contact_2_phone, format: { with: /\A[\d\s\-\(\)\+\.]+\z/, message: "must be a valid phone number" }, allow_blank: true
+  
   validates :terms_agreement, acceptance: true
   validates :medical_consent, acceptance: true
 

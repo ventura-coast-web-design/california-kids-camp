@@ -45,7 +45,7 @@
                 <%= f.text_field :counsellor_1_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
               </div>
               <div class="form-group">
-                <%= f.text_field :counsellor_1_postal_code, class: "form-control", placeholder: "Postal Code", required: true %>
+                <%= f.text_field :counsellor_1_postal_code, class: "form-control", placeholder: "Postal Code", required: true, pattern: "[\\d\\w\\s\\-]+", title: "Please enter a valid postal code" %>
               </div>
               <div class="form-group">
                 <%= f.select :counsellor_1_country, options_for_select([
@@ -64,7 +64,7 @@
           <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
               <%= f.label :counsellor_1_phone, "Counselor 1 Home/Cell Phone", class: "form-label" %>
-              <%= f.telephone_field :counsellor_1_phone, class: "form-control", required: true %>
+              <%= f.telephone_field :counsellor_1_phone, class: "form-control", required: true, pattern: "[\\d\\s\\-\\(\\)\\+\\.]+", title: "Please enter a valid phone number" %>
             </div>
 
             <div class="form-group">
@@ -129,7 +129,7 @@
                 <%= f.text_field :counsellor_2_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
               </div>
               <div class="form-group">
-                <%= f.text_field :counsellor_2_postal_code, class: "form-control", placeholder: "Postal Code", required: true %>
+                <%= f.text_field :counsellor_2_postal_code, class: "form-control", placeholder: "Postal Code", required: true, pattern: "[\\d\\w\\s\\-]+", title: "Please enter a valid postal code" %>
               </div>
               <div class="form-group">
                 <%= f.select :counsellor_2_country, options_for_select([
@@ -148,7 +148,7 @@
           <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
             <div class="form-group">
               <%= f.label :counsellor_2_phone, "Counselor 2 Home/Cell Phone", class: "form-label" %>
-              <%= f.telephone_field :counsellor_2_phone, class: "form-control", required: true %>
+              <%= f.telephone_field :counsellor_2_phone, class: "form-control", required: true, pattern: "[\\d\\s\\-\\(\\)\\+\\.]+", title: "Please enter a valid phone number" %>
             </div>
 
             <div class="form-group">

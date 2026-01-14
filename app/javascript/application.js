@@ -2,6 +2,7 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import "menu"
+import "form_validation"
 
 // Suppress harmless Google Maps extension errors
 // These occur when browser extensions try to interact with Google Maps iframes

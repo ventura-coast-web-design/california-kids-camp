@@ -193,6 +193,24 @@
     border-color: $primary-color;
     box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
   }
+  
+  &.is-valid {
+    border-color: #10b981;
+    
+    &:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+  }
+  
+  &.is-invalid {
+    border-color: #dc2626;
+    
+    &:focus {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+  }
 }
 
 .form-actions {
