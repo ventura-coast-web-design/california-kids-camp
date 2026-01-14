@@ -237,29 +237,54 @@
 </div>
 
 <script>
-  // Toggle Guardian 2 address fields
-  document.addEventListener('DOMContentLoaded', function() {
+  // Store handlers for cleanup
+  let handlers = {
+    guardian2Change: null,
+    addButtonClick: null,
+    removeButtonClick: null
+  };
+
+  // Initialize form functionality
+  const initializeAttendeeForm = () => {
+    // Reset attendee index based on current form state
+    const container = document.getElementById('attendees-container');
+    const existingAttendees = container ? container.querySelectorAll('.attendee-form-group').length : 0;
+    let attendeeIndex = existingAttendees || <%= @attendee_registration.attendees.size %>;
+
+    // Toggle Guardian 2 address fields
     const sameAddressCheckbox = document.querySelector('#attendee_registration_guardian_2_same_address');
     const guardian2Address = document.getElementById('guardian-2-address');
     
-    if (sameAddressCheckbox) {
-      sameAddressCheckbox.addEventListener('change', function() {
+    // Cleanup previous handler
+    if (handlers.guardian2Change && sameAddressCheckbox) {
+      sameAddressCheckbox.removeEventListener('change', handlers.guardian2Change);
+    }
+    
+    if (sameAddressCheckbox && guardian2Address) {
+      handlers.guardian2Change = function() {
         guardian2Address.style.display = this.checked ? 'none' : 'block';
-      });
+      };
+      sameAddressCheckbox.addEventListener('change', handlers.guardian2Change);
       
       // Set initial state
       guardian2Address.style.display = sameAddressCheckbox.checked ? 'none' : 'block';
     }
-  });
 
-  // Dynamic attendee form management
-  let attendeeIndex = <%= @attendee_registration.attendees.size %>;
-  
-  document.addEventListener('DOMContentLoaded', function() {
+    // Dynamic attendee form management
     const addButton = document.getElementById('add-attendee-btn');
-    const container = document.getElementById('attendees-container');
+    const attendeesContainer = document.getElementById('attendees-container');
     
-    addButton.addEventListener('click', function(e) {
+    if (!addButton || !attendeesContainer) return;
+    
+    // Cleanup previous handlers
+    if (handlers.addButtonClick) {
+      addButton.removeEventListener('click', handlers.addButtonClick);
+    }
+    if (handlers.removeButtonClick) {
+      attendeesContainer.removeEventListener('click', handlers.removeButtonClick);
+    }
+    
+    handlers.addButtonClick = function(e) {
       e.preventDefault();
       const newId = new Date().getTime();
       const template = `
@@ -393,18 +418,20 @@
         </div>
       `;
       
-      container.insertAdjacentHTML('beforeend', template);
+      attendeesContainer.insertAdjacentHTML('beforeend', template);
       attendeeIndex++;
       
       // Update child numbers
       updateChildNumbers();
-    });
+    };
+    
+    addButton.addEventListener('click', handlers.addButtonClick);
     
     // Remove attendee handler (event delegation)
-    container.addEventListener('click', function(e) {
+    handlers.removeButtonClick = function(e) {
       if (e.target.classList.contains('remove-attendee-btn')) {
         e.preventDefault();
-        const attendeeCount = container.querySelectorAll('.attendee-form-group').length;
+        const attendeeCount = attendeesContainer.querySelectorAll('.attendee-form-group').length;
         
         if (attendeeCount > 1) {
           e.target.closest('.attendee-form-group').remove();
@@ -413,10 +440,12 @@
           alert('You must register at least one child.');
         }
       }
-    });
+    };
+    
+    attendeesContainer.addEventListener('click', handlers.removeButtonClick);
     
     function updateChildNumbers() {
-      const attendeeForms = container.querySelectorAll('.attendee-form-group');
+      const attendeeForms = attendeesContainer.querySelectorAll('.attendee-form-group');
       attendeeForms.forEach((form, index) => {
         const header = form.querySelector('h4');
         if (header) {
@@ -424,7 +453,16 @@
         }
       });
     }
-  });
+  };
+
+  // Initialize on DOMContentLoaded (for initial page load)
+  document.addEventListener('DOMContentLoaded', initializeAttendeeForm);
+
+  // Initialize on Turbo load (for Turbo navigation)
+  document.addEventListener('turbo:load', initializeAttendeeForm);
+
+  // Also initialize on turbo:render for compatibility
+  document.addEventListener('turbo:render', initializeAttendeeForm);
 </script>
 
 
