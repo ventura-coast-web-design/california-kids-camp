@@ -24,6 +24,29 @@
       <div class="border-b border-gray-200 pb-6">
         <h3 class="text-xl font-semibold mb-4 text-gray-800">Payment Information</h3>
         
+        <!-- Payment Type Selection -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-3">Payment Option</label>
+          <div class="space-y-3">
+            <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-colors payment-option">
+              <input type="radio" name="payment_type" value="deposit" class="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500" checked>
+              <div class="flex-1">
+                <div class="font-semibold text-gray-900">Pay Deposit</div>
+                <div class="text-sm text-gray-600">$50.00 per attendee deposit (balance due later)</div>
+              </div>
+              <div class="text-lg font-bold text-blue-600">$<%= sprintf('%.2f', @deposit_amount) %></div>
+            </label>
+            <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-colors payment-option">
+              <input type="radio" name="payment_type" value="full" class="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500">
+              <div class="flex-1">
+                <div class="font-semibold text-gray-900">Pay in Full</div>
+                <div class="text-sm text-gray-600">Complete payment now</div>
+              </div>
+              <div class="text-lg font-bold text-blue-600">$<%= sprintf('%.2f', @amount) %></div>
+            </label>
+          </div>
+        </div>
+        
         <form id="payment-form">
           <div id="card-element" class="mb-4">
             <!-- Stripe Elements will create form elements here -->
@@ -34,7 +57,7 @@
           
           <div class="form-actions">
             <button type="submit" id="submit-button" class="btn btn-primary w-full">
-              <span id="button-text">Pay $<%= sprintf('%.2f', @amount) %></span>
+              <span id="button-text">Pay $<span id="payment-amount"><%= sprintf('%.2f', @deposit_amount) %></span></span>
               <span id="spinner" class="hidden">Processing...</span>
             </button>
           </div>
@@ -55,26 +78,58 @@
   
   // Get registration ID
   const registrationId = <%= @attendee_registration.id %>;
+  const fullAmount = <%= @amount %>;
+  const depositAmount = <%= @deposit_amount %>;
   
   // Create payment intent and set up Stripe Elements
   let elements;
   let cardElement;
+  let currentPaymentType = 'deposit';
+  let currentClientSecret = null;
   
-  async function initializePayment() {
-    try {
-      // Check if Stripe is properly initialized
-      if (!stripe || !stripe._apiKey) {
-        document.getElementById('card-errors').textContent = 'Payment system is not properly configured. Please contact support.';
-        return;
+  // Update payment amount when payment type changes
+  function updatePaymentAmount() {
+    const paymentTypeRadios = document.querySelectorAll('input[name="payment_type"]');
+    const paymentAmountSpan = document.getElementById('payment-amount');
+    
+    paymentTypeRadios.forEach(radio => {
+      // Update selected state styling
+      const label = radio.closest('label.payment-option');
+      if (radio.checked) {
+        label.classList.add('selected');
       }
       
-      // Create payment intent
+      radio.addEventListener('change', async function() {
+        currentPaymentType = this.value;
+        
+        // Update styling
+        document.querySelectorAll('label.payment-option').forEach(l => l.classList.remove('selected'));
+        this.closest('label.payment-option').classList.add('selected');
+        
+        if (this.value === 'deposit') {
+          paymentAmountSpan.textContent = depositAmount.toFixed(2);
+        } else {
+          paymentAmountSpan.textContent = fullAmount.toFixed(2);
+        }
+        
+        // Recreate payment intent when payment type changes
+        await createPaymentIntent(this.value);
+      });
+    });
+  }
+  
+  // Create payment intent
+  async function createPaymentIntent(paymentType) {
+    try {
       const response = await fetch(`/attendee_registrations/${registrationId}/create_payment_intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        }
+        },
+        body: JSON.stringify({
+          payment_type: paymentType
+        })
       });
       
       if (!response.ok) {
@@ -85,16 +140,46 @@
       
       if (data.error) {
         document.getElementById('card-errors').textContent = data.error;
-        return;
+        return null;
       }
       
       if (!data.clientSecret) {
         document.getElementById('card-errors').textContent = 'Failed to initialize payment. Please try again.';
+        return null;
+      }
+      
+      currentClientSecret = data.clientSecret;
+      return data.clientSecret;
+    } catch (error) {
+      console.error('Error creating payment intent:', error);
+      document.getElementById('card-errors').textContent = 'An error occurred. Please refresh the page and try again.';
+      return null;
+    }
+  }
+  
+  // Initialize payment amount display
+  updatePaymentAmount();
+  
+  async function initializePayment() {
+    try {
+      // Check if Stripe is properly initialized
+      if (!stripe || !stripe._apiKey) {
+        document.getElementById('card-errors').textContent = 'Payment system is not properly configured. Please contact support.';
+        return;
+      }
+      
+      // Get selected payment type
+      const selectedPaymentType = document.querySelector('input[name="payment_type"]:checked').value;
+      currentPaymentType = selectedPaymentType;
+      
+      // Create payment intent
+      const clientSecret = await createPaymentIntent(selectedPaymentType);
+      if (!clientSecret) {
         return;
       }
       
       // Initialize Stripe Elements
-      elements = stripe.elements({ clientSecret: data.clientSecret });
+      elements = stripe.elements({ clientSecret: clientSecret });
       cardElement = elements.create('card', {
         style: {
           base: {
@@ -132,13 +217,29 @@
         const buttonText = document.getElementById('button-text');
         const spinner = document.getElementById('spinner');
         
+        // Get current payment type
+        const selectedPaymentType = document.querySelector('input[name="payment_type"]:checked').value;
+        
+        // If payment type changed, recreate payment intent
+        if (selectedPaymentType !== currentPaymentType || !currentClientSecret) {
+          const newClientSecret = await createPaymentIntent(selectedPaymentType);
+          if (!newClientSecret) {
+            submitButton.disabled = false;
+            buttonText.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            return;
+          }
+          currentClientSecret = newClientSecret;
+          currentPaymentType = selectedPaymentType;
+        }
+        
         // Disable button and show spinner
         submitButton.disabled = true;
         buttonText.classList.add('hidden');
         spinner.classList.remove('hidden');
         
         // Confirm payment with Stripe
-        const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
+        const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
           payment_method: {
             card: cardElement,
             billing_details: {
@@ -175,6 +276,12 @@
             paymentIntentInput.value = paymentIntent.id;
             form.appendChild(paymentIntentInput);
             
+            const paymentTypeInput = document.createElement('input');
+            paymentTypeInput.type = 'hidden';
+            paymentTypeInput.name = 'payment_type';
+            paymentTypeInput.value = selectedPaymentType;
+            form.appendChild(paymentTypeInput);
+            
             document.body.appendChild(form);
             form.submit();
           }
@@ -201,6 +308,38 @@
   #card-element:focus {
     outline: 2px solid #3b82f6;
     outline-offset: 2px;
+  }
+  
+  .payment-option {
+    transition: all 0.2s ease;
+  }
+  
+  .payment-option input[type="radio"]:checked + div {
+    color: #1e40af;
+  }
+  
+  .payment-option input[type="radio"]:checked ~ div {
+    color: #1e40af;
+  }
+  
+  input[type="radio"]:checked ~ .payment-option-content {
+    color: #1e40af;
+  }
+  
+  /* Highlight selected payment option */
+  .payment-option input[type="radio"]:checked {
+    border-color: #3b82f6;
+  }
+  
+  label.payment-option:has(input[type="radio"]:checked),
+  .payment-option input[type="radio"]:checked {
+    border-color: #3b82f6;
+  }
+  
+  /* Fallback for browsers without :has() support */
+  .payment-option.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
   }
 </style>
 

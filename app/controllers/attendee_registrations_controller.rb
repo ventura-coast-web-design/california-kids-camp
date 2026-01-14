@@ -58,6 +58,7 @@ class AttendeeRegistrationsController < ApplicationController
     end
     
     @amount = @attendee_registration.calculate_total_amount
+    @deposit_amount = @attendee_registration.calculate_deposit_amount
     @child_count = @attendee_registration.attendees.count
     @stripe_publishable_key = ENV['STRIPE_PUBLISHABLE_KEY']
   end
@@ -67,12 +68,29 @@ class AttendeeRegistrationsController < ApplicationController
     @attendee_registration = AttendeeRegistration.find(params[:id])
     
     begin
+      # Get payment type from request (deposit or full)
+      payment_type = params[:payment_type] || 'deposit'
+      
+      # Calculate amount based on payment type
+      amount = if payment_type == 'deposit'
+                 @attendee_registration.calculate_deposit_amount # $50 per attendee
+               else
+                 @attendee_registration.calculate_total_amount
+               end
+      
+      amount_in_cents = if payment_type == 'deposit'
+                          @attendee_registration.deposit_amount_in_cents
+                        else
+                          @attendee_registration.amount_in_cents
+                        end
+      
       # Check if payment intent already exists and is still valid
       if @attendee_registration.stripe_payment_intent_id.present?
         payment_intent = Stripe::PaymentIntent.retrieve(@attendee_registration.stripe_payment_intent_id)
         
-        # If payment intent is still in a processable state, reuse it
-        if ['requires_payment_method', 'requires_confirmation'].include?(payment_intent.status)
+        # If payment intent is still in a processable state and matches the requested amount, reuse it
+        if ['requires_payment_method', 'requires_confirmation'].include?(payment_intent.status) &&
+           payment_intent.amount == amount_in_cents
           render json: {
             clientSecret: payment_intent.client_secret
           }
@@ -82,15 +100,19 @@ class AttendeeRegistrationsController < ApplicationController
       
       # Create new payment intent
       payment_intent = Stripe::PaymentIntent.create(
-        amount: @attendee_registration.amount_in_cents,
+        amount: amount_in_cents,
         currency: 'usd',
         metadata: {
           attendee_registration_id: @attendee_registration.id,
-          guardian_email: @attendee_registration.guardian_1_email
+          guardian_email: @attendee_registration.guardian_1_email,
+          payment_type: payment_type
         }
       )
 
-      @attendee_registration.update(stripe_payment_intent_id: payment_intent.id)
+      @attendee_registration.update(
+        stripe_payment_intent_id: payment_intent.id,
+        payment_type: payment_type
+      )
       
       render json: {
         clientSecret: payment_intent.client_secret
@@ -118,10 +140,14 @@ class AttendeeRegistrationsController < ApplicationController
       end
       
       if payment_intent.status == 'succeeded'
+        # Get payment_type from metadata first (source of truth), then params, then registration, default to 'full'
+        payment_type = payment_intent.metadata['payment_type'] || params[:payment_type] || @attendee_registration.payment_type || 'full'
+        
         @attendee_registration.update(
           payment_status: 'succeeded',
           stripe_payment_intent_id: payment_intent_id,
-          amount_paid: payment_intent.amount / 100.0
+          amount_paid: payment_intent.amount / 100.0,
+          payment_type: payment_type
         )
         
         redirect_to attendee_registration_path(@attendee_registration)

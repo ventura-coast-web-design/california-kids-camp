@@ -29,13 +29,52 @@ class AttendeeRegistration < ApplicationRecord
     end
   end
 
+  # Calculate deposit amount: $50 per attendee
+  def calculate_deposit_amount
+    child_count = attendees.reject(&:marked_for_destruction?).count
+    (child_count * 50.00).round(2)
+  end
+
   # Convert amount to cents for Stripe
   def amount_in_cents
     (calculate_total_amount * 100).to_i
   end
 
+  # Convert deposit amount to cents for Stripe
+  def deposit_amount_in_cents
+    (calculate_deposit_amount * 100).to_i
+  end
+
   def paid?
     payment_status == 'succeeded'
+  end
+
+  def paid_in_full?
+    return false unless paid?
+    return true if payment_type.to_s == 'full'
+    # If payment_type is not set but amount_paid equals total, assume full payment
+    return true if payment_type.blank? && amount_paid.to_f >= calculate_total_amount
+    false
+  end
+
+  def paid_deposit?
+    return false unless paid?
+    return true if payment_type.to_s == 'deposit'
+    # If payment_type is not set but amount_paid is less than total, assume deposit
+    return true if payment_type.blank? && amount_paid.to_f > 0 && amount_paid.to_f < calculate_total_amount
+    false
+  end
+
+  def payment_status_display
+    return 'Not Paid' unless paid?
+    return 'Paid in Full' if paid_in_full?
+    return 'Deposit Paid' if paid_deposit?
+    'Paid'
+  end
+
+  def remaining_balance
+    return 0.0 unless paid_deposit?
+    calculate_total_amount - amount_paid.to_f
   end
 
   private
