@@ -224,6 +224,15 @@ class AdminController < ApplicationController
     redirect_to admin_login_path, notice: "Logged out successfully"
   end
 
+  def show_attendee
+    @attendee = Attendee.includes(:attendee_registration).find(params[:id])
+    @registration = @attendee.attendee_registration
+  end
+
+  def show_counsellor
+    @counsellor = Counsellor.find(params[:id])
+  end
+
   private
 
   def require_admin_password

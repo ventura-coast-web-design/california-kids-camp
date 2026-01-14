@@ -1,0 +1,234 @@
+<div class="content-section">
+  <div class="container">
+    <div class="section-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 class="section-title" style="margin-bottom: 0;">Counsellor Registration Details</h2>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="<%= admin_path %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+            ← Back to Dashboard
+          </a>
+          <%= button_to "Logout", admin_logout_path, method: :delete, class: "btn btn-outline", style: "padding: 0.5rem 1rem;", data: { turbo: false } %>
+        </div>
+      </div>
+      <p style="color: #6b7280; margin-top: 0.5rem;">
+        Registered on <%= @counsellor.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+      </p>
+    </div>
+    
+    <div class="section-content">
+      <div class="counsellor-cards-container">
+        <!-- Counsellor 1 Card -->
+        <div class="detail-card counsellor-card">
+          <div class="detail-card-header">
+            <h3 style="margin: 0; color: #2c5f2d;">
+              Counsellor 1
+            </h3>
+          </div>
+          
+          <div class="detail-card-body">
+            <div class="detail-grid">
+              <!-- Personal Information -->
+              <div class="detail-section">
+                <h4 class="detail-section-title">Personal Information</h4>
+                <div class="detail-row">
+                  <span class="detail-label">Name:</span>
+                  <span class="detail-value">
+                    <%= @counsellor.counsellor_1_first_name %> <%= @counsellor.counsellor_1_last_name %>
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Ecclesia:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_1_ecclesia %></span>
+                </div>
+              </div>
+
+              <!-- Contact Information -->
+              <div class="detail-section">
+                <h4 class="detail-section-title">Contact Information</h4>
+                <div class="detail-row">
+                  <span class="detail-label">Email:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_1_email %></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Phone:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_1_phone %></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Address:</span>
+                  <span class="detail-value">
+                    <%= @counsellor.counsellor_1_address_line_1 %><br>
+                    <%= @counsellor.counsellor_1_city %>, <%= @counsellor.counsellor_1_state_province_region %> <%= @counsellor.counsellor_1_postal_code %><br>
+                    <%= @counsellor.counsellor_1_country %>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Camp Details -->
+              <div class="detail-section">
+                <h4 class="detail-section-title">Camp Details</h4>
+                <div class="detail-row">
+                  <span class="detail-label">T-Shirt Size:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_1_tshirt_size %></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Piano:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_1_piano %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Counsellor 2 Card -->
+        <div class="detail-card counsellor-card">
+          <div class="detail-card-header">
+            <h3 style="margin: 0; color: #2c5f2d;">
+              Counsellor 2
+            </h3>
+          </div>
+          
+          <div class="detail-card-body">
+            <div class="detail-grid">
+              <!-- Personal Information -->
+              <div class="detail-section">
+                <h4 class="detail-section-title">Personal Information</h4>
+                <div class="detail-row">
+                  <span class="detail-label">Name:</span>
+                  <span class="detail-value">
+                    <%= @counsellor.counsellor_2_first_name %> <%= @counsellor.counsellor_2_last_name %>
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Ecclesia:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_2_ecclesia %></span>
+                </div>
+              </div>
+
+              <!-- Contact Information -->
+              <div class="detail-section">
+                <h4 class="detail-section-title">Contact Information</h4>
+                <div class="detail-row">
+                  <span class="detail-label">Email:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_2_email %></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Phone:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_2_phone %></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Address:</span>
+                  <span class="detail-value">
+                    <%= @counsellor.counsellor_2_address_line_1 %><br>
+                    <%= @counsellor.counsellor_2_city %>, <%= @counsellor.counsellor_2_state_province_region %> <%= @counsellor.counsellor_2_postal_code %><br>
+                    <%= @counsellor.counsellor_2_country %>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Camp Details -->
+              <div class="detail-section">
+                <h4 class="detail-section-title">Camp Details</h4>
+                <div class="detail-row">
+                  <span class="detail-label">T-Shirt Size:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_2_tshirt_size %></span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Piano:</span>
+                  <span class="detail-value"><%= @counsellor.counsellor_2_piano %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .counsellor-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+
+  .detail-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .counsellor-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .counsellor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  .detail-card-header {
+    background-color: #f9fafb;
+    padding: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .detail-card-body {
+    padding: 1.5rem;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .detail-section-title {
+    color: #2c5f2d;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #2c5f2d;
+  }
+
+  .detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .detail-label {
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .detail-value {
+    color: #1f2937;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .counsellor-cards-container {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .detail-card-header,
+    .detail-card-body {
+      padding: 1rem;
+    }
+  }
+</style>

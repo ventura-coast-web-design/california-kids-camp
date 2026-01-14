@@ -66,7 +66,11 @@
               <% @attendees.each do |attendee| %>
                 <% registration = attendee.attendee_registration %>
                 <tr>
-                  <td><strong><%= attendee.first_name %> <%= attendee.last_name %></strong></td>
+                  <td>
+                    <strong>
+                      <%= link_to "#{attendee.first_name} #{attendee.last_name}", admin_attendee_path(attendee), style: "color: #2c5f2d; text-decoration: none;", onmouseover: "this.style.textDecoration='underline'", onmouseout: "this.style.textDecoration='none'" %>
+                    </strong>
+                  </td>
                   <td>
                     <% if registration.paid? %>
                       <% if registration.paid_in_full? %>
@@ -196,7 +200,9 @@
                 <!-- Counselor 1 Row -->
                 <tr style="background-color: #f9fafb;">
                   <td rowspan="2" style="vertical-align: top; border-bottom: 2px solid #e5e7eb;">
-                    <strong><%= counsellor.created_at.strftime("%m/%d/%Y") %></strong><br>
+                    <strong>
+                      <%= link_to counsellor.created_at.strftime("%m/%d/%Y"), admin_counsellor_path(counsellor), style: "color: #2c5f2d; text-decoration: none;", onmouseover: "this.style.textDecoration='underline'", onmouseout: "this.style.textDecoration='none'" %>
+                    </strong><br>
                     <small style="color: #6b7280;"><%= counsellor.created_at.strftime("%I:%M %p") %></small>
                   </td>
                   <td>

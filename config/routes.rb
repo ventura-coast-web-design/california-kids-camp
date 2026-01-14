@@ -48,6 +48,8 @@ Rails.application.routes.draw do
   get "admin", to: "admin#index", as: "admin"
   get "admin/export_attendees", to: "admin#export_attendees", as: "admin_export_attendees"
   get "admin/export_counsellors", to: "admin#export_counsellors", as: "admin_export_counsellors"
+  get "admin/attendees/:id", to: "admin#show_attendee", as: "admin_attendee"
+  get "admin/counsellors/:id", to: "admin#show_counsellor", as: "admin_counsellor"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
