@@ -46,6 +46,8 @@ Rails.application.routes.draw do
   post "admin/authenticate", to: "admin#authenticate", as: "admin_authenticate"
   delete "admin/logout", to: "admin#logout", as: "admin_logout"
   get "admin", to: "admin#index", as: "admin"
+  get "admin/export_attendees", to: "admin#export_attendees", as: "admin_export_attendees"
+  get "admin/export_counsellors", to: "admin#export_counsellors", as: "admin_export_counsellors"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

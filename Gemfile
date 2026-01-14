@@ -75,3 +75,4 @@ end
 
 gem "letter_opener"
 gem "stripe"
+gem "csv"

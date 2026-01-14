@@ -1,11 +1,203 @@
 # frozen_string_literal: true
 
+require "csv"
+
 class AdminController < ApplicationController
   before_action :require_admin_password, except: [ :login, :authenticate, :logout ]
 
   def index
     @attendees = Attendee.includes(:attendee_registration).order(created_at: :desc)
     @counsellors = Counsellor.order(created_at: :desc)
+  end
+
+  def export_attendees
+    @attendees = Attendee.includes(:attendee_registration).order(created_at: :desc)
+
+    csv_data = CSV.generate do |csv|
+      # Header row
+      csv << [
+        "Name",
+        "Payment Status",
+        "Amount Paid",
+        "Remaining Balance",
+        "Date of Birth",
+        "Age",
+        "Gender",
+        "Phone",
+        "Email",
+        "T-Shirt Size",
+        "Ecclesia",
+        "Piano",
+        "Address Line 1",
+        "Address Line 2",
+        "City",
+        "State",
+        "Zip",
+        "Medical Conditions",
+        "Dietary Restrictions",
+        "Allergies",
+        "Special Needs",
+        "Notes",
+        "Guardian 1 Name",
+        "Guardian 1 Email",
+        "Guardian 1 Phone",
+        "Guardian 1 Address Line 1",
+        "Guardian 1 Address Line 2",
+        "Guardian 1 City",
+        "Guardian 1 State",
+        "Guardian 1 Zip",
+        "Guardian 2 Name",
+        "Guardian 2 Email",
+        "Guardian 2 Phone",
+        "Guardian 2 Address Line 1",
+        "Guardian 2 Address Line 2",
+        "Guardian 2 City",
+        "Guardian 2 State",
+        "Guardian 2 Zip",
+        "Emergency Contact 1 Name",
+        "Emergency Contact 1 Phone",
+        "Emergency Contact 2 Name",
+        "Emergency Contact 2 Phone",
+        "Registration Date"
+      ]
+
+      # Data rows
+      @attendees.each do |attendee|
+        registration = attendee.attendee_registration
+        payment_status = registration.payment_status_display
+
+        csv << [
+          "#{attendee.first_name} #{attendee.last_name}",
+          payment_status,
+          registration.amount_paid || 0,
+          registration.remaining_balance,
+          attendee.date_of_birth&.strftime("%m/%d/%Y"),
+          attendee.age,
+          attendee.gender,
+          attendee.phone,
+          attendee.email,
+          attendee.tshirt_size,
+          attendee.ecclesia,
+          attendee.piano ? "Yes" : "No",
+          attendee.address_line_1,
+          attendee.address_line_2,
+          attendee.city,
+          attendee.state,
+          attendee.zip,
+          attendee.medical_conditions,
+          attendee.dietary_restrictions,
+          attendee.allergies,
+          attendee.special_needs,
+          attendee.notes,
+          registration.guardian_1_name,
+          registration.guardian_1_email,
+          registration.guardian_1_phone,
+          registration.guardian_1_address_line_1,
+          registration.guardian_1_address_line_2,
+          registration.guardian_1_city,
+          registration.guardian_1_state,
+          registration.guardian_1_zip,
+          registration.guardian_2_name,
+          registration.guardian_2_email,
+          registration.guardian_2_phone,
+          registration.guardian_2_same_address ? "Same as Guardian 1" : registration.guardian_2_address_line_1,
+          registration.guardian_2_same_address ? "" : registration.guardian_2_address_line_2,
+          registration.guardian_2_same_address ? "" : registration.guardian_2_city,
+          registration.guardian_2_same_address ? "" : registration.guardian_2_state,
+          registration.guardian_2_same_address ? "" : registration.guardian_2_zip,
+          registration.emergency_contact_1_name,
+          registration.emergency_contact_1_phone,
+          registration.emergency_contact_2_name,
+          registration.emergency_contact_2_phone,
+          registration.created_at.strftime("%m/%d/%Y")
+        ]
+      end
+    end
+
+    respond_to do |format|
+      format.csv do
+        send_data csv_data,
+          filename: "attendees_#{Date.current.strftime('%Y%m%d')}.csv",
+          type: "text/csv"
+      end
+    end
+  end
+
+  def export_counsellors
+    @counsellors = Counsellor.order(created_at: :desc)
+
+    csv_data = CSV.generate do |csv|
+      # Header row
+      csv << [
+        "Registration Date",
+        "Registration Time",
+        "Counselor Number",
+        "First Name",
+        "Last Name",
+        "Address Line 1",
+        "Address Line 2",
+        "City",
+        "State/Province/Region",
+        "Postal Code",
+        "Country",
+        "Phone",
+        "Email",
+        "Ecclesia",
+        "T-Shirt Size",
+        "Piano"
+      ]
+
+      # Data rows
+      @counsellors.each do |counsellor|
+        # Counselor 1
+        csv << [
+          counsellor.created_at.strftime("%m/%d/%Y"),
+          counsellor.created_at.strftime("%I:%M %p"),
+          "1",
+          counsellor.counsellor_1_first_name,
+          counsellor.counsellor_1_last_name,
+          counsellor.counsellor_1_address_line_1,
+          "",
+          counsellor.counsellor_1_city,
+          counsellor.counsellor_1_state_province_region,
+          counsellor.counsellor_1_postal_code,
+          counsellor.counsellor_1_country,
+          counsellor.counsellor_1_phone,
+          counsellor.counsellor_1_email,
+          counsellor.counsellor_1_ecclesia,
+          counsellor.counsellor_1_tshirt_size,
+          counsellor.counsellor_1_piano
+        ]
+
+        # Counselor 2
+        csv << [
+          counsellor.created_at.strftime("%m/%d/%Y"),
+          counsellor.created_at.strftime("%I:%M %p"),
+          "2",
+          counsellor.counsellor_2_first_name,
+          counsellor.counsellor_2_last_name,
+          counsellor.counsellor_2_address_line_1,
+          "",
+          counsellor.counsellor_2_city,
+          counsellor.counsellor_2_state_province_region,
+          counsellor.counsellor_2_postal_code,
+          counsellor.counsellor_2_country,
+          counsellor.counsellor_2_phone,
+          counsellor.counsellor_2_email,
+          counsellor.counsellor_2_ecclesia,
+          counsellor.counsellor_2_tshirt_size,
+          counsellor.counsellor_2_piano
+        ]
+      end
+    end
+
+    respond_to do |format|
+      format.csv do
+        send_data csv_data,
+          filename: "counsellors_#{Date.current.strftime('%Y%m%d')}.csv",
+          type: "text/csv"
+      end
+    end
   end
 
   def login

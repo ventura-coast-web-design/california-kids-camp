@@ -9,13 +9,23 @@
     
     <div class="section-content">
     <!-- Tabs -->
-    <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="attendees" onclick="switchTab('attendees')">
-        Attendees (<%= @attendees.count %>)
-      </button>
-      <button class="admin-tab" data-tab="counsellors" onclick="switchTab('counsellors')">
-        Counsellors (<%= @counsellors.count %>)
-      </button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="attendees" onclick="switchTab('attendees')">
+          Attendees (<%= @attendees.count %>)
+        </button>
+        <button class="admin-tab" data-tab="counsellors" onclick="switchTab('counsellors')">
+          Counsellors (<%= @counsellors.count %>)
+        </button>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <a href="<%= admin_export_attendees_path(format: :csv) %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+          Export Attendees CSV
+        </a>
+        <a href="<%= admin_export_counsellors_path(format: :csv) %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+          Export Counsellors CSV
+        </a>
+      </div>
     </div>
 
     <!-- Attendees Tab Content -->
