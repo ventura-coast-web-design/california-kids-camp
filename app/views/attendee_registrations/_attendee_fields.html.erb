@@ -1,15 +1,15 @@
-<div class="attendee-form-group border border-gray-300 rounded-lg p-4 mb-4 bg-gray-50">
-  <div class="flex justify-between items-center mb-4">
-    <h4 class="text-lg font-semibold text-gray-700">Child</h4>
+<div class="attendee-form-group" style="border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; margin-bottom: 12px; background-color: #f9fafb;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <h4 style="font-size: 16px; font-weight: 600; color: #374151;">Child</h4>
     <% unless f.object.new_record? %>
       <%= f.hidden_field :_destroy, class: 'destroy-field' %>
-      <button type="button" class="remove-attendee-btn text-red-600 hover:text-red-800">Remove</button>
+      <button type="button" class="remove-attendee-btn" style="color: #dc2626; font-size: 14px; background: none; border: none; cursor: pointer;">Remove</button>
     <% else %>
-      <button type="button" class="remove-attendee-btn text-red-600 hover:text-red-800">Remove</button>
+      <button type="button" class="remove-attendee-btn" style="color: #dc2626; font-size: 14px; background: none; border: none; cursor: pointer;">Remove</button>
     <% end %>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="form-grid form-grid-2">
     <div class="form-group">
       <%= f.label :first_name, "First Name", class: "form-label" %>
       <%= f.text_field :first_name, class: "form-control", required: true %>
@@ -30,8 +30,20 @@
       <%= f.select :gender, options_for_select([['Select...', ''], ['Male', 'Male'], ['Female', 'Female']], f.object.gender), {}, class: "form-control" %>
     </div>
 
-    <div class="form-group md:col-span-2">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="form-group">
+      <%= f.label :tshirt_size, "T-Shirt Size", class: "form-label" %>
+      <%= f.select :tshirt_size, options_for_select([['Select...', ''], ['Youth S', 'Youth S'], ['Youth M', 'Youth M'], ['Youth L', 'Youth L'], ['Youth XL', 'Youth XL'], ['Adult S', 'Adult S'], ['Adult M', 'Adult M'], ['Adult L', 'Adult L'], ['Adult XL', 'Adult XL'], ['Adult XXL', 'Adult XXL']], f.object.tshirt_size), {}, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <label style="display: flex; align-items: center;">
+        <%= f.check_box :piano, style: "margin-right: 8px;" %>
+        <span style="font-size: 14px;">This attendee plays piano</span>
+      </label>
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <div class="form-grid form-grid-3">
         <div class="form-group">
           <%= f.label :phone, "Phone Number", class: "form-label" %>
           <%= f.telephone_field :phone, class: "form-control" %>
@@ -49,28 +61,16 @@
       </div>
     </div>
 
-    <div class="form-group">
-      <%= f.label :tshirt_size, "T-Shirt Size", class: "form-label" %>
-      <%= f.select :tshirt_size, options_for_select([['Select...', ''], ['Youth S', 'Youth S'], ['Youth M', 'Youth M'], ['Youth L', 'Youth L'], ['Youth XL', 'Youth XL'], ['Adult S', 'Adult S'], ['Adult M', 'Adult M'], ['Adult L', 'Adult L'], ['Adult XL', 'Adult XL'], ['Adult XXL', 'Adult XXL']], f.object.tshirt_size), {}, class: "form-control" %>
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <h5 style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Address</h5>
     </div>
 
-    <div class="form-group md:col-span-2">
-      <label class="flex items-center">
-        <%= f.check_box :piano, class: "mr-2" %>
-        <span>This attendee plays piano</span>
-      </label>
-    </div>
-
-    <div class="form-group md:col-span-2">
-      <h5 class="font-semibold mb-2">Address</h5>
-    </div>
-
-    <div class="form-group md:col-span-2">
+    <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :address_line_1, "Address Line 1", class: "form-label" %>
       <%= f.text_field :address_line_1, class: "form-control" %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :address_line_2, "Address Line 2 (Optional)", class: "form-label" %>
       <%= f.text_field :address_line_2, class: "form-control" %>
     </div>
@@ -90,27 +90,27 @@
       <%= f.text_field :zip, class: "form-control" %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :medical_conditions, class: "form-label" %>
       <%= f.text_area :medical_conditions, rows: 2, class: "form-control", placeholder: "Any medical conditions we should be aware of..." %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :dietary_restrictions, class: "form-label" %>
       <%= f.text_area :dietary_restrictions, rows: 2, class: "form-control", placeholder: "Any dietary restrictions..." %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :allergies, class: "form-label" %>
       <%= f.text_area :allergies, rows: 2, class: "form-control", placeholder: "Any allergies..." %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :special_needs, class: "form-label" %>
       <%= f.text_area :special_needs, rows: 2, class: "form-control", placeholder: "Any special needs or accommodations required..." %>
     </div>
 
-    <div class="form-group md:col-span-2">
+    <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :notes, "Additional Notes", class: "form-label" %>
       <%= f.text_area :notes, rows: 2, class: "form-control", placeholder: "Any additional information about this child..." %>
     </div>

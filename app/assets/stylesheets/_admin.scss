@@ -132,7 +132,35 @@
 }
 
 .form-group {
-  margin-bottom: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+// Form grid layouts
+.form-grid {
+  display: grid;
+  gap: $spacing-sm;
+  
+  &.form-grid-2 {
+    grid-template-columns: 1fr;
+    
+    @media (min-width: $breakpoint-tablet) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  &.form-grid-3 {
+    grid-template-columns: 1fr;
+    
+    @media (min-width: $breakpoint-tablet) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+.remove-attendee-btn {
+  &:hover {
+    color: #991b1b !important;
+  }
 }
 
 .form-label {
