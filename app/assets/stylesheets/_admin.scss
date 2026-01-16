@@ -266,6 +266,65 @@
 
 .section-header {
   margin-bottom: $spacing-lg;
+  
+  .section-intro {
+    color: $text-light;
+    margin-top: $spacing-md;
+    padding: $spacing-md;
+    
+    p {
+      margin-bottom: $spacing-sm;
+      font-size: $font-size-base;
+      line-height: 1.6;
+      color: $text-light;
+      
+      a {
+        color: $primary-color;
+        text-decoration: none;
+        font-weight: $font-weight-medium;
+        
+        &:hover {
+          color: $primary-dark;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+  
+  .contact-info-box {
+    background-color: $background-light;
+    border-left: 4px solid $primary-color;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+    margin-top: $spacing-md;
+    margin-bottom: $spacing-sm;
+    
+    p {
+      margin-bottom: $spacing-sm;
+      color: $text-dark;
+      font-size: $font-size-base;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      strong {
+        color: $text-dark;
+        font-weight: $font-weight-semibold;
+      }
+      
+      a {
+        color: $primary-color;
+        text-decoration: none;
+        font-weight: $font-weight-medium;
+        
+        &:hover {
+          color: $primary-dark;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
 }
 
 .section-content {
