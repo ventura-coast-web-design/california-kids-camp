@@ -50,11 +50,11 @@
     background-color: $background-white;
     box-shadow: $shadow-lg;
     max-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
     @include transition(max-height, 0.4s);
     
     &.is-active {
-      max-height: 400px;
+      max-height: calc(100vh - 80px);
       border-bottom: 2px solid $primary-color;
     }
   }
@@ -211,12 +211,25 @@
   }
 }
 
+// Mobile registration items (shown only on mobile)
+.mobile-register-item {
+  @include tablet-up {
+    display: none;
+  }
+}
+
 // Dropdown styles
 .dropdown-container {
   position: relative;
   
   @include mobile {
-    width: 100%;
+    display: none;
+  }
+  
+  &.desktop-dropdown {
+    @include tablet-up {
+      display: block;
+    }
   }
 }
 
