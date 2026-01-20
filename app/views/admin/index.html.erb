@@ -15,7 +15,7 @@
           Attendees (<%= @attendees.count %>)
         </button>
         <button class="admin-tab" data-tab="counsellors" onclick="switchTab('counsellors')">
-          Counsellors (<%= @counsellors.count %>)
+          Counselors (<%= @counsellors.count %>)
         </button>
       </div>
       <div style="display: flex; gap: 0.5rem;">
@@ -23,7 +23,7 @@
           Export Attendees CSV
         </a>
         <a href="<%= admin_export_counsellors_path(format: :csv) %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
-          Export Counsellors CSV
+          Export Counselors CSV
         </a>
       </div>
     </div>
@@ -178,7 +178,7 @@
 
     <!-- Counsellors Tab Content -->
     <div id="counsellors-tab" class="admin-tab-content">
-      <h3 style="margin-bottom: 1.5rem;">Registered Counsellors</h3>
+      <h3 style="margin-bottom: 1.5rem;">Registered Counselors</h3>
       
       <% if @counsellors.any? %>
         <div class="admin-table-container" style="overflow-x: auto;">
@@ -242,7 +242,7 @@
           </table>
         </div>
       <% else %>
-        <p class="text-gray-600">No counsellor registrations yet.</p>
+        <p class="text-gray-600">No counselor registrations yet.</p>
       <% end %>
     </div>
     </div>

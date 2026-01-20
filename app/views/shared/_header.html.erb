@@ -11,11 +11,11 @@
         <li><%= link_to "Home", root_path, class: "nav-link" %></li>
         <li><%= link_to "About", "/#about", class: "nav-link" %></li>
         <li><%= link_to "Attendee Info", attendee_info_path, class: "nav-link" %></li>
-        <li><%= link_to "Counsellor Info", counsellor_info_path, class: "nav-link" %></li>
+        <li><%= link_to "Counselor Info", counsellor_info_path, class: "nav-link" %></li>
         <li><%= link_to "Rules", rules_path, class: "nav-link" %></li>
         <!-- Mobile: Show as regular nav items -->
         <li class="mobile-register-item"><%= link_to "Register as Attendee", new_attendee_path, class: "nav-link" %></li>
-        <li class="mobile-register-item"><%= link_to "Register as Counsellor", new_counsellor_path, class: "nav-link" %></li>
+        <li class="mobile-register-item"><%= link_to "Register as Counselor", new_counsellor_path, class: "nav-link" %></li>
         <!-- Desktop: Show as dropdown -->
         <li class="dropdown-container desktop-dropdown">
           <button class="nav-link btn-register dropdown-toggle" id="registerDropdown" aria-haspopup="true" aria-expanded="false">
@@ -24,7 +24,7 @@
           </button>
           <ul class="dropdown-menu" id="registerDropdownMenu" aria-labelledby="registerDropdown">
             <li><%= link_to "Register as Attendee", new_attendee_path, class: "dropdown-item" %></li>
-            <li><%= link_to "Register as Counsellor", new_counsellor_path, class: "dropdown-item" %></li>
+            <li><%= link_to "Register as Counselor", new_counsellor_path, class: "dropdown-item" %></li>
           </ul>
         </li>
         <li><%= link_to "Admin", admin_login_path, class: "nav-link" %></li>
