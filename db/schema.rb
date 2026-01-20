@@ -66,7 +66,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_002257) do
     t.text "medical_conditions"
     t.text "notes"
     t.string "phone"
-    t.boolean "piano"
+    t.boolean "piano", default: false
     t.text "special_needs"
     t.string "state"
     t.string "tshirt_size"
