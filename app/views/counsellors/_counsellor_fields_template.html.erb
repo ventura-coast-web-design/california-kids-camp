@@ -1,0 +1,157 @@
+<template id="counsellor-fields-template">
+  <div class="counsellor-form-group" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 16px; background-color: #f9fafb;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="font-size: 18px; font-weight: 600; color: #1f2937;">Counselor {INDEX}'s Information:</h3>
+      <button type="button" class="remove-counsellor-btn" style="color: #dc2626; font-size: 14px; background: none; border: none; cursor: pointer; padding: 4px 8px;">Remove</button>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label">Name</label>
+      <div class="form-grid form-grid-2">
+        <input type="text" name="counsellors[{INDEX}][first_name]" class="form-control" placeholder="First" required>
+        <input type="text" name="counsellors[{INDEX}][last_name]" class="form-control" placeholder="Last" required>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label">Gender</label>
+      <select name="counsellors[{INDEX}][gender]" class="form-control" required>
+        <option value="">Choose...</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label">Address</label>
+      <input type="text" name="counsellors[{INDEX}][address_line_1]" class="form-control" placeholder="Address Line 1" required style="margin-bottom: 12px;">
+      <div class="form-grid form-grid-4">
+        <div class="form-group">
+          <input type="text" name="counsellors[{INDEX}][city]" class="form-control" placeholder="City" required>
+        </div>
+        <div class="form-group">
+          <input type="text" name="counsellors[{INDEX}][state_province_region]" class="form-control" placeholder="State / Province / Region" required>
+        </div>
+        <div class="form-group">
+          <input type="text" name="counsellors[{INDEX}][postal_code]" class="form-control" placeholder="Postal Code" required pattern="[\d\w\s\-]+" title="Please enter a valid postal code">
+        </div>
+        <div class="form-group">
+          <select name="counsellors[{INDEX}][country]" class="form-control" required>
+            <option value="United States of America" selected>United States of America</option>
+            <option value="Canada">Canada</option>
+            <option value="Mexico">Mexico</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Australia">Australia</option>
+            <option value="New Zealand">New Zealand</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
+      <div class="form-group">
+        <label class="form-label">Home/Cell Phone</label>
+        <input type="tel" name="counsellors[{INDEX}][phone]" class="form-control" required pattern="[\d\s\-\(\)\+\.]+" title="Please enter a valid phone number">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" name="counsellors[{INDEX}][email]" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
+      <div class="form-group">
+        <label class="form-label">Ecclesia</label>
+        <input type="text" name="counsellors[{INDEX}][ecclesia]" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">T-Shirt Size</label>
+        <select name="counsellors[{INDEX}][tshirt_size]" class="form-control" required>
+          <option value="">Choose...</option>
+          <option value="Youth S">Youth S</option>
+          <option value="Youth M">Youth M</option>
+          <option value="Youth L">Youth L</option>
+          <option value="Youth XL">Youth XL</option>
+          <option value="Adult S">Adult S</option>
+          <option value="Adult M">Adult M</option>
+          <option value="Adult L">Adult L</option>
+          <option value="Adult XL">Adult XL</option>
+          <option value="Adult XXL">Adult XXL</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label">Plays the piano and would be willing to play a couple hymns</label>
+      <select name="counsellors[{INDEX}][piano]" class="form-control" required>
+        <option value="">Choose...</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
+    <!-- Pairing Request Section -->
+    <div class="form-group" style="margin-bottom: 12px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+      <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Pairing Request (Optional)</h4>
+      <p style="font-size: 13px; color: #6b7280; margin-bottom: 12px;">Counselors are typically grouped in pairs. You can request to be paired with other counselors being registered in this form, or request pairing with someone who will register separately.</p>
+      
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Request pairing with other counselors in this form:</label>
+        <select name="counsellors[{INDEX}][requested_pairing_with][]" class="pairing-select form-control" multiple style="min-height: 100px;">
+          <!-- Options will be populated dynamically by JavaScript -->
+        </select>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Request pairing with someone not in this form:</label>
+        <input type="text" name="counsellors[{INDEX}][requested_pairing_name]" class="form-control" placeholder="Enter name of person you'd like to be paired with">
+        <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">If you know someone who will register separately, enter their name here.</p>
+      </div>
+    </div>
+
+    <!-- Squirts Section -->
+    <div class="squirts-section" style="border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 16px;">
+      <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Squirts (Children)</h4>
+      <p style="font-size: 13px; color: #6b7280; margin-bottom: 12px;">Squirts are children aged 3-8 who can participate in squirts activities and classes. You can register all your children here, and we'll note that those aged 3-8 can participate in squirts activities.</p>
+      
+      <div class="squirts-container">
+        <!-- Squirts will be added here dynamically -->
+      </div>
+      
+      <button type="button" class="add-squirt-btn btn btn-outline" style="margin-top: 8px; font-size: 14px; padding: 6px 12px;">
+        + Add Child
+      </button>
+      
+      <!-- Template for squirt form (hidden) -->
+      <template class="squirt-template">
+        <div class="squirt-form-group" style="border: 1px solid #d1d5db; border-radius: 6px; padding: 12px; margin-bottom: 8px; background-color: white;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h5 style="font-size: 14px; font-weight: 600;">Child</h5>
+            <button type="button" class="remove-squirt-btn" style="color: #dc2626; font-size: 12px; background: none; border: none; cursor: pointer;">Remove</button>
+          </div>
+          <div class="form-grid form-grid-3">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 13px;">Name</label>
+              <input type="text" name="counsellors[{INDEX}][squirts][{TIMESTAMP}][name]" class="form-control" placeholder="Child's name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 13px;">Gender</label>
+              <select name="counsellors[{INDEX}][squirts][{TIMESTAMP}][gender]" class="form-control">
+                <option value="">Choose...</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 13px;">Age</label>
+              <input type="number" name="counsellors[{INDEX}][squirts][{TIMESTAMP}][age]" class="form-control" placeholder="Age" min="0" max="18">
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>

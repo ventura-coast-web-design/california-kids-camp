@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_14_002257) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_21_021101) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,31 +76,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_002257) do
   end
 
   create_table "counsellors", force: :cascade do |t|
-    t.string "counsellor_1_address_line_1", null: false
-    t.string "counsellor_1_city", null: false
-    t.string "counsellor_1_country", default: "United States of America", null: false
-    t.string "counsellor_1_ecclesia", null: false
-    t.string "counsellor_1_email", null: false
-    t.string "counsellor_1_first_name", null: false
-    t.string "counsellor_1_last_name", null: false
-    t.string "counsellor_1_phone", null: false
-    t.string "counsellor_1_piano", null: false
-    t.string "counsellor_1_postal_code", null: false
-    t.string "counsellor_1_state_province_region", null: false
-    t.string "counsellor_1_tshirt_size", null: false
-    t.string "counsellor_2_address_line_1", null: false
-    t.string "counsellor_2_city", null: false
-    t.string "counsellor_2_country", default: "United States of America", null: false
-    t.string "counsellor_2_ecclesia", null: false
-    t.string "counsellor_2_email", null: false
-    t.string "counsellor_2_first_name", null: false
-    t.string "counsellor_2_last_name", null: false
-    t.string "counsellor_2_phone", null: false
-    t.string "counsellor_2_piano", null: false
-    t.string "counsellor_2_postal_code", null: false
-    t.string "counsellor_2_state_province_region", null: false
-    t.string "counsellor_2_tshirt_size", null: false
+    t.string "address_line_1", null: false
+    t.string "city", null: false
+    t.string "country", default: "United States of America", null: false
     t.datetime "created_at", null: false
+    t.string "ecclesia", null: false
+    t.string "email", null: false
+    t.string "first_name", null: false
+    t.string "gender", null: false
+    t.string "last_name", null: false
+    t.string "pairing_group_id"
+    t.integer "pairing_index"
+    t.string "phone", null: false
+    t.string "piano", null: false
+    t.string "postal_code", null: false
+    t.string "requested_pairing_name"
+    t.text "requested_pairing_with"
+    t.text "squirts"
+    t.string "state_province_region", null: false
+    t.string "tshirt_size", null: false
     t.datetime "updated_at", null: false
   end
 

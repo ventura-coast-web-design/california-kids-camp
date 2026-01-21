@@ -4,6 +4,7 @@
     <div class="section-intro">
       <p>Please sign up to volunteer no later than April 15th.</p>
       <p>To be a counselor, you must be a baptized member in good standing and fellowship exclusively based on the BASF. If you would like to volunteer as a counselor, please fill out the form below</p>
+      <p><strong>Please note:</strong> Submitting this form does not confirm you as a counselor. We will contact you if we could use your help.</p>
       <p>For more information on what the counseling experience is like, please refer to <%= link_to "our counselor FAQs", counsellor_info_path %>, or reach out to Bro. James and Sis. Kristen Styles.</p>
       <div class="contact-info-box">
         <p>
@@ -19,198 +20,199 @@
   
   <div class="section-content">
     <div class="form-container">
-      <%= form_with(model: @counsellor, url: counsellors_path, data: {turbo: false}) do |f| %>
-        <% if @counsellor.errors.any? %>
+      <%= form_with(url: counsellors_path, data: {turbo: false}) do |f| %>
+        <% if flash[:alert] %>
           <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-            <h3 style="font-weight: 600; margin-bottom: 8px;"><%= pluralize(@counsellor.errors.count, "error") %> prohibited this registration from being saved:</h3>
-            <ul style="list-style-type: disc; list-style-position: inside;">
-              <% @counsellor.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
+            <p style="margin: 0;"><%= flash[:alert] %></p>
           </div>
         <% end %>
 
-        <!-- Counselor 1 Information -->
-        <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
-          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Counselor 1's Information:</h3>
-          
-          <div class="form-group" style="margin-bottom: 12px;">
-            <%= f.label :counsellor_1_first_name, "Counselor 1 Name", class: "form-label" %>
-            <div class="form-grid form-grid-2">
-              <%= f.text_field :counsellor_1_first_name, class: "form-control", placeholder: "First", required: true %>
-              <%= f.text_field :counsellor_1_last_name, class: "form-control", placeholder: "Last", required: true %>
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 12px;">
-            <%= f.label :counsellor_1_address_line_1, "Counselor 1 Address", class: "form-label" %>
-            <%= f.text_field :counsellor_1_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true, style: "margin-bottom: 12px;" %>
-            <div class="form-grid form-grid-4">
-              <div class="form-group">
-                <%= f.text_field :counsellor_1_city, class: "form-control", placeholder: "City", required: true %>
-              </div>
-              <div class="form-group">
-                <%= f.text_field :counsellor_1_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
-              </div>
-              <div class="form-group">
-                <%= f.text_field :counsellor_1_postal_code, class: "form-control", placeholder: "Postal Code", required: true, pattern: "[\\d\\w\\s\\-]+", title: "Please enter a valid postal code" %>
-              </div>
-              <div class="form-group">
-                <%= f.select :counsellor_1_country, options_for_select([
-                  ['United States of America', 'United States of America'],
-                  ['Canada', 'Canada'],
-                  ['Mexico', 'Mexico'],
-                  ['United Kingdom', 'United Kingdom'],
-                  ['Australia', 'Australia'],
-                  ['New Zealand', 'New Zealand'],
-                  ['Other', 'Other']
-                ], @counsellor.counsellor_1_country || 'United States of America'), {}, { class: "form-control", required: true } %>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
-            <div class="form-group">
-              <%= f.label :counsellor_1_phone, "Counselor 1 Home/Cell Phone", class: "form-label" %>
-              <%= f.telephone_field :counsellor_1_phone, class: "form-control", required: true, pattern: "[\\d\\s\\-\\(\\)\\+\\.]+", title: "Please enter a valid phone number" %>
-            </div>
-
-            <div class="form-group">
-              <%= f.label :counsellor_1_email, "Counselor 1 Email", class: "form-label" %>
-              <%= f.email_field :counsellor_1_email, class: "form-control", required: true %>
-            </div>
-          </div>
-
-          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
-            <div class="form-group">
-              <%= f.label :counsellor_1_ecclesia, "Counselor 1's Ecclesia", class: "form-label" %>
-              <%= f.text_field :counsellor_1_ecclesia, class: "form-control", required: true %>
-            </div>
-
-            <div class="form-group">
-              <%= f.label :counsellor_1_tshirt_size, "Counselor 1 T-Shirt Size", class: "form-label" %>
-              <%= f.select :counsellor_1_tshirt_size, options_for_select([
-                ['Choose...', ''],
-                ['Youth S', 'Youth S'],
-                ['Youth M', 'Youth M'],
-                ['Youth L', 'Youth L'],
-                ['Youth XL', 'Youth XL'],
-                ['Adult S', 'Adult S'],
-                ['Adult M', 'Adult M'],
-                ['Adult L', 'Adult L'],
-                ['Adult XL', 'Adult XL'],
-                ['Adult XXL', 'Adult XXL']
-              ], @counsellor.counsellor_1_tshirt_size), {}, { class: "form-control", required: true } %>
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 12px;">
-            <%= f.label :counsellor_1_piano, "Counselor 1 plays the piano and would be willing to play a couple hymns", class: "form-label" %>
-            <%= f.select :counsellor_1_piano, options_for_select([
-              ['Choose...', ''],
-              ['Yes', 'Yes'],
-              ['No', 'No']
-            ], @counsellor.counsellor_1_piano), {}, { class: "form-control", required: true } %>
-          </div>
+        <div id="counsellors-container">
+          <% @counsellors.each_with_index do |counsellor, index| %>
+            <%= render 'counsellor_fields', counsellor: counsellor, index: index %>
+          <% end %>
         </div>
 
-        <!-- Counselor 2 Information -->
-        <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
-          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1f2937;">Counselor 2's Information:</h3>
-          
-          <div class="form-group" style="margin-bottom: 12px;">
-            <%= f.label :counsellor_2_first_name, "Counselor 2 Name", class: "form-label" %>
-            <div class="form-grid form-grid-2">
-              <%= f.text_field :counsellor_2_first_name, class: "form-control", placeholder: "First", required: true %>
-              <%= f.text_field :counsellor_2_last_name, class: "form-control", placeholder: "Last", required: true %>
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 12px;">
-            <%= f.label :counsellor_2_address_line_1, "Counselor 2 Address", class: "form-label" %>
-            <%= f.text_field :counsellor_2_address_line_1, class: "form-control", placeholder: "Address Line 1", required: true, style: "margin-bottom: 12px;" %>
-            <div class="form-grid form-grid-4">
-              <div class="form-group">
-                <%= f.text_field :counsellor_2_city, class: "form-control", placeholder: "City", required: true %>
-              </div>
-              <div class="form-group">
-                <%= f.text_field :counsellor_2_state_province_region, class: "form-control", placeholder: "State / Province / Region", required: true %>
-              </div>
-              <div class="form-group">
-                <%= f.text_field :counsellor_2_postal_code, class: "form-control", placeholder: "Postal Code", required: true, pattern: "[\\d\\w\\s\\-]+", title: "Please enter a valid postal code" %>
-              </div>
-              <div class="form-group">
-                <%= f.select :counsellor_2_country, options_for_select([
-                  ['United States of America', 'United States of America'],
-                  ['Canada', 'Canada'],
-                  ['Mexico', 'Mexico'],
-                  ['United Kingdom', 'United Kingdom'],
-                  ['Australia', 'Australia'],
-                  ['New Zealand', 'New Zealand'],
-                  ['Other', 'Other']
-                ], @counsellor.counsellor_2_country || 'United States of America'), {}, { class: "form-control", required: true } %>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
-            <div class="form-group">
-              <%= f.label :counsellor_2_phone, "Counselor 2 Home/Cell Phone", class: "form-label" %>
-              <%= f.telephone_field :counsellor_2_phone, class: "form-control", required: true, pattern: "[\\d\\s\\-\\(\\)\\+\\.]+", title: "Please enter a valid phone number" %>
-            </div>
-
-            <div class="form-group">
-              <%= f.label :counsellor_2_email, "Counselor 2 Email", class: "form-label" %>
-              <%= f.email_field :counsellor_2_email, class: "form-control", required: true %>
-            </div>
-          </div>
-
-          <div class="form-grid form-grid-2" style="margin-bottom: 12px;">
-            <div class="form-group">
-              <%= f.label :counsellor_2_ecclesia, "Counselor 2's Ecclesia", class: "form-label" %>
-              <%= f.text_field :counsellor_2_ecclesia, class: "form-control", required: true %>
-            </div>
-
-            <div class="form-group">
-              <%= f.label :counsellor_2_tshirt_size, "Counselor 2 T-Shirt Size", class: "form-label" %>
-              <%= f.select :counsellor_2_tshirt_size, options_for_select([
-                ['Choose...', ''],
-                ['Youth S', 'Youth S'],
-                ['Youth M', 'Youth M'],
-                ['Youth L', 'Youth L'],
-                ['Youth XL', 'Youth XL'],
-                ['Adult S', 'Adult S'],
-                ['Adult M', 'Adult M'],
-                ['Adult L', 'Adult L'],
-                ['Adult XL', 'Adult XL'],
-                ['Adult XXL', 'Adult XXL']
-              ], @counsellor.counsellor_2_tshirt_size), {}, { class: "form-control", required: true } %>
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 12px;">
-            <%= f.label :counsellor_2_piano, "Counselor 2 plays the piano and would be willing to play a couple hymns", class: "form-label" %>
-            <%= f.select :counsellor_2_piano, options_for_select([
-              ['Choose...', ''],
-              ['Yes', 'Yes'],
-              ['No', 'No']
-            ], @counsellor.counsellor_2_piano), {}, { class: "form-control", required: true } %>
-          </div>
+        <div style="margin-top: 16px; margin-bottom: 24px;">
+          <button type="button" id="add-counsellor-btn" class="btn btn-outline" style="width: 100%;">
+            + Add Another Counselor
+          </button>
         </div>
         
         <div class="form-actions">
-          <%= f.submit "Submit Registration", class: "btn btn-primary w-full" %>
+          <%= submit_tag "Submit Registration", class: "btn btn-primary w-full" %>
         </div>
       <% end %>
       
       <div style="margin-top: 24px; text-align: center;">
-        <p style="color: #6b7280; margin-bottom: 12px;">Need to register someone else?</p>
         <div>
-          <%= link_to "Register Attendee", new_attendee_path, class: "btn btn-outline w-full" %>
           <%= link_to "Back to Home", root_path, style: "color: #2563eb; display: block; margin-top: 8px;" %>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<%= render 'counsellor_fields_template' %>
+
+<script>
+  let counsellorIndex = <%= @counsellors.length %>;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-counsellor-btn');
+    const counsellorsContainer = document.getElementById('counsellors-container');
+    const template = document.getElementById('counsellor-fields-template');
+    
+    if (addButton && counsellorsContainer && template) {
+      addButton.addEventListener('click', function() {
+        // Get template HTML - try content first, then innerHTML as fallback
+        let templateHTML = '';
+        if (template.content) {
+          const tempDiv = document.createElement('div');
+          tempDiv.appendChild(template.content.cloneNode(true));
+          templateHTML = tempDiv.innerHTML;
+        } else {
+          templateHTML = template.innerHTML;
+        }
+        
+        // Replace all placeholders with the current index
+        let updatedHTML = templateHTML.replace(/\{INDEX\}/g, counsellorIndex);
+        updatedHTML = updatedHTML.replace(/\{TIMESTAMP\}/g, Date.now());
+        
+        counsellorsContainer.insertAdjacentHTML('beforeend', updatedHTML);
+        counsellorIndex++;
+        updateCounsellorNumbers();
+      });
+      
+      // Remove counselor handler (event delegation)
+      counsellorsContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-counsellor-btn')) {
+          e.preventDefault();
+          const counsellorCount = counsellorsContainer.querySelectorAll('.counsellor-form-group').length;
+          
+          if (counsellorCount > 1) {
+            e.target.closest('.counsellor-form-group').remove();
+            updateCounsellorNumbers();
+          } else {
+            alert('You must register at least one counselor.');
+          }
+        }
+      });
+      
+      // Handle squirts add/remove
+      counsellorsContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-squirt-btn')) {
+          e.preventDefault();
+          const counsellorGroup = e.target.closest('.counsellor-form-group');
+          const squirtsContainer = counsellorGroup.querySelector('.squirts-container');
+          const squirtTemplate = counsellorGroup.querySelector('.squirt-template');
+          
+          if (squirtsContainer && squirtTemplate) {
+            // Find the index of this counselor by looking at the name attribute of the first input
+            const firstInput = counsellorGroup.querySelector('input[name*="[first_name]"]');
+            let counsellorIndexForSquirt = 0;
+            if (firstInput) {
+              const nameMatch = firstInput.name.match(/counsellors\[(\d+)\]/);
+              if (nameMatch) {
+                counsellorIndexForSquirt = parseInt(nameMatch[1]);
+              }
+            }
+            
+            // Get template HTML - try content first, then innerHTML as fallback
+            let templateHTML = '';
+            if (squirtTemplate.content) {
+              const tempDiv = document.createElement('div');
+              tempDiv.appendChild(squirtTemplate.content.cloneNode(true));
+              templateHTML = tempDiv.innerHTML;
+            } else {
+              templateHTML = squirtTemplate.innerHTML;
+            }
+            
+            // Replace placeholders
+            let updatedHTML = templateHTML.replace(/\{INDEX\}/g, counsellorIndexForSquirt);
+            updatedHTML = updatedHTML.replace(/\{TIMESTAMP\}/g, Date.now());
+            
+            squirtsContainer.insertAdjacentHTML('beforeend', updatedHTML);
+          }
+        }
+        
+        if (e.target.classList.contains('remove-squirt-btn')) {
+          e.preventDefault();
+          e.target.closest('.squirt-form-group').remove();
+        }
+      });
+    }
+    
+    function updateCounsellorNumbers() {
+      const counsellorForms = counsellorsContainer.querySelectorAll('.counsellor-form-group');
+      counsellorForms.forEach((form, index) => {
+        const header = form.querySelector('h3');
+        if (header) {
+          header.textContent = `Counselor ${index + 1}'s Information:`;
+        }
+        
+        // Update all input/select names to use the correct index
+        form.querySelectorAll('input, select').forEach(function(input) {
+          const name = input.name;
+          if (name && name.includes('counsellors[')) {
+            const newName = name.replace(/counsellors\[\d+\]/, `counsellors[${index}]`);
+            input.name = newName;
+          }
+        });
+      });
+      
+      // Update pairing dropdowns
+      updatePairingDropdowns();
+    }
+    
+    function updatePairingDropdowns() {
+      const counsellorForms = counsellorsContainer.querySelectorAll('.counsellor-form-group');
+      
+      counsellorForms.forEach((form, currentIndex) => {
+        const pairingSelect = form.querySelector('.pairing-select');
+        if (!pairingSelect) return;
+        
+        // Store current selection
+        const currentSelection = Array.from(pairingSelect.selectedOptions).map(opt => opt.value);
+        
+        // Clear and repopulate options
+        pairingSelect.innerHTML = '';
+        
+        counsellorForms.forEach((otherForm, otherIndex) => {
+          if (currentIndex !== otherIndex) {
+            // Get the name from the other form
+            const firstNameInput = otherForm.querySelector('input[name*="[first_name]"]');
+            const lastNameInput = otherForm.querySelector('input[name*="[last_name]"]');
+            let displayName = `Counselor ${otherIndex + 1}`;
+            
+            if (firstNameInput && lastNameInput) {
+              const firstName = firstNameInput.value || '';
+              const lastName = lastNameInput.value || '';
+              if (firstName || lastName) {
+                displayName = `${firstName} ${lastName}`.trim() || displayName;
+              }
+            }
+            
+            const option = document.createElement('option');
+            option.value = otherIndex;
+            option.textContent = displayName;
+            if (currentSelection.includes(String(otherIndex))) {
+              option.selected = true;
+            }
+            pairingSelect.appendChild(option);
+          }
+        });
+      });
+    }
+    
+    // Update pairing dropdowns when names change
+    counsellorsContainer.addEventListener('input', function(e) {
+      if (e.target.name && (e.target.name.includes('[first_name]') || e.target.name.includes('[last_name]'))) {
+        updatePairingDropdowns();
+      }
+    });
+    
+    // Initial update
+    updateCounsellorNumbers();
+  });
+</script>
