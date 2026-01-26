@@ -1,0 +1,141 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Registration Confirmed!</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <!-- Success Message -->
+      <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-6 mb-6">
+        <div class="flex items-center mb-4">
+          <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="text-2xl font-bold">Thank You!</h3>
+        </div>
+        <p class="text-lg">
+          <% if flash[:counsellors_count] %>
+            Your registration for <%= pluralize(flash[:counsellors_count], 'counselor') %> has been successfully submitted!
+          <% else %>
+            Your counselor registration has been successfully submitted!
+          <% end %>
+        </p>
+        <p class="text-lg mt-2">
+          <strong>Please note:</strong> Submitting this form does not confirm you as a counselor. We will contact you if we could use your help.
+        </p>
+      </div>
+
+      <!-- Registration Summary -->
+      <div class="border-b border-gray-200 pb-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">Registration Summary</h3>
+        
+        <div class="space-y-4">
+          <!-- Counselor Information -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold mb-2 text-gray-700">Counselor Information</h4>
+            <div class="space-y-2">
+              <p class="text-gray-800">
+                <strong>Name:</strong> <%= @counsellor.first_name %> <%= @counsellor.last_name %>
+              </p>
+              <p class="text-gray-600">
+                <strong>Email:</strong> <%= @counsellor.email %>
+              </p>
+              <p class="text-gray-600">
+                <strong>Phone:</strong> <%= @counsellor.phone %>
+              </p>
+              <p class="text-gray-600">
+                <strong>Gender:</strong> <%= @counsellor.gender %>
+              </p>
+              <p class="text-gray-600">
+                <strong>Ecclesia:</strong> <%= @counsellor.ecclesia %>
+              </p>
+              <p class="text-gray-600">
+                <strong>T-Shirt Size:</strong> <%= @counsellor.tshirt_size %>
+              </p>
+              <p class="text-gray-600">
+                <strong>Plays Piano:</strong> <%= @counsellor.piano %>
+              </p>
+            </div>
+          </div>
+
+          <!-- Address Information -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold mb-2 text-gray-700">Address</h4>
+            <p class="text-gray-800">
+              <%= @counsellor.address_line_1 %><br>
+              <%= @counsellor.city %>, <%= @counsellor.state_province_region %> <%= @counsellor.postal_code %><br>
+              <%= @counsellor.country %>
+            </p>
+          </div>
+
+          <!-- Pairing Request -->
+          <% if @counsellor.requested_pairing_name.present? || @counsellor.requested_pairing_with.present? %>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h4 class="font-semibold mb-2 text-gray-700">Pairing Request</h4>
+              <% if @counsellor.requested_pairing_name.present? %>
+                <p class="text-gray-800">
+                  <strong>Requested pairing with:</strong> <%= @counsellor.requested_pairing_name %>
+                </p>
+              <% end %>
+              <% if @counsellor.requested_pairing_with.present? %>
+                <p class="text-gray-600 text-sm mt-1">
+                  <em>Note: Pairing requests with other counselors in your registration have been noted.</em>
+                </p>
+              <% end %>
+            </div>
+          <% end %>
+
+          <!-- Squirts (Children) -->
+          <% if @counsellor.squirts.present? %>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h4 class="font-semibold mb-3 text-gray-700">Registered Children (Squirts)</h4>
+              <div class="space-y-2">
+                <% @counsellor.squirts_array.each_with_index do |squirt, index| %>
+                  <div class="border-l-4 border-blue-500 pl-3">
+                    <p class="font-semibold text-gray-800">
+                      <%= index + 1 %>. <%= squirt[:name] %>
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      Gender: <%= squirt[:gender] %>, Age: <%= squirt[:age] %>
+                    </p>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Registration ID -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-gray-600 text-sm">
+              <strong>Registration ID:</strong> <span class="font-mono">#<%= @counsellor.id %></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="border-b border-gray-200 pb-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">What's Next?</h3>
+        <ul class="list-disc list-inside space-y-2 text-gray-700">
+          <li>We will review your registration and contact you if we could use your help as a counselor</li>
+          <li>You will be notified via email at <strong><%= @counsellor.email %></strong></li>
+          <li>If you have any questions, please contact Bro. James and Sis. Kristen Styles</li>
+          <li>For more information, please refer to <%= link_to "our counselor FAQs", counsellor_info_path, class: "text-blue-600 hover:text-blue-800 underline" %></li>
+        </ul>
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-blue-800">
+            <strong>Contact Information:</strong><br>
+            <a href="tel:805-433-3409" class="text-blue-600 hover:text-blue-800 underline">805-433-3409</a><br>
+            <a href="mailto:kidscampcalifornia@gmail.com" class="text-blue-600 hover:text-blue-800 underline">kidscampcalifornia@gmail.com</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <%= link_to "Back to Home", root_path, class: "btn btn-outline flex-1" %>
+        <%= link_to "View Counselor Information", counsellor_info_path, class: "btn btn-primary flex-1" %>
+      </div>
+    </div>
+  </div>
+</div>

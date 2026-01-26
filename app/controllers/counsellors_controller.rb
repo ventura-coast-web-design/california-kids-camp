@@ -6,15 +6,39 @@ class CounsellorsController < ApplicationController
     @counsellors = [ Counsellor.new ] # Start with one counselor form
   end
 
+  # GET /counsellors/:id
+  def show
+    @counsellor = Counsellor.find(params[:id])
+  end
+
   # POST /counsellors
   def create
-    counselors_data = params[:counsellors] || []
+    counselors_data = params[:counsellors]
+    return redirect_to new_counsellor_path, alert: "No counselor data submitted." unless counselors_data.present?
+    
+    # Convert ActionController::Parameters hash to array, sorted by numeric index
+    # When form submits counsellors[0][first_name], Rails creates a hash with string keys "0", "1", etc.
+    # Convert to hash first to ensure consistent access, then convert back to Parameters for each counselor
+    counselors_hash = counselors_data.to_unsafe_h
+    counselors_array = if counselors_hash.is_a?(Hash)
+                         # Get all keys, sort numerically, and map to their values
+                         keys = counselors_hash.keys.sort_by(&:to_i)
+                         keys.map { |key| ActionController::Parameters.new(counselors_hash[key]) }.compact
+                       else
+                         Array(counselors_data).compact
+                       end
+    
+    return redirect_to new_counsellor_path, alert: "No counselor data found." if counselors_array.empty?
+    
     created_counselors = []
     errors = []
 
     # Create all counselors
-    counselors_data.each_with_index do |counsellor_data, index|
-      counsellor = Counsellor.new(counsellor_params_for(counsellor_data))
+    counselors_array.each_with_index do |counsellor_data, index|
+      next unless counsellor_data.present?
+      
+      permitted_params = counsellor_params_for(counsellor_data)
+      counsellor = Counsellor.new(permitted_params)
 
       # Handle squirts (format: "name|gender|age,name|gender|age")
       if counsellor_data[:squirts].present? && counsellor_data[:squirts].is_a?(Hash)
@@ -45,10 +69,12 @@ class CounsellorsController < ApplicationController
     end
 
     if errors.empty? && created_counselors.any?
+      # Store count of registered counselors in flash for display on confirmation page
       flash[:notice] = "Registration submitted successfully! We'll be in touch soon."
-      redirect_to root_path
+      flash[:counsellors_count] = created_counselors.count if created_counselors.count > 1
+      redirect_to counsellor_path(created_counselors.first)
     else
-      @counsellors = counselors_data.map { |data| Counsellor.new(counsellor_params_for(data)) }
+      @counsellors = counselors_array.map { |data| Counsellor.new(counsellor_params_for(data)) }
       @counsellors = [ Counsellor.new ] if @counsellors.empty?
       flash.now[:alert] = errors.any? ? errors.join(", ") : "There was an error with your registration. Please check the form and try again."
       render :new, status: :unprocessable_entity
@@ -58,14 +84,31 @@ class CounsellorsController < ApplicationController
   private
 
   def counsellor_params_for(data)
-    data.permit(
-      :first_name, :last_name, :gender,
-      :address_line_1, :city,
-      :state_province_region, :postal_code,
-      :country, :phone, :email,
-      :ecclesia, :tshirt_size, :piano,
-      :requested_pairing_name,
-      requested_pairing_with: []
-    )
+    return {} unless data.present?
+    
+    # Handle both ActionController::Parameters and Hash
+    if data.respond_to?(:permit)
+      data.permit(
+        :first_name, :last_name, :gender,
+        :address_line_1, :city,
+        :state_province_region, :postal_code,
+        :country, :phone, :email,
+        :ecclesia, :tshirt_size, :piano,
+        :requested_pairing_name,
+        requested_pairing_with: []
+      )
+    elsif data.is_a?(Hash)
+      ActionController::Parameters.new(data).permit(
+        :first_name, :last_name, :gender,
+        :address_line_1, :city,
+        :state_province_region, :postal_code,
+        :country, :phone, :email,
+        :ecclesia, :tshirt_size, :piano,
+        :requested_pairing_name,
+        requested_pairing_with: []
+      )
+    else
+      {}
+    end
   end
 end

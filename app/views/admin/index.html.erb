@@ -187,55 +187,56 @@
               <tr>
                 <th>Registration Date</th>
                 <th>Name</th>
+                <th>Gender</th>
                 <th>Address</th>
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Ecclesia</th>
                 <th>T-Shirt Size</th>
                 <th>Piano</th>
+                <th>Pairing Request</th>
+                <th>Squirts</th>
               </tr>
             </thead>
             <tbody>
               <% @counsellors.each do |counsellor| %>
-                <!-- Counselor 1 Row -->
-                <tr style="background-color: #f9fafb;">
-                  <td rowspan="2" style="vertical-align: top; border-bottom: 2px solid #e5e7eb;">
+                <tr>
+                  <td>
                     <strong>
                       <%= link_to counsellor.created_at.strftime("%m/%d/%Y"), admin_counsellor_path(counsellor), style: "color: #2c5f2d; text-decoration: none;", onmouseover: "this.style.textDecoration='underline'", onmouseout: "this.style.textDecoration='none'" %>
                     </strong><br>
                     <small style="color: #6b7280;"><%= counsellor.created_at.strftime("%I:%M %p") %></small>
                   </td>
                   <td>
-                    <strong>Counselor 1:</strong><br>
-                    <%= counsellor.counsellor_1_first_name %> <%= counsellor.counsellor_1_last_name %>
+                    <strong><%= counsellor.first_name %> <%= counsellor.last_name %></strong>
+                  </td>
+                  <td><%= counsellor.gender %></td>
+                  <td>
+                    <%= counsellor.address_line_1 %><br>
+                    <%= counsellor.city %>, <%= counsellor.state_province_region %> <%= counsellor.postal_code %><br>
+                    <%= counsellor.country %>
+                  </td>
+                  <td><%= counsellor.phone %></td>
+                  <td><%= counsellor.email %></td>
+                  <td><%= counsellor.ecclesia %></td>
+                  <td><%= counsellor.tshirt_size %></td>
+                  <td><%= counsellor.piano %></td>
+                  <td>
+                    <% if counsellor.requested_pairing_name.present? %>
+                      <%= counsellor.requested_pairing_name %>
+                    <% elsif counsellor.requested_pairing_with.present? %>
+                      <small>See registration</small>
+                    <% else %>
+                      <em>None</em>
+                    <% end %>
                   </td>
                   <td>
-                    <%= counsellor.counsellor_1_address_line_1 %><br>
-                    <%= counsellor.counsellor_1_city %>, <%= counsellor.counsellor_1_state_province_region %> <%= counsellor.counsellor_1_postal_code %><br>
-                    <%= counsellor.counsellor_1_country %>
+                    <% if counsellor.squirts.present? %>
+                      <%= counsellor.squirts_display %>
+                    <% else %>
+                      <em>None</em>
+                    <% end %>
                   </td>
-                  <td><%= counsellor.counsellor_1_phone %></td>
-                  <td><%= counsellor.counsellor_1_email %></td>
-                  <td><%= counsellor.counsellor_1_ecclesia %></td>
-                  <td><%= counsellor.counsellor_1_tshirt_size %></td>
-                  <td><%= counsellor.counsellor_1_piano %></td>
-                </tr>
-                <!-- Counselor 2 Row -->
-                <tr style="background-color: #ffffff; border-bottom: 2px solid #e5e7eb;">
-                  <td>
-                    <strong>Counselor 2:</strong><br>
-                    <%= counsellor.counsellor_2_first_name %> <%= counsellor.counsellor_2_last_name %>
-                  </td>
-                  <td>
-                    <%= counsellor.counsellor_2_address_line_1 %><br>
-                    <%= counsellor.counsellor_2_city %>, <%= counsellor.counsellor_2_state_province_region %> <%= counsellor.counsellor_2_postal_code %><br>
-                    <%= counsellor.counsellor_2_country %>
-                  </td>
-                  <td><%= counsellor.counsellor_2_phone %></td>
-                  <td><%= counsellor.counsellor_2_email %></td>
-                  <td><%= counsellor.counsellor_2_ecclesia %></td>
-                  <td><%= counsellor.counsellor_2_tshirt_size %></td>
-                  <td><%= counsellor.counsellor_2_piano %></td>
                 </tr>
               <% end %>
             </tbody>

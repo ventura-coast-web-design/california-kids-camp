@@ -131,11 +131,10 @@ class AdminController < ApplicationController
       csv << [
         "Registration Date",
         "Registration Time",
-        "Counselor Number",
         "First Name",
         "Last Name",
+        "Gender",
         "Address Line 1",
-        "Address Line 2",
         "City",
         "State/Province/Region",
         "Postal Code",
@@ -144,49 +143,33 @@ class AdminController < ApplicationController
         "Email",
         "Ecclesia",
         "T-Shirt Size",
-        "Piano"
+        "Piano",
+        "Pairing Request Name",
+        "Requested Pairing With",
+        "Squirts"
       ]
 
-      # Data rows
+      # Data rows - each counsellor is a separate record
       @counsellors.each do |counsellor|
-        # Counselor 1
         csv << [
           counsellor.created_at.strftime("%m/%d/%Y"),
           counsellor.created_at.strftime("%I:%M %p"),
-          "1",
-          counsellor.counsellor_1_first_name,
-          counsellor.counsellor_1_last_name,
-          counsellor.counsellor_1_address_line_1,
-          "",
-          counsellor.counsellor_1_city,
-          counsellor.counsellor_1_state_province_region,
-          counsellor.counsellor_1_postal_code,
-          counsellor.counsellor_1_country,
-          counsellor.counsellor_1_phone,
-          counsellor.counsellor_1_email,
-          counsellor.counsellor_1_ecclesia,
-          counsellor.counsellor_1_tshirt_size,
-          counsellor.counsellor_1_piano
-        ]
-
-        # Counselor 2
-        csv << [
-          counsellor.created_at.strftime("%m/%d/%Y"),
-          counsellor.created_at.strftime("%I:%M %p"),
-          "2",
-          counsellor.counsellor_2_first_name,
-          counsellor.counsellor_2_last_name,
-          counsellor.counsellor_2_address_line_1,
-          "",
-          counsellor.counsellor_2_city,
-          counsellor.counsellor_2_state_province_region,
-          counsellor.counsellor_2_postal_code,
-          counsellor.counsellor_2_country,
-          counsellor.counsellor_2_phone,
-          counsellor.counsellor_2_email,
-          counsellor.counsellor_2_ecclesia,
-          counsellor.counsellor_2_tshirt_size,
-          counsellor.counsellor_2_piano
+          counsellor.first_name,
+          counsellor.last_name,
+          counsellor.gender,
+          counsellor.address_line_1,
+          counsellor.city,
+          counsellor.state_province_region,
+          counsellor.postal_code,
+          counsellor.country,
+          counsellor.phone,
+          counsellor.email,
+          counsellor.ecclesia,
+          counsellor.tshirt_size,
+          counsellor.piano,
+          counsellor.requested_pairing_name,
+          counsellor.requested_pairing_with,
+          counsellor.squirts
         ]
       end
     end

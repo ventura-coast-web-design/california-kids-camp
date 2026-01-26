@@ -38,8 +38,9 @@ Rails.application.routes.draw do
   get "attendees/register", to: "attendee_registrations#new", as: "new_attendee"
 
   # Counsellor registration (no login, data collection only)
-  resources :counsellors, only: [ :create ]
+  # Specific route must come before resources to avoid route conflict
   get "counsellors/register", to: "counsellors#new", as: "new_counsellor"
+  resources :counsellors, only: [ :create, :show ]
 
   # Admin routes (password protected)
   get "admin/login", to: "admin#login", as: "admin_login"

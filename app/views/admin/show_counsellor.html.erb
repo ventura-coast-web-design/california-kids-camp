@@ -17,11 +17,11 @@
     
     <div class="section-content">
       <div class="counsellor-cards-container">
-        <!-- Counsellor 1 Card -->
+        <!-- Counselor Card -->
         <div class="detail-card counsellor-card">
           <div class="detail-card-header">
             <h3 style="margin: 0; color: #2c5f2d;">
-              Counselor 1
+              Counselor Information
             </h3>
           </div>
           
@@ -33,12 +33,16 @@
                 <div class="detail-row">
                   <span class="detail-label">Name:</span>
                   <span class="detail-value">
-                    <%= @counsellor.counsellor_1_first_name %> <%= @counsellor.counsellor_1_last_name %>
+                    <%= @counsellor.first_name %> <%= @counsellor.last_name %>
                   </span>
                 </div>
                 <div class="detail-row">
+                  <span class="detail-label">Gender:</span>
+                  <span class="detail-value"><%= @counsellor.gender %></span>
+                </div>
+                <div class="detail-row">
                   <span class="detail-label">Ecclesia:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_1_ecclesia %></span>
+                  <span class="detail-value"><%= @counsellor.ecclesia %></span>
                 </div>
               </div>
 
@@ -47,18 +51,18 @@
                 <h4 class="detail-section-title">Contact Information</h4>
                 <div class="detail-row">
                   <span class="detail-label">Email:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_1_email %></span>
+                  <span class="detail-value"><%= @counsellor.email %></span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">Phone:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_1_phone %></span>
+                  <span class="detail-value"><%= @counsellor.phone %></span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">Address:</span>
                   <span class="detail-value">
-                    <%= @counsellor.counsellor_1_address_line_1 %><br>
-                    <%= @counsellor.counsellor_1_city %>, <%= @counsellor.counsellor_1_state_province_region %> <%= @counsellor.counsellor_1_postal_code %><br>
-                    <%= @counsellor.counsellor_1_country %>
+                    <%= @counsellor.address_line_1 %><br>
+                    <%= @counsellor.city %>, <%= @counsellor.state_province_region %> <%= @counsellor.postal_code %><br>
+                    <%= @counsellor.country %>
                   </span>
                 </div>
               </div>
@@ -68,75 +72,44 @@
                 <h4 class="detail-section-title">Camp Details</h4>
                 <div class="detail-row">
                   <span class="detail-label">T-Shirt Size:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_1_tshirt_size %></span>
+                  <span class="detail-value"><%= @counsellor.tshirt_size %></span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">Piano:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_1_piano %></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Counsellor 2 Card -->
-        <div class="detail-card counsellor-card">
-          <div class="detail-card-header">
-            <h3 style="margin: 0; color: #2c5f2d;">
-              Counselor 2
-            </h3>
-          </div>
-          
-          <div class="detail-card-body">
-            <div class="detail-grid">
-              <!-- Personal Information -->
-              <div class="detail-section">
-                <h4 class="detail-section-title">Personal Information</h4>
-                <div class="detail-row">
-                  <span class="detail-label">Name:</span>
-                  <span class="detail-value">
-                    <%= @counsellor.counsellor_2_first_name %> <%= @counsellor.counsellor_2_last_name %>
-                  </span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Ecclesia:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_2_ecclesia %></span>
+                  <span class="detail-value"><%= @counsellor.piano %></span>
                 </div>
               </div>
 
-              <!-- Contact Information -->
-              <div class="detail-section">
-                <h4 class="detail-section-title">Contact Information</h4>
-                <div class="detail-row">
-                  <span class="detail-label">Email:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_2_email %></span>
+              <!-- Pairing Information -->
+              <% if @counsellor.requested_pairing_name.present? || @counsellor.requested_pairing_with.present? %>
+                <div class="detail-section">
+                  <h4 class="detail-section-title">Pairing Request</h4>
+                  <% if @counsellor.requested_pairing_name.present? %>
+                    <div class="detail-row">
+                      <span class="detail-label">Requested Pairing With:</span>
+                      <span class="detail-value"><%= @counsellor.requested_pairing_name %></span>
+                    </div>
+                  <% end %>
+                  <% if @counsellor.requested_pairing_with.present? %>
+                    <div class="detail-row">
+                      <span class="detail-label">Pairing Indices:</span>
+                      <span class="detail-value"><%= @counsellor.requested_pairing_with %></span>
+                    </div>
+                  <% end %>
                 </div>
-                <div class="detail-row">
-                  <span class="detail-label">Phone:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_2_phone %></span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Address:</span>
-                  <span class="detail-value">
-                    <%= @counsellor.counsellor_2_address_line_1 %><br>
-                    <%= @counsellor.counsellor_2_city %>, <%= @counsellor.counsellor_2_state_province_region %> <%= @counsellor.counsellor_2_postal_code %><br>
-                    <%= @counsellor.counsellor_2_country %>
-                  </span>
-                </div>
-              </div>
+              <% end %>
 
-              <!-- Camp Details -->
-              <div class="detail-section">
-                <h4 class="detail-section-title">Camp Details</h4>
-                <div class="detail-row">
-                  <span class="detail-label">T-Shirt Size:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_2_tshirt_size %></span>
+              <!-- Squirts Information -->
+              <% if @counsellor.squirts.present? %>
+                <div class="detail-section">
+                  <h4 class="detail-section-title">Registered Children (Squirts)</h4>
+                  <div class="detail-row">
+                    <span class="detail-value">
+                      <%= @counsellor.squirts_display %>
+                    </span>
+                  </div>
                 </div>
-                <div class="detail-row">
-                  <span class="detail-label">Piano:</span>
-                  <span class="detail-value"><%= @counsellor.counsellor_2_piano %></span>
-                </div>
-              </div>
+              <% end %>
             </div>
           </div>
         </div>
