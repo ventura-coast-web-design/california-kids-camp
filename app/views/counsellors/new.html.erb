@@ -82,6 +82,10 @@
         counsellorsContainer.insertAdjacentHTML('beforeend', updatedHTML);
         counsellorIndex++;
         updateCounsellorNumbers();
+        // Setup same address checkboxes for the new form
+        setTimeout(function() {
+          setupSameAddressCheckboxes();
+        }, 50);
       });
       
       // Remove counselor handler (event delegation)
@@ -211,6 +215,111 @@
         updatePairingDropdowns();
       }
     });
+    
+    // Handle "Same address as previous counselor" checkbox
+    function setupSameAddressCheckboxes() {
+      const checkboxes = document.querySelectorAll('.same-address-checkbox:not([data-listener-attached])');
+      checkboxes.forEach(function(checkbox) {
+        checkbox.setAttribute('data-listener-attached', 'true');
+        
+        checkbox.addEventListener('change', function() {
+          const currentGroup = this.closest('.counsellor-form-group');
+          const addressFields = currentGroup.querySelectorAll('.address-field');
+          
+          if (this.checked) {
+            // Find the previous counselor form
+            const allGroups = Array.from(document.querySelectorAll('.counsellor-form-group'));
+            const currentGroupIndex = allGroups.indexOf(currentGroup);
+            
+            if (currentGroupIndex > 0) {
+              const previousGroup = allGroups[currentGroupIndex - 1];
+              const previousAddressFields = previousGroup.querySelectorAll('.address-field');
+              
+              // Copy values from previous counselor
+              addressFields.forEach(function(field, index) {
+                const previousField = previousAddressFields[index];
+                if (previousField) {
+                  field.value = previousField.value;
+                  
+                  // Use readonly for text inputs, prevent changes for selects
+                  if (field.tagName === 'SELECT') {
+                    field.style.backgroundColor = '#f3f4f6';
+                    field.style.cursor = 'not-allowed';
+                    // Store locked value
+                    const lockedValue = previousField.value;
+                    field.setAttribute('data-locked-value', lockedValue);
+                    // Prevent changes by reverting on change event
+                    const preventChange = function(e) {
+                      if (field.value !== lockedValue) {
+                        field.value = lockedValue;
+                      }
+                    };
+                    field.addEventListener('change', preventChange);
+                    field.addEventListener('focus', function() {
+                      this.blur();
+                    });
+                  } else {
+                    field.readOnly = true;
+                    field.style.backgroundColor = '#f3f4f6';
+                    field.style.cursor = 'not-allowed';
+                  }
+                }
+              });
+              
+              // Listen for changes in previous counselor's address fields
+              previousAddressFields.forEach(function(prevField, prevIndex) {
+                const updateListener = function() {
+                  if (checkbox.checked) {
+                    const currentField = addressFields[prevIndex];
+                    if (currentField) {
+                      currentField.value = prevField.value;
+                      if (currentField.tagName === 'SELECT') {
+                        currentField.setAttribute('data-locked-value', prevField.value);
+                      }
+                    }
+                  }
+                };
+                
+                // Add listener based on field type
+                if (prevField.tagName === 'SELECT') {
+                  prevField.addEventListener('change', updateListener);
+                } else {
+                  prevField.addEventListener('input', updateListener);
+                }
+              });
+            }
+          } else {
+            // Uncheck: enable fields and clear them
+            addressFields.forEach(function(field) {
+              if (field.tagName === 'SELECT') {
+                // Clone to remove all event listeners
+                const newSelect = field.cloneNode(true);
+                field.parentNode.replaceChild(newSelect, field);
+                newSelect.style.backgroundColor = '';
+                newSelect.style.cursor = '';
+                newSelect.removeAttribute('data-locked-value');
+                const defaultOption = newSelect.querySelector('option[value="United States of America"]');
+                if (defaultOption) {
+                  newSelect.value = 'United States of America';
+                } else {
+                  newSelect.value = '';
+                }
+              } else {
+                field.readOnly = false;
+                field.style.backgroundColor = '';
+                field.style.cursor = '';
+                field.value = '';
+              }
+            });
+          }
+        });
+      });
+    }
+    
+    // Setup checkboxes on page load
+    setupSameAddressCheckboxes();
+    
+    // Re-setup checkboxes when a new counselor is added (handled in the add button click handler)
     
     // Initial update
     updateCounsellorNumbers();

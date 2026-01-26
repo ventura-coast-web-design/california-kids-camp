@@ -25,19 +25,27 @@
 
   <div class="form-group" style="margin-bottom: 12px;">
     <label class="form-label">Address</label>
-    <input type="text" name="counsellors[<%= index %>][address_line_1]" class="form-control" placeholder="Address Line 1" required style="margin-bottom: 12px;" value="<%= counsellor.address_line_1 %>">
+    <% if index > 0 %>
+      <div style="margin-bottom: 8px;">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+          <input type="checkbox" class="same-address-checkbox" data-counsellor-index="<%= index %>" style="margin-right: 8px; cursor: pointer;">
+          <span style="font-size: 14px; color: #6b7280;">Same address as previous counselor</span>
+        </label>
+      </div>
+    <% end %>
+    <input type="text" name="counsellors[<%= index %>][address_line_1]" class="form-control address-field" placeholder="Address Line 1" required style="margin-bottom: 12px;" value="<%= counsellor.address_line_1 %>" data-field="address_line_1">
     <div class="form-grid form-grid-4">
       <div class="form-group">
-        <input type="text" name="counsellors[<%= index %>][city]" class="form-control" placeholder="City" required value="<%= counsellor.city %>">
+        <input type="text" name="counsellors[<%= index %>][city]" class="form-control address-field" placeholder="City" required value="<%= counsellor.city %>" data-field="city">
       </div>
       <div class="form-group">
-        <input type="text" name="counsellors[<%= index %>][state_province_region]" class="form-control" placeholder="State / Province / Region" required value="<%= counsellor.state_province_region %>">
+        <input type="text" name="counsellors[<%= index %>][state_province_region]" class="form-control address-field" placeholder="State / Province / Region" required value="<%= counsellor.state_province_region %>" data-field="state_province_region">
       </div>
       <div class="form-group">
-        <input type="text" name="counsellors[<%= index %>][postal_code]" class="form-control" placeholder="Postal Code" required pattern="[\d\w\s\-]+" title="Please enter a valid postal code" value="<%= counsellor.postal_code %>">
+        <input type="text" name="counsellors[<%= index %>][postal_code]" class="form-control address-field" placeholder="Postal Code" required pattern="[\d\w\s\-]+" title="Please enter a valid postal code" value="<%= counsellor.postal_code %>" data-field="postal_code">
       </div>
       <div class="form-group">
-        <select name="counsellors[<%= index %>][country]" class="form-control" required>
+        <select name="counsellors[<%= index %>][country]" class="form-control address-field" required data-field="country">
           <% countries = [
             ['United States of America', 'United States of America'],
             ['Canada', 'Canada'],
