@@ -76,8 +76,8 @@
   // Initialize Stripe
   const stripe = Stripe('<%= @stripe_publishable_key %>');
   
-  // Get registration ID
-  const registrationId = <%= @attendee_registration.id %>;
+  // Get registration ID (temporary UUID string for new registrations, or database ID for existing)
+  const registrationId = '<%= @temp_registration_id || params[:id] %>';
   const fullAmount = <%= @amount %>;
   const depositAmount = <%= @deposit_amount %>;
   
