@@ -4,8 +4,9 @@ class Attendee < ApplicationRecord
 
   # Validations
   validates :first_name, :last_name, :date_of_birth, presence: true
-  validates :age, numericality: { greater_than: 0, less_than: 100 }, allow_nil: true
+  validates :age, numericality: { greater_than_or_equal_to: 9, less_than_or_equal_to: 17 }, allow_nil: true
   validate :date_of_birth_must_be_in_past
+  validate :age_must_be_between_9_and_17
   validates :phone, presence: true, format: { with: /\A[\d\s\-\(\)\+\.]+\z/, message: "must be a valid phone number" }
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :ecclesia, presence: true
@@ -19,6 +20,9 @@ class Attendee < ApplicationRecord
   before_validation :calculate_age_from_dob
   # Copy guardian 1 address if attendee address is blank (checkbox was checked)
   before_validation :copy_guardian_1_address_if_blank
+
+  # Camp date: June 21, 2026
+  CAMP_START_DATE = Date.new(2026, 6, 21)
 
   private
 
@@ -42,11 +46,32 @@ class Attendee < ApplicationRecord
     end
   end
 
+  def age_must_be_between_9_and_17
+    return unless date_of_birth.present?
+
+    camp_age = calculate_age_on_date(CAMP_START_DATE)
+    return unless camp_age.present?
+
+    if camp_age < 9
+      errors.add(:date_of_birth, "attendee must be at least 9 years old on June 21, 2026")
+    elsif camp_age > 17
+      errors.add(:date_of_birth, "attendee must be 17 years old or younger on June 21, 2026")
+    end
+  end
+
   def calculate_age_from_dob
     return unless date_of_birth.present?
 
     now = Time.current.to_date
     self.age = now.year - date_of_birth.year
     self.age -= 1 if now < date_of_birth + age.years
+  end
+
+  def calculate_age_on_date(target_date)
+    return nil unless date_of_birth.present?
+
+    age = target_date.year - date_of_birth.year
+    age -= 1 if target_date < date_of_birth + age.years
+    age
   end
 end

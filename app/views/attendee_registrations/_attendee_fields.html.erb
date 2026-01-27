@@ -22,7 +22,22 @@
 
     <div class="form-group">
       <%= f.label :date_of_birth, "Date of Birth", class: "form-label" %>
-      <%= f.date_field :date_of_birth, class: "form-control", required: true, max: Date.today.to_s, title: "Date of birth must be in the past" %>
+      <% 
+        # Camp date: June 21, 2026
+        # Calculate date range for ages 9-17 on camp start date
+        # Must be at least 9 years old on June 21, 2026: born on or before June 21, 2017
+        # Must be no older than 17 on June 21, 2026: born on or after June 22, 2008
+        camp_start_date = Date.new(2026, 6, 21)
+        max_date = Date.new(2017, 6, 21)  # To be at least 9 years old
+        min_date = Date.new(2008, 6, 22)  # To be at most 17 years old
+      %>
+      <%= f.date_field :date_of_birth, class: "form-control", required: true, 
+          min: min_date.to_s, 
+          max: max_date.to_s, 
+          title: "Date of birth must result in an age between 9 and 17 years old on June 21, 2026" %>
+      <small style="color: #6b7280; font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+        Attendees must be between 9 and 17 years old on June 21, 2026 (camp start date)
+      </small>
     </div>
 
     <div class="form-group">
