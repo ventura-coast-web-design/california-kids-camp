@@ -1,0 +1,112 @@
+// Workbooks page styles
+@use "sass:color";
+@use "variables" as *;
+@use "mixins" as *;
+
+.workbooks-page {
+  .info-section {
+    padding: $spacing-2xl 0;
+    background-color: $background-light;
+    
+    @include mobile {
+      padding: $spacing-xl 0;
+    }
+  }
+  
+  .page-title {
+    text-align: center;
+    font-size: $font-size-h1;
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+    
+    @include mobile {
+      font-size: $font-size-h2;
+    }
+  }
+  
+  .intro-text {
+    text-align: center;
+    font-size: $font-size-large;
+    color: $text-dark;
+    line-height: 1.8;
+    margin-bottom: $spacing-xl;
+    
+    @include mobile {
+      font-size: $font-size-base;
+      margin-bottom: $spacing-lg;
+    }
+  }
+  
+  .workbooks-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .workbook-card {
+    @include card;
+    background-color: $background-white;
+    padding: $spacing-lg;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    @include mobile {
+      padding: $spacing-md;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .workbook-title {
+    color: $primary-color;
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-md;
+    font-weight: $font-weight-semibold;
+    
+    @include mobile {
+      font-size: $font-size-h4;
+    }
+  }
+  
+  .workbook-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    
+    @include mobile {
+      flex-direction: column;
+      gap: $spacing-sm;
+    }
+  }
+  
+  .workbook-link {
+    display: inline-block;
+    padding: $spacing-sm $spacing-md;
+    background-color: $primary-color;
+    color: $background-white;
+    text-decoration: none;
+    border-radius: $border-radius-sm;
+    font-weight: $font-weight-medium;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    font-size: $font-size-base;
+    
+    @include mobile {
+      text-align: center;
+      padding: $spacing-sm $spacing-lg;
+    }
+    
+    &:hover {
+      background-color: $primary-dark;
+      transform: translateY(-1px);
+      color: $background-white;
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}

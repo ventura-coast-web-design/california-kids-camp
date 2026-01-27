@@ -1,0 +1,50 @@
+<div class="workbooks-page">
+  <section class="info-section">
+    <div class="container">
+      <h1 class="page-title">Historical Workbooks</h1>
+      <p class="intro-text">Access workbooks from previous years of California Christadelphian Kids Camp.</p>
+
+      <div class="workbooks-list">
+        <% workbooks_data = [
+          { year: 2025, topic: "The Last Year of Christ's Ministry" },
+          { year: 2024, topic: "Early Life and Ministry of Christ" },
+          { year: 2023, topic: "Daniel" },
+          { year: 2022, topic: "Josiah" },
+          { year: 2019, topic: "Parables of Christ" },
+          { year: 2018, topic: "Joshua" },
+          { year: 2017, topic: "Nehemiah" },
+          { year: 2016, topic: "Moses/Philippians" },
+          { year: 2015, topic: "David" },
+          { year: 2014, topic: "Revelation" },
+          { year: 2013, topic: "Moses" },
+          { year: 2012, topic: "Elisha" },
+          { year: 2011, topic: "Elijah" },
+          { year: 2010, topic: "Paul" },
+          { year: 2009, topic: "Esther" },
+          { year: 2008, topic: "Abraham" },
+          { year: 2007, topic: "Judges" }
+        ] %>
+
+        <% workbooks_data.each do |workbook| %>
+          <div class="workbook-card">
+            <h2 class="workbook-title">
+              <%= workbook[:topic] %> (<%= workbook[:year] %>)
+            </h2>
+            <div class="workbook-links">
+              <% workbook_types = [
+                { name: "Teen Workbook", filename: "TeenWorkbook" },
+                { name: "Intermediate Workbook", filename: "IntermediateWorkbook" },
+                { name: "Junior Workbook", filename: "JuniorWorkbook" }
+              ] %>
+              
+              <% workbook_types.each do |type| %>
+                <% file_path = "/files/workbook/#{workbook[:year]}/#{type[:filename]}.pdf" %>
+                <%= link_to type[:name], file_path, class: "workbook-link", target: "_blank", rel: "noopener noreferrer" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</div>

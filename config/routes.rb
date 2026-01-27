@@ -64,6 +64,7 @@ Rails.application.routes.draw do
   get "attendee_info", to: "home#attendee_info", as: "attendee_info"
   get "counsellor_info", to: "home#counsellor_info", as: "counsellor_info"
   get "rules", to: "home#rules", as: "rules"
+  get "workbooks", to: "home#workbooks", as: "workbooks"
 
   # Defines the root path route ("/")
   root "home#index"

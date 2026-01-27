@@ -10,5 +10,8 @@ class HomeController < ApplicationController
 
   def rules
   end
+
+  def workbooks
+  end
 end
 
