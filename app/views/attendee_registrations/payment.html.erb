@@ -58,7 +58,7 @@
           <div class="form-actions">
             <button type="submit" id="submit-button" class="btn btn-primary w-full">
               <span id="button-text">Pay $<span id="payment-amount"><%= sprintf('%.2f', @deposit_amount) %></span></span>
-              <span id="spinner" class="hidden">Processing...</span>
+              <span id="spinner" style="display: none;">Processing...</span>
             </button>
           </div>
         </form>
@@ -225,8 +225,8 @@
           const newClientSecret = await createPaymentIntent(selectedPaymentType);
           if (!newClientSecret) {
             submitButton.disabled = false;
-            buttonText.classList.remove('hidden');
-            spinner.classList.add('hidden');
+            buttonText.style.display = 'inline';
+            spinner.style.display = 'none';
             return;
           }
           currentClientSecret = newClientSecret;
@@ -235,8 +235,8 @@
         
         // Disable button and show spinner
         submitButton.disabled = true;
-        buttonText.classList.add('hidden');
-        spinner.classList.remove('hidden');
+        buttonText.style.display = 'none';
+        spinner.style.display = 'inline';
         
         // Confirm payment with Stripe
         const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
@@ -253,8 +253,8 @@
           // Show error to customer
           document.getElementById('card-errors').textContent = error.message;
           submitButton.disabled = false;
-          buttonText.classList.remove('hidden');
-          spinner.classList.add('hidden');
+          buttonText.style.display = 'inline';
+          spinner.style.display = 'none';
         } else {
           // Payment succeeded
           if (paymentIntent.status === 'succeeded') {
