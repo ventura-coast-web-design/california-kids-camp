@@ -20,9 +20,9 @@ class CounsellorsController < ApplicationController
     # When form submits counsellors[0][first_name], Rails creates a hash with string keys "0", "1", etc.
     # Convert to hash first to ensure consistent access, then convert back to Parameters for each counselor
     counselors_hash = counselors_data.to_unsafe_h
+    keys = counselors_hash.is_a?(Hash) ? counselors_hash.keys.sort_by(&:to_i) : []
     counselors_array = if counselors_hash.is_a?(Hash)
                          # Get all keys, sort numerically, and map to their values
-                         keys = counselors_hash.keys.sort_by(&:to_i)
                          keys.map { |key| ActionController::Parameters.new(counselors_hash[key]) }.compact
                        else
                          Array(counselors_data).compact
@@ -37,21 +37,38 @@ class CounsellorsController < ApplicationController
     counselors_array.each_with_index do |counsellor_data, index|
       next unless counsellor_data.present?
       
+      # Extract squirts data from original hash before wrapping in Parameters
+      # This ensures we can access nested hash data properly
+      original_key = keys[index]
+      original_counsellor_hash = counselors_hash[original_key] if original_key
+      squirts_data = if original_counsellor_hash.is_a?(Hash)
+                       original_counsellor_hash["squirts"] || original_counsellor_hash[:squirts]
+                     elsif original_counsellor_hash.is_a?(ActionController::Parameters)
+                       original_counsellor_hash[:squirts] || original_counsellor_hash["squirts"]
+                     end
+      
       permitted_params = counsellor_params_for(counsellor_data)
       counsellor = Counsellor.new(permitted_params)
 
       # Handle squirts (format: "name|gender|age,name|gender|age")
-      if counsellor_data[:squirts].present? && counsellor_data[:squirts].is_a?(Hash)
-        squirts_array = []
-        counsellor_data[:squirts].each do |_key, squirt|
-          next unless squirt.is_a?(Hash)
-          next if squirt[:name].blank? || squirt[:name].to_s.strip.empty?
-          name = squirt[:name].to_s.strip
-          gender = squirt[:gender].to_s.strip
-          age = squirt[:age].to_s.strip
-          squirts_array << "#{name}|#{gender}|#{age}" if name.present?
+      if squirts_data.present?
+        # Convert to hash if it's ActionController::Parameters
+        squirts_hash = squirts_data.is_a?(ActionController::Parameters) ? squirts_data.to_unsafe_h : squirts_data
+        if squirts_hash.is_a?(Hash) && squirts_hash.any?
+          squirts_array = []
+          squirts_hash.each do |_key, squirt|
+            next unless squirt.is_a?(Hash) || squirt.is_a?(ActionController::Parameters)
+            # Convert to hash if needed
+            squirt_hash = squirt.is_a?(ActionController::Parameters) ? squirt.to_unsafe_h : squirt
+            # Handle both symbol and string keys
+            name = (squirt_hash[:name] || squirt_hash["name"]).to_s.strip
+            next if name.blank?
+            gender = (squirt_hash[:gender] || squirt_hash["gender"]).to_s.strip
+            age = (squirt_hash[:age] || squirt_hash["age"]).to_s.strip
+            squirts_array << "#{name}|#{gender}|#{age}" if name.present?
+          end
+          counsellor.squirts = squirts_array.join(",") if squirts_array.any?
         end
-        counsellor.squirts = squirts_array.join(",") if squirts_array.any?
       end
 
       # Handle pairing requests
