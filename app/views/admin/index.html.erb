@@ -223,9 +223,11 @@
                   <td><%= counsellor.piano %></td>
                   <td>
                     <% if counsellor.requested_pairing_name.present? %>
-                      <%= counsellor.requested_pairing_name %>
-                    <% elsif counsellor.requested_pairing_with.present? %>
-                      <small>See registration</small>
+                      <% if counsellor.requested_pairing_with.present? %>
+                        Registered together: <strong><%= counsellor.requested_pairing_name %></strong>
+                      <% else %>
+                        Requested: <strong><%= counsellor.requested_pairing_name %></strong>
+                      <% end %>
                     <% else %>
                       <em>None</em>
                     <% end %>

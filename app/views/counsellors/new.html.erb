@@ -20,7 +20,7 @@
   
   <div class="section-content">
     <div class="form-container">
-      <%= form_with(url: counsellors_path, data: {turbo: false}) do |f| %>
+      <%= form_with(url: counsellors_path, data: {turbo: false}, id: "counsellor-registration-form") do |f| %>
         <% if flash[:alert] %>
           <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
             <p style="margin: 0;"><%= flash[:alert] %></p>
@@ -44,6 +44,7 @@
         </div>
       <% end %>
       
+      
       <div style="margin-top: 24px; text-align: center;">
         <div>
           <%= link_to "Back to Home", root_path, style: "color: #2563eb; display: block; margin-top: 8px;" %>
@@ -56,9 +57,11 @@
 <%= render 'counsellor_fields_template' %>
 
 <script>
-  let counsellorIndex = <%= @counsellors.length %>;
+  (function() {
+    'use strict';
   
-  document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+    var counsellorIndex = <%= @counsellors.length %>;
     const addButton = document.getElementById('add-counsellor-btn');
     const counsellorsContainer = document.getElementById('counsellors-container');
     const template = document.getElementById('counsellor-fields-template');
@@ -177,10 +180,10 @@
         if (!pairingSelect) return;
         
         // Store current selection
-        const currentSelection = Array.from(pairingSelect.selectedOptions).map(opt => opt.value);
+        const currentSelection = pairingSelect.value;
         
         // Clear and repopulate options
-        pairingSelect.innerHTML = '';
+        pairingSelect.innerHTML = '<option value="">Choose a counselor...</option>';
         
         counsellorForms.forEach((otherForm, otherIndex) => {
           if (currentIndex !== otherIndex) {
@@ -188,26 +191,59 @@
             const firstNameInput = otherForm.querySelector('input[name*="[first_name]"]');
             const lastNameInput = otherForm.querySelector('input[name*="[last_name]"]');
             let displayName = `Counselor ${otherIndex + 1}`;
+            let fullName = '';
             
             if (firstNameInput && lastNameInput) {
               const firstName = firstNameInput.value || '';
               const lastName = lastNameInput.value || '';
               if (firstName || lastName) {
-                displayName = `${firstName} ${lastName}`.trim() || displayName;
+                fullName = `${firstName} ${lastName}`.trim();
+                displayName = fullName || displayName;
               }
             }
             
             const option = document.createElement('option');
-            option.value = otherIndex;
+            option.value = fullName || `Counselor ${otherIndex + 1}`;
             option.textContent = displayName;
-            if (currentSelection.includes(String(otherIndex))) {
+            option.dataset.index = otherIndex;
+            if (currentSelection === option.value) {
               option.selected = true;
             }
             pairingSelect.appendChild(option);
           }
         });
+        
+        // Restore selection if it matches
+        if (currentSelection) {
+          pairingSelect.value = currentSelection;
+        }
       });
     }
+    
+    // Handle pairing select change - clear name input when select is used
+    counsellorsContainer.addEventListener('change', function(e) {
+      if (e.target.classList.contains('pairing-select')) {
+        const form = e.target.closest('.counsellor-form-group');
+        const nameInput = form.querySelector('.pairing-name-input');
+        
+        if (e.target.value) {
+          // When a counselor is selected, clear the manual name input
+          nameInput.value = '';
+        }
+      }
+    });
+    
+    // Clear pairing select when name input is filled manually
+    counsellorsContainer.addEventListener('input', function(e) {
+      if (e.target.classList.contains('pairing-name-input') && e.target.value.trim()) {
+        const form = e.target.closest('.counsellor-form-group');
+        const pairingSelect = form.querySelector('.pairing-select');
+        if (pairingSelect) {
+          pairingSelect.value = '';
+        }
+      }
+    });
+    
     
     // Update pairing dropdowns when names change
     counsellorsContainer.addEventListener('input', function(e) {
@@ -323,5 +359,6 @@
     
     // Initial update
     updateCounsellorNumbers();
-  });
+    });
+  })();
 </script>

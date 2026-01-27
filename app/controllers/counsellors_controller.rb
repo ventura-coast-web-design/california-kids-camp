@@ -55,10 +55,16 @@ class CounsellorsController < ApplicationController
       end
 
       # Handle pairing requests
-      # Store requested_pairing_with as comma-separated indices
+      # If requested_pairing_with is present, it came from the dropdown (registered together)
+      # If only requested_pairing_name is present, it was manually typed (requested)
       if counsellor_data[:requested_pairing_with].present?
-        indices = Array(counsellor_data[:requested_pairing_with]).reject(&:blank?).map(&:to_i)
-        counsellor.requested_pairing_with = indices.join(",") if indices.any?
+        # Came from dropdown - save name and keep requested_pairing_with as flag
+        counsellor.requested_pairing_name = counsellor_data[:requested_pairing_with].to_s.strip
+        counsellor.requested_pairing_with = counsellor_data[:requested_pairing_with].to_s.strip # Keep as flag
+      elsif counsellor_data[:requested_pairing_name].present?
+        # Manually typed - save name and clear requested_pairing_with
+        counsellor.requested_pairing_name = counsellor_data[:requested_pairing_name].to_s.strip
+        counsellor.requested_pairing_with = nil
       end
 
       if counsellor.save
@@ -95,7 +101,7 @@ class CounsellorsController < ApplicationController
         :country, :phone, :email,
         :ecclesia, :tshirt_size, :piano,
         :requested_pairing_name,
-        requested_pairing_with: []
+        :requested_pairing_with
       )
     elsif data.is_a?(Hash)
       ActionController::Parameters.new(data).permit(
@@ -105,7 +111,7 @@ class CounsellorsController < ApplicationController
         :country, :phone, :email,
         :ecclesia, :tshirt_size, :piano,
         :requested_pairing_name,
-        requested_pairing_with: []
+        :requested_pairing_with
       )
     else
       {}
