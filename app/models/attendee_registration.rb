@@ -27,18 +27,26 @@ class AttendeeRegistration < ApplicationRecord
   # Validate at least one attendee
   validate :must_have_at_least_one_attendee
 
-  # Payment calculation based on number of children
-  # 1 child: $275, 2 children: $550, 3+ children: $650 (family max)
+  # Set pricing type before validation if not already set
+  before_validation :set_pricing_type_if_blank, on: :create
+
+  # Early bird pricing ends April 1st
+  EARLY_BIRD_END_DATE = Date.new(2026, 4, 1)
+
+  # Payment calculation based on number of children and pricing type
+  # Regular pricing: 1 child: $275, 2 children: $550, 3+ children: $650 (family max)
+  # Early bird pricing: 1 child: $225, 2 children: $450, 3+ children: $500 (family max)
   def calculate_total_amount
     child_count = attendees.reject(&:marked_for_destruction?).count
+    is_early_bird = pricing_type == 'early_bird'
     
     case child_count
     when 1
-      275.00
+      is_early_bird ? 225.00 : 275.00
     when 2
-      550.00
+      is_early_bird ? 450.00 : 550.00
     else
-      650.00 # Family max for 3 or more
+      is_early_bird ? 500.00 : 650.00 # Family max for 3 or more
     end
   end
 
@@ -90,7 +98,24 @@ class AttendeeRegistration < ApplicationRecord
     calculate_total_amount - amount_paid.to_f
   end
 
+  def early_bird_eligible?
+    Date.current < EARLY_BIRD_END_DATE
+  end
+
+  def pricing_type_display
+    case pricing_type
+    when 'early_bird'
+      'Early Bird'
+    else
+      'Regular'
+    end
+  end
+
   private
+
+  def set_pricing_type_if_blank
+    self.pricing_type = early_bird_eligible? ? 'early_bird' : 'regular' if pricing_type.blank?
+  end
 
   def must_have_at_least_one_attendee
     if attendees.empty? || attendees.all?(&:marked_for_destruction?)

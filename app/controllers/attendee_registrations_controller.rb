@@ -35,6 +35,10 @@ class AttendeeRegistrationsController < ApplicationController
       temp_id = SecureRandom.uuid
       registration_params_hash = attendee_registration_params.to_unsafe_h
 
+      # Set pricing_type before storing in session
+      pricing_type = @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
+      registration_params_hash["pricing_type"] = pricing_type
+
       session[:pending_registration] = {
         "id" => temp_id,
         "data" => registration_params_hash,
@@ -71,6 +75,8 @@ class AttendeeRegistrationsController < ApplicationController
       # Load registration from session - handle both symbol and string keys
       reg_data = registration_data[:data] || registration_data["data"]
       @attendee_registration = AttendeeRegistration.new(reg_data.with_indifferent_access)
+      # Set pricing_type if not already set (will be set by before_validation callback, but ensure it's set for calculations)
+      @attendee_registration.pricing_type ||= @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
       @temp_registration_id = temp_id
     else
       # Not a UUID, try to find existing registration (backward compatibility)
@@ -116,6 +122,8 @@ class AttendeeRegistrationsController < ApplicationController
       if reg_id == temp_id
         reg_data = registration_data[:data] || registration_data["data"]
         @attendee_registration = AttendeeRegistration.new(reg_data.with_indifferent_access)
+        # Set pricing_type if not already set
+        @attendee_registration.pricing_type ||= @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
       else
         render json: { error: "Registration session expired. Please start over." }, status: :unprocessable_entity
         return
@@ -254,6 +262,8 @@ class AttendeeRegistrationsController < ApplicationController
           @attendee_registration.stripe_payment_intent_id = payment_intent_id
           @attendee_registration.amount_paid = payment_intent.amount / 100.0
           @attendee_registration.payment_type = payment_type
+          # Set pricing_type if not already set (will be set by before_validation callback, but ensure it's preserved)
+          @attendee_registration.pricing_type ||= @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
 
           if @attendee_registration.save
             # Clear session data

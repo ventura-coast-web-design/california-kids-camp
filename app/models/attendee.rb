@@ -25,7 +25,7 @@ class Attendee < ApplicationRecord
   def copy_guardian_1_address_if_blank
     # If address_line_1 is blank, copy from guardian 1
     return unless address_line_1.blank? && attendee_registration.present?
-    
+
     registration = attendee_registration
     self.address_line_1 = registration.guardian_1_address_line_1
     self.address_line_2 = registration.guardian_1_address_line_2

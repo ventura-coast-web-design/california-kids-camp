@@ -13,6 +13,13 @@
             <span class="text-gray-700">Number of children:</span>
             <span class="font-semibold"><%= @child_count %></span>
           </div>
+          <% if @attendee_registration.pricing_type == 'early_bird' %>
+            <div class="mb-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                Early Bird Pricing
+              </span>
+            </div>
+          <% end %>
           <div class="flex justify-between items-center text-lg font-semibold pt-2 border-t border-gray-200">
             <span>Total Amount:</span>
             <span class="text-blue-600">$<%= sprintf('%.2f', @amount) %></span>
