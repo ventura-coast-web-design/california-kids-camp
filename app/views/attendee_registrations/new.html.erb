@@ -337,17 +337,17 @@
               <div class="form-grid form-grid-3">
                 <div class="form-group">
                   <label class="form-label">Phone Number</label>
-                  <input type="tel" name="attendee_registration[attendees_attributes][${newId}][phone]" class="form-control" pattern="[\\d\\s\\-\\(\\)\\+\\.]+" title="Please enter a valid phone number" />
+                  <input type="tel" name="attendee_registration[attendees_attributes][${newId}][phone]" class="form-control" required pattern="[\\d\\s\\-\\(\\)\\+\\.]+" title="Please enter a valid phone number" />
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Email</label>
-                  <input type="email" name="attendee_registration[attendees_attributes][${newId}][email]" class="form-control" />
+                  <input type="email" name="attendee_registration[attendees_attributes][${newId}][email]" class="form-control" required />
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Ecclesia</label>
-                  <input type="text" name="attendee_registration[attendees_attributes][${newId}][ecclesia]" class="form-control" />
+                  <input type="text" name="attendee_registration[attendees_attributes][${newId}][ecclesia]" class="form-control" required />
                 </div>
               </div>
             </div>
@@ -383,17 +383,17 @@
 
             <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Medical Conditions</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][medical_conditions]" rows="2" class="form-control" placeholder="Any medical conditions we should be aware of..."></textarea>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][medical_conditions]" rows="2" class="form-control" required placeholder="Any medical conditions we should be aware of..."></textarea>
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Dietary Restrictions</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][dietary_restrictions]" rows="2" class="form-control" placeholder="Any dietary restrictions..."></textarea>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][dietary_restrictions]" rows="2" class="form-control" required placeholder="Any dietary restrictions..."></textarea>
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Allergies</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][allergies]" rows="2" class="form-control" placeholder="Any allergies..."></textarea>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][allergies]" rows="2" class="form-control" required placeholder="Any allergies..."></textarea>
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">

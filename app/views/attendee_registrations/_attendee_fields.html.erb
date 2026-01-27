@@ -46,17 +46,17 @@
       <div class="form-grid form-grid-3">
         <div class="form-group">
           <%= f.label :phone, "Phone Number", class: "form-label" %>
-          <%= f.telephone_field :phone, class: "form-control", pattern: "[\\d\\s\\-\\(\\)\\+\\.]+", title: "Please enter a valid phone number" %>
+          <%= f.telephone_field :phone, class: "form-control", required: true, pattern: "[\\d\\s\\-\\(\\)\\+\\.]+", title: "Please enter a valid phone number" %>
         </div>
 
         <div class="form-group">
           <%= f.label :email, "Email", class: "form-label" %>
-          <%= f.email_field :email, class: "form-control" %>
+          <%= f.email_field :email, class: "form-control", required: true %>
         </div>
 
         <div class="form-group">
           <%= f.label :ecclesia, class: "form-label" %>
-          <%= f.text_field :ecclesia, class: "form-control" %>
+          <%= f.text_field :ecclesia, class: "form-control", required: true %>
         </div>
       </div>
     </div>
@@ -92,17 +92,17 @@
 
     <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :medical_conditions, class: "form-label" %>
-      <%= f.text_area :medical_conditions, rows: 2, class: "form-control", placeholder: "Any medical conditions we should be aware of..." %>
+      <%= f.text_area :medical_conditions, rows: 2, class: "form-control", required: true, placeholder: "Any medical conditions we should be aware of..." %>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :dietary_restrictions, class: "form-label" %>
-      <%= f.text_area :dietary_restrictions, rows: 2, class: "form-control", placeholder: "Any dietary restrictions..." %>
+      <%= f.text_area :dietary_restrictions, rows: 2, class: "form-control", required: true, placeholder: "Any dietary restrictions..." %>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :allergies, class: "form-label" %>
-      <%= f.text_area :allergies, rows: 2, class: "form-control", placeholder: "Any allergies..." %>
+      <%= f.text_area :allergies, rows: 2, class: "form-control", required: true, placeholder: "Any allergies..." %>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1;">
