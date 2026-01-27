@@ -54,7 +54,6 @@
   box-shadow: $shadow-md;
   border-radius: $border-radius-md;
   overflow: hidden;
-  min-width: 100%;
   
   thead {
     background-color: $primary-color;
@@ -72,6 +71,19 @@
       top: 0;
       z-index: 10;
     }
+    
+    // Set explicit widths for columns that commonly wrap
+    th:nth-child(1) { width: 150px; min-width: 150px; } // Name
+    th:nth-child(2) { width: 180px; min-width: 180px; } // Payment Status
+    th:nth-child(3) { width: 120px; min-width: 120px; } // Date of Birth
+    th:nth-child(4) { width: 80px; min-width: 80px; }  // Age
+    th:nth-child(5) { width: 100px; min-width: 100px; } // Gender
+    th:nth-child(6) { width: 140px; min-width: 140px; } // Phone
+    th:nth-child(7) { width: 200px; min-width: 200px; } // Email
+    th:nth-child(8) { width: 120px; min-width: 120px; } // T-Shirt Size
+    th:nth-child(9) { width: 120px; min-width: 120px; } // Ecclesia
+    th:nth-child(10) { width: 80px; min-width: 80px; } // Piano
+    th:nth-child(11) { width: 250px; min-width: 250px; } // Address
   }
   
   tbody {
@@ -92,8 +104,6 @@
         font-size: $font-size-base;
         color: $text-dark;
         vertical-align: top;
-        word-wrap: break-word;
-        max-width: 200px;
         
         strong {
           font-weight: $font-weight-bold;
@@ -105,16 +115,53 @@
           font-style: italic;
         }
       }
+      
+      // Prevent wrapping for phone numbers
+      td:nth-child(6) { // Phone
+        white-space: nowrap;
+        width: 140px;
+        min-width: 140px;
+      }
+      
+      // Email column - allow wrapping but keep wide
+      td:nth-child(7) { // Email
+        width: 200px;
+        min-width: 200px;
+        word-break: break-all;
+      }
+      
+      // Wider columns for addresses
+      td:nth-child(11) { // Address
+        width: 250px;
+        min-width: 250px;
+        max-width: 350px;
+      }
+      
+      // Guardian contact addresses
+      td:nth-child(17), // Guardian 1 Contact
+      td:nth-child(19) { // Guardian 2 Contact
+        width: 220px;
+        min-width: 220px;
+        max-width: 300px;
+      }
     }
   }
   
   @include mobile {
     font-size: $font-size-small;
     
-    thead th,
+    thead th {
+      padding: $spacing-xs $spacing-sm;
+      width: auto !important;
+      min-width: auto !important;
+    }
+    
     tbody td {
       padding: $spacing-xs $spacing-sm;
-      max-width: 150px;
+      white-space: normal !important;
+      width: auto !important;
+      min-width: auto !important;
+      max-width: none !important;
     }
   }
 }
