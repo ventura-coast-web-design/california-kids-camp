@@ -353,32 +353,39 @@
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
+              <label style="display: flex; align-items: center;">
+                <input type="checkbox" class="attendee-same-address-checkbox" checked style="margin-right: 8px;" />
+                <span style="font-size: 14px;">Same address as primary guardian</span>
+              </label>
+            </div>
+
+            <div class="attendee-address-fields" style="grid-column: 1 / -1; display: none;">
               <h5 style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">Address</h5>
-            </div>
 
-            <div class="form-group" style="grid-column: 1 / -1;">
-              <label class="form-label">Address Line 1</label>
-              <input type="text" name="attendee_registration[attendees_attributes][${newId}][address_line_1]" class="form-control" />
-            </div>
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label">Address Line 1</label>
+                <input type="text" name="attendee_registration[attendees_attributes][${newId}][address_line_1]" class="form-control" />
+              </div>
 
-            <div class="form-group" style="grid-column: 1 / -1;">
-              <label class="form-label">Address Line 2 (Optional)</label>
-              <input type="text" name="attendee_registration[attendees_attributes][${newId}][address_line_2]" class="form-control" />
-            </div>
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label">Address Line 2 (Optional)</label>
+                <input type="text" name="attendee_registration[attendees_attributes][${newId}][address_line_2]" class="form-control" />
+              </div>
 
-            <div class="form-group">
-              <label class="form-label">City</label>
-              <input type="text" name="attendee_registration[attendees_attributes][${newId}][city]" class="form-control" />
-            </div>
+              <div class="form-group">
+                <label class="form-label">City</label>
+                <input type="text" name="attendee_registration[attendees_attributes][${newId}][city]" class="form-control" />
+              </div>
 
-            <div class="form-group">
-              <label class="form-label">State</label>
-              <input type="text" name="attendee_registration[attendees_attributes][${newId}][state]" class="form-control" maxlength="2" pattern="[A-Z]{2}" placeholder="CA" title="Please enter a 2-letter state code (e.g., CA)" />
-            </div>
+              <div class="form-group">
+                <label class="form-label">State</label>
+                <input type="text" name="attendee_registration[attendees_attributes][${newId}][state]" class="form-control" maxlength="2" pattern="[A-Z]{2}" placeholder="CA" title="Please enter a 2-letter state code (e.g., CA)" />
+              </div>
 
-            <div class="form-group">
-              <label class="form-label">ZIP Code</label>
-              <input type="text" name="attendee_registration[attendees_attributes][${newId}][zip]" class="form-control" pattern="\\d{5}(-\\d{4})?" title="Please enter a valid ZIP code (e.g., 12345 or 12345-6789)" />
+              <div class="form-group">
+                <label class="form-label">ZIP Code</label>
+                <input type="text" name="attendee_registration[attendees_attributes][${newId}][zip]" class="form-control" pattern="\\d{5}(-\\d{4})?" title="Please enter a valid ZIP code (e.g., 12345 or 12345-6789)" />
+              </div>
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
@@ -414,6 +421,10 @@
       
       // Update child numbers
       updateChildNumbers();
+      
+      // Set up address checkbox handler for the newly added attendee
+      const newAttendeeGroup = attendeesContainer.lastElementChild;
+      setupAttendeeAddressCheckbox(newAttendeeGroup);
     };
     
     addButton.addEventListener('click', handlers.addButtonClick);
@@ -444,7 +455,141 @@
         }
       });
     }
+    
+    // Set up address checkbox handlers for all existing attendees
+    setupAllAttendeeAddressCheckboxes();
   };
+  
+  // Function to copy guardian 1 address to attendee address fields
+  function copyGuardian1AddressToAttendee(attendeeGroup) {
+    const guardian1AddressLine1 = document.querySelector('#attendee_registration_guardian_1_address_line_1');
+    const guardian1AddressLine2 = document.querySelector('#attendee_registration_guardian_1_address_line_2');
+    const guardian1City = document.querySelector('#attendee_registration_guardian_1_city');
+    const guardian1State = document.querySelector('#attendee_registration_guardian_1_state');
+    const guardian1Zip = document.querySelector('#attendee_registration_guardian_1_zip');
+    
+    if (!attendeeGroup) return;
+    
+    const attendeeAddressLine1 = attendeeGroup.querySelector('input[name*="[address_line_1]"]');
+    const attendeeAddressLine2 = attendeeGroup.querySelector('input[name*="[address_line_2]"]');
+    const attendeeCity = attendeeGroup.querySelector('input[name*="[city]"]');
+    const attendeeState = attendeeGroup.querySelector('input[name*="[state]"]');
+    const attendeeZip = attendeeGroup.querySelector('input[name*="[zip]"]');
+    
+    if (guardian1AddressLine1 && attendeeAddressLine1) {
+      attendeeAddressLine1.value = guardian1AddressLine1.value || '';
+    }
+    if (guardian1AddressLine2 && attendeeAddressLine2) {
+      attendeeAddressLine2.value = guardian1AddressLine2.value || '';
+    }
+    if (guardian1City && attendeeCity) {
+      attendeeCity.value = guardian1City.value || '';
+    }
+    if (guardian1State && attendeeState) {
+      attendeeState.value = guardian1State.value || '';
+    }
+    if (guardian1Zip && attendeeZip) {
+      attendeeZip.value = guardian1Zip.value || '';
+    }
+  }
+  
+  // Function to set up address checkbox handler for a single attendee group
+  function setupAttendeeAddressCheckbox(attendeeGroup) {
+    if (!attendeeGroup) return;
+    
+    const checkbox = attendeeGroup.querySelector('.attendee-same-address-checkbox');
+    const addressFields = attendeeGroup.querySelector('.attendee-address-fields');
+    
+    if (!checkbox || !addressFields) return;
+    
+    // Get address input fields
+    const addressLine1 = attendeeGroup.querySelector('input[name*="[address_line_1]"]');
+    const city = attendeeGroup.querySelector('input[name*="[city]"]');
+    const state = attendeeGroup.querySelector('input[name*="[state]"]');
+    const zip = attendeeGroup.querySelector('input[name*="[zip]"]');
+    
+    // Function to toggle required attributes
+    function toggleRequiredFields(required) {
+      if (addressLine1) addressLine1.required = required;
+      if (city) city.required = required;
+      if (state) state.required = required;
+      if (zip) zip.required = required;
+    }
+    
+    // Set initial state
+    addressFields.style.display = checkbox.checked ? 'none' : 'block';
+    toggleRequiredFields(!checkbox.checked);
+    
+    // If checkbox is checked, copy guardian 1 address
+    if (checkbox.checked) {
+      copyGuardian1AddressToAttendee(attendeeGroup);
+    }
+    
+    // Handle checkbox change
+    checkbox.addEventListener('change', function() {
+      if (this.checked) {
+        addressFields.style.display = 'none';
+        toggleRequiredFields(false);
+        copyGuardian1AddressToAttendee(attendeeGroup);
+      } else {
+        addressFields.style.display = 'block';
+        toggleRequiredFields(true);
+      }
+    });
+  }
+  
+  // Function to set up address checkbox handlers for all attendees
+  function setupAllAttendeeAddressCheckboxes() {
+    const attendeesContainer = document.getElementById('attendees-container');
+    if (!attendeesContainer) return;
+    
+    const attendeeGroups = attendeesContainer.querySelectorAll('.attendee-form-group');
+    attendeeGroups.forEach(function(group) {
+      setupAttendeeAddressCheckbox(group);
+    });
+  }
+  
+  // Listen to guardian 1 address changes and update attendee addresses if checkbox is checked
+  function setupGuardian1AddressListeners() {
+    const guardian1Fields = [
+      '#attendee_registration_guardian_1_address_line_1',
+      '#attendee_registration_guardian_1_address_line_2',
+      '#attendee_registration_guardian_1_city',
+      '#attendee_registration_guardian_1_state',
+      '#attendee_registration_guardian_1_zip'
+    ];
+    
+    guardian1Fields.forEach(function(selector) {
+      const field = document.querySelector(selector);
+      if (field) {
+        field.addEventListener('input', function() {
+          const attendeesContainer = document.getElementById('attendees-container');
+          if (!attendeesContainer) return;
+          
+          const attendeeGroups = attendeesContainer.querySelectorAll('.attendee-form-group');
+          attendeeGroups.forEach(function(group) {
+            const checkbox = group.querySelector('.attendee-same-address-checkbox');
+            if (checkbox && checkbox.checked) {
+              copyGuardian1AddressToAttendee(group);
+            }
+          });
+        });
+      }
+    });
+  }
+  
+  // Set up guardian 1 address listeners when form initializes
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(setupGuardian1AddressListeners, 100);
+  });
+  
+  document.addEventListener('turbo:load', function() {
+    setTimeout(setupGuardian1AddressListeners, 100);
+  });
+  
+  document.addEventListener('turbo:render', function() {
+    setTimeout(setupGuardian1AddressListeners, 100);
+  });
 
   // Initialize on DOMContentLoaded (for initial page load)
   document.addEventListener('DOMContentLoaded', initializeAttendeeForm);
