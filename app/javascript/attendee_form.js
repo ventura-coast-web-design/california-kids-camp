@@ -178,27 +178,22 @@
 
             <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Medical Conditions</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][medical_conditions]" rows="2" class="form-control" required placeholder="Any medical conditions we should be aware of..."></textarea>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][medical_conditions]" rows="2" class="form-control" placeholder="Any medical conditions we should be aware of..."></textarea>
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Dietary Restrictions</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][dietary_restrictions]" rows="2" class="form-control" required placeholder="Any dietary restrictions..."></textarea>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][dietary_restrictions]" rows="2" class="form-control" placeholder="Any dietary restrictions..."></textarea>
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label">Allergies</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][allergies]" rows="2" class="form-control" required placeholder="Any allergies..."></textarea>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][allergies]" rows="2" class="form-control" placeholder="Any allergies..."></textarea>
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
-              <label class="form-label">Special Needs</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][special_needs]" rows="2" class="form-control" placeholder="Any special needs or accommodations required..."></textarea>
-            </div>
-
-            <div class="form-group" style="grid-column: 1 / -1;">
-              <label class="form-label">Additional Notes</label>
-              <textarea name="attendee_registration[attendees_attributes][${newId}][notes]" rows="2" class="form-control" placeholder="Any additional information about this child..."></textarea>
+              <label class="form-label">Special Needs or Additional Notes</label>
+              <textarea name="attendee_registration[attendees_attributes][${newId}][notes]" rows="3" class="form-control" placeholder="Any special needs, accommodations, or additional information about this child..."></textarea>
             </div>
           </div>
         </div>

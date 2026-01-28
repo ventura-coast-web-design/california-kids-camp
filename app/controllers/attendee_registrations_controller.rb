@@ -32,7 +32,7 @@ class AttendeeRegistrationsController < ApplicationController
     if @attendee_registration.valid?
       # Clear any existing pending registration to prevent stale data
       old_registration_data = session[:pending_registration]
-      
+
       # Cancel any existing payment intents from previous registration attempts
       if old_registration_data
         old_payment_intent_id = old_registration_data[:stripe_payment_intent_id] || old_registration_data["stripe_payment_intent_id"]
@@ -40,7 +40,7 @@ class AttendeeRegistrationsController < ApplicationController
           begin
             old_payment_intent = Stripe::PaymentIntent.retrieve(old_payment_intent_id)
             # Cancel payment intent if it's still in a cancellable state
-            if ["requires_payment_method", "requires_confirmation"].include?(old_payment_intent.status)
+            if [ "requires_payment_method", "requires_confirmation" ].include?(old_payment_intent.status)
               Stripe::PaymentIntent.cancel(old_payment_intent_id)
             end
           rescue Stripe::StripeError => e
@@ -49,9 +49,9 @@ class AttendeeRegistrationsController < ApplicationController
           end
         end
       end
-      
+
       session.delete(:pending_registration)
-      
+
       # Store registration data in session temporarily
       # Convert to hash and ensure nested attributes are preserved
       temp_id = SecureRandom.uuid
@@ -404,7 +404,6 @@ class AttendeeRegistrationsController < ApplicationController
       :emergency_contact_2_name,
       :emergency_contact_2_phone,
       :interest_in_counselling,
-      :notes,
       attendees_attributes: [
         :id,
         :first_name,

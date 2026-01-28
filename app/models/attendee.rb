@@ -10,7 +10,6 @@ class Attendee < ApplicationRecord
   validates :phone, presence: true, format: { with: /\A[\d\s\-\(\)\+\.]+\z/, message: "must be a valid phone number" }
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :ecclesia, presence: true
-  validates :medical_conditions, :dietary_restrictions, :allergies, presence: true
   # If attendee provides their own address (address_line_1 present), validate all address fields
   validates :city, presence: true, if: -> { address_line_1.present? }
   validates :state, presence: true, length: { is: 2, message: "must be 2 characters" }, if: -> { address_line_1.present? }

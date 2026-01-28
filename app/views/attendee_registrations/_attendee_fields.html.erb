@@ -114,27 +114,22 @@
 
     <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :medical_conditions, class: "form-label" %>
-      <%= f.text_area :medical_conditions, rows: 2, class: "form-control", required: true, placeholder: "Any medical conditions we should be aware of..." %>
+      <%= f.text_area :medical_conditions, rows: 2, class: "form-control", placeholder: "Any medical conditions we should be aware of..." %>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :dietary_restrictions, class: "form-label" %>
-      <%= f.text_area :dietary_restrictions, rows: 2, class: "form-control", required: true, placeholder: "Any dietary restrictions..." %>
+      <%= f.text_area :dietary_restrictions, rows: 2, class: "form-control", placeholder: "Any dietary restrictions..." %>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1;">
       <%= f.label :allergies, class: "form-label" %>
-      <%= f.text_area :allergies, rows: 2, class: "form-control", required: true, placeholder: "Any allergies..." %>
+      <%= f.text_area :allergies, rows: 2, class: "form-control", placeholder: "Any allergies..." %>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1;">
-      <%= f.label :special_needs, class: "form-label" %>
-      <%= f.text_area :special_needs, rows: 2, class: "form-control", placeholder: "Any special needs or accommodations required..." %>
-    </div>
-
-    <div class="form-group" style="grid-column: 1 / -1;">
-      <%= f.label :notes, "Additional Notes", class: "form-label" %>
-      <%= f.text_area :notes, rows: 2, class: "form-control", placeholder: "Any additional information about this child..." %>
+      <%= f.label :notes, "Special Needs or Additional Notes", class: "form-label" %>
+      <%= f.text_area :notes, rows: 3, class: "form-control", placeholder: "Any special needs, accommodations, or additional information about this child..." %>
     </div>
   </div>
 </div>
