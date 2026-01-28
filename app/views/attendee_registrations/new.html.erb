@@ -170,15 +170,16 @@
 
         <!-- Attendees (Children) Section -->
         <div style="border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="font-size: 18px; font-weight: 600; color: #1f2937;">Attending Children/Youth</h3>
-            <button type="button" id="add-attendee-btn" class="btn btn-outline" style="font-size: 14px; padding: 4px 12px;">+ Add Another Child</button>
-          </div>
+
 
           <div id="attendees-container">
             <%= f.fields_for :attendees do |attendee_fields| %>
               <%= render 'attendee_fields', f: attendee_fields %>
             <% end %>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 18px; font-weight: 600; color: #1f2937;">Attending Children/Youth</h3>
+            <button type="button" id="add-attendee-btn" class="btn btn-outline" style="font-size: 14px; padding: 4px 12px;">+ Add Another Child</button>
           </div>
         </div>
 
