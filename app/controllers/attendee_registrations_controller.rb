@@ -30,6 +30,28 @@ class AttendeeRegistrationsController < ApplicationController
 
     # Validate without saving
     if @attendee_registration.valid?
+      # Clear any existing pending registration to prevent stale data
+      old_registration_data = session[:pending_registration]
+      
+      # Cancel any existing payment intents from previous registration attempts
+      if old_registration_data
+        old_payment_intent_id = old_registration_data[:stripe_payment_intent_id] || old_registration_data["stripe_payment_intent_id"]
+        if old_payment_intent_id.present?
+          begin
+            old_payment_intent = Stripe::PaymentIntent.retrieve(old_payment_intent_id)
+            # Cancel payment intent if it's still in a cancellable state
+            if ["requires_payment_method", "requires_confirmation"].include?(old_payment_intent.status)
+              Stripe::PaymentIntent.cancel(old_payment_intent_id)
+            end
+          rescue Stripe::StripeError => e
+            # Log error but don't fail the registration
+            Rails.logger.warn "Failed to cancel old payment intent #{old_payment_intent_id}: #{e.message}"
+          end
+        end
+      end
+      
+      session.delete(:pending_registration)
+      
       # Store registration data in session temporarily
       # Convert to hash and ensure nested attributes are preserved
       temp_id = SecureRandom.uuid
@@ -248,6 +270,15 @@ class AttendeeRegistrationsController < ApplicationController
         end
 
         if payment_intent.status == "succeeded"
+          # Check if a registration with this payment intent already exists (idempotency check)
+          existing_registration = AttendeeRegistration.find_by(stripe_payment_intent_id: payment_intent_id)
+          if existing_registration
+            # Payment already processed, redirect to existing registration
+            session.delete(:pending_registration)
+            redirect_to attendee_registration_path(existing_registration)
+            return
+          end
+
           # Get payment_type from metadata first (source of truth), then session, then params, default to 'full'
           payment_type = payment_intent.metadata["payment_type"] ||
                         registration_data[:payment_type] ||
@@ -305,6 +336,12 @@ class AttendeeRegistrationsController < ApplicationController
         end
 
         if payment_intent.status == "succeeded"
+          # Check if payment was already processed (idempotency check)
+          if @attendee_registration.payment_status == "succeeded" && @attendee_registration.stripe_payment_intent_id == payment_intent_id
+            redirect_to attendee_registration_path(@attendee_registration)
+            return
+          end
+
           # Get payment_type from metadata first (source of truth), then params, then registration, default to 'full'
           payment_type = payment_intent.metadata["payment_type"] || params[:payment_type] || @attendee_registration.payment_type || "full"
 

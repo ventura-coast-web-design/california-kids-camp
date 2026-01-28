@@ -217,8 +217,15 @@
       
       // Handle form submission
       const form = document.getElementById('payment-form');
+      let isProcessing = false; // Prevent duplicate submissions
+      
       form.addEventListener('submit', async function(event) {
         event.preventDefault();
+        
+        // Prevent duplicate submissions
+        if (isProcessing) {
+          return;
+        }
         
         const submitButton = document.getElementById('submit-button');
         const buttonText = document.getElementById('button-text');
@@ -234,64 +241,86 @@
             submitButton.disabled = false;
             buttonText.style.display = 'inline';
             spinner.style.display = 'none';
+            isProcessing = false;
             return;
           }
           currentClientSecret = newClientSecret;
           currentPaymentType = selectedPaymentType;
         }
         
-        // Disable button and show spinner
+        // Set processing flag and disable button
+        isProcessing = true;
         submitButton.disabled = true;
         buttonText.style.display = 'none';
         spinner.style.display = 'inline';
         
-        // Confirm payment with Stripe
-        const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              email: '<%= @attendee_registration.guardian_1_email %>',
-              name: '<%= @attendee_registration.guardian_1_name %>',
+        try {
+          // Confirm payment with Stripe
+          const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: {
+                email: '<%= @attendee_registration.guardian_1_email %>',
+                name: '<%= @attendee_registration.guardian_1_name %>',
+              },
             },
-          },
-        });
-        
-        if (error) {
-          // Show error to customer
-          document.getElementById('card-errors').textContent = error.message;
+          });
+          
+          if (error) {
+            // Show error to customer
+            document.getElementById('card-errors').textContent = error.message;
+            submitButton.disabled = false;
+            buttonText.style.display = 'inline';
+            spinner.style.display = 'none';
+            isProcessing = false;
+          } else {
+            // Payment succeeded
+            if (paymentIntent.status === 'succeeded') {
+              // Prevent multiple redirects
+              if (isProcessing) {
+                // Redirect to success page
+                const successForm = document.createElement('form');
+                successForm.method = 'POST';
+                successForm.action = `/attendee_registrations/${registrationId}/payment_success`;
+                
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'authenticity_token';
+                csrfInput.value = csrfToken;
+                successForm.appendChild(csrfInput);
+                
+                const paymentIntentInput = document.createElement('input');
+                paymentIntentInput.type = 'hidden';
+                paymentIntentInput.name = 'payment_intent_id';
+                paymentIntentInput.value = paymentIntent.id;
+                successForm.appendChild(paymentIntentInput);
+                
+                const paymentTypeInput = document.createElement('input');
+                paymentTypeInput.type = 'hidden';
+                paymentTypeInput.name = 'payment_type';
+                paymentTypeInput.value = selectedPaymentType;
+                successForm.appendChild(paymentTypeInput);
+                
+                document.body.appendChild(successForm);
+                successForm.submit();
+              }
+            } else {
+              // Payment not succeeded, re-enable form
+              submitButton.disabled = false;
+              buttonText.style.display = 'inline';
+              spinner.style.display = 'none';
+              isProcessing = false;
+            }
+          }
+        } catch (err) {
+          // Handle any unexpected errors
+          console.error('Payment error:', err);
+          document.getElementById('card-errors').textContent = 'An unexpected error occurred. Please try again.';
           submitButton.disabled = false;
           buttonText.style.display = 'inline';
           spinner.style.display = 'none';
-        } else {
-          // Payment succeeded
-          if (paymentIntent.status === 'succeeded') {
-            // Redirect to success page
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/attendee_registrations/${registrationId}/payment_success`;
-            
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'authenticity_token';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
-            
-            const paymentIntentInput = document.createElement('input');
-            paymentIntentInput.type = 'hidden';
-            paymentIntentInput.name = 'payment_intent_id';
-            paymentIntentInput.value = paymentIntent.id;
-            form.appendChild(paymentIntentInput);
-            
-            const paymentTypeInput = document.createElement('input');
-            paymentTypeInput.type = 'hidden';
-            paymentTypeInput.name = 'payment_type';
-            paymentTypeInput.value = selectedPaymentType;
-            form.appendChild(paymentTypeInput);
-            
-            document.body.appendChild(form);
-            form.submit();
-          }
+          isProcessing = false;
         }
       });
     } catch (error) {
