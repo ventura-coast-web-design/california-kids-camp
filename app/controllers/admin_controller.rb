@@ -69,8 +69,8 @@ class AdminController < ApplicationController
         csv << [
           "#{attendee.first_name} #{attendee.last_name}",
           payment_status,
-          registration.amount_paid || 0,
-          registration.remaining_balance,
+          registration.calculate_per_attendee_paid,
+          registration.calculate_per_attendee_balance,
           attendee.date_of_birth&.strftime("%m/%d/%Y"),
           attendee.age,
           attendee.gender,

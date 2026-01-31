@@ -98,6 +98,27 @@ class AttendeeRegistration < ApplicationRecord
     calculate_total_amount - amount_paid.to_f
   end
 
+  # Calculate per-attendee total amount
+  # This divides the total registration cost evenly among all attendees
+  def calculate_per_attendee_total
+    child_count = attendees.reject(&:marked_for_destruction?).count
+    return 0.0 if child_count.zero?
+    (calculate_total_amount / child_count.to_f).round(2)
+  end
+
+  # Calculate per-attendee amount paid
+  # This divides the total amount paid evenly among all attendees
+  def calculate_per_attendee_paid
+    child_count = attendees.reject(&:marked_for_destruction?).count
+    return 0.0 if child_count.zero? || amount_paid.to_f.zero?
+    (amount_paid.to_f / child_count.to_f).round(2)
+  end
+
+  # Calculate per-attendee remaining balance
+  def calculate_per_attendee_balance
+    calculate_per_attendee_total - calculate_per_attendee_paid
+  end
+
   def early_bird_eligible?
     Date.current < EARLY_BIRD_END_DATE
   end
