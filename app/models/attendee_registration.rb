@@ -94,8 +94,21 @@ class AttendeeRegistration < ApplicationRecord
   end
 
   def remaining_balance
-    return 0.0 unless paid_deposit?
-    calculate_total_amount - amount_paid.to_f
+    return 0.0 unless paid?
+    
+    total = calculate_total_amount.to_f
+    paid = amount_paid.to_f
+    
+    # Handle nil amount_paid
+    paid = 0.0 if paid.nil? || paid.nan?
+    
+    balance = total - paid
+    
+    # Round to 2 decimal places to avoid floating point precision issues
+    balance = balance.round(2)
+    
+    # Return 0 if balance is very close to zero (within 1 cent) due to floating point precision
+    balance.abs < 0.01 ? 0.0 : balance
   end
 
   # Calculate per-attendee total amount

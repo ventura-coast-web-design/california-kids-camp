@@ -1,0 +1,409 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Pay Remaining Balance</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <!-- Registration Summary -->
+      <div class="border-b border-gray-200 pb-6 mb-6" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 24px; margin-bottom: 24px;">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800" style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: #1f2937;">Registration Summary</h3>
+        <div class="bg-gray-50 rounded-lg p-4" style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
+          <div class="flex justify-between items-center mb-2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="text-gray-700" style="color: #374151;">Primary Guardian:</span>
+            <span class="font-semibold" style="font-weight: 600;"><%= @registration.guardian_1_name %></span>
+          </div>
+          <div class="flex justify-between items-center mb-2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="text-gray-700" style="color: #374151;">Email:</span>
+            <span class="font-semibold" style="font-weight: 600;"><%= @registration.guardian_1_email %></span>
+          </div>
+          <div class="flex justify-between items-center mb-2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="text-gray-700" style="color: #374151;">Number of children:</span>
+            <span class="font-semibold" style="font-weight: 600;"><%= @registration.attendees.count %></span>
+          </div>
+          <div class="flex justify-between items-center mb-2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="text-gray-700" style="color: #374151;">Total Amount:</span>
+            <span class="font-semibold" style="font-weight: 600;">$<%= sprintf('%.2f', @registration.calculate_total_amount) %></span>
+          </div>
+          <div class="flex justify-between items-center mb-2" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="text-gray-700" style="color: #374151;">Amount Paid:</span>
+            <span class="font-semibold" style="font-weight: 600;">$<%= sprintf('%.2f', @registration.amount_paid.to_f) %></span>
+          </div>
+          <div class="flex justify-between items-center text-lg font-semibold pt-2 border-t border-gray-200" style="display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 600; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+            <span>Remaining Balance:</span>
+            <span class="text-blue-600" style="color: #2563eb;">$<%= sprintf('%.2f', @remaining_balance) %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <div class="border-b border-gray-200 pb-6" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 24px;">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800" style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: #1f2937;">Payment Information</h3>
+        
+        <form id="payment-form">
+          <div id="card-element" class="mb-4" style="margin-bottom: 16px;">
+            <!-- Stripe Elements will create form elements here -->
+          </div>
+          
+          <!-- Display form errors -->
+          <div id="card-errors" role="alert" class="text-red-600 mb-4" style="color: #dc2626; margin-bottom: 16px;"></div>
+          
+          <div class="form-actions">
+            <button type="submit" id="submit-button" class="btn btn-primary w-full" style="width: 100%;">
+              <span id="button-text">Pay $<span id="payment-amount"><%= sprintf('%.2f', @remaining_balance) %></span></span>
+              <span id="spinner" style="display: none;">Processing...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="mt-6 text-center" style="margin-top: 24px; text-align: center;">
+        <%= link_to "Back to Lookup", balance_payment_lookup_path, class: "text-blue-600 hover:text-blue-800" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Get registration ID
+  const registrationId = '<%= @registration.id %>';
+  const remainingBalance = <%= @remaining_balance %>;
+  
+  // Create payment intent and set up Stripe Elements
+  // Use window scope to avoid redeclaration issues with Turbo
+  if (!window.balancePaymentElements) {
+    window.balancePaymentElements = {};
+  }
+  let elements = window.balancePaymentElements.elements;
+  let cardElement = window.balancePaymentElements.cardElement;
+  let currentClientSecret = window.balancePaymentElements.currentClientSecret || null;
+  
+  // Load Stripe.js only if not already loaded
+  function loadStripeScript() {
+    return new Promise((resolve, reject) => {
+      if (typeof Stripe !== 'undefined') {
+        resolve();
+        return;
+      }
+      
+      // Check if script is already being loaded
+      const existingScript = document.querySelector('script[src="https://js.stripe.com/v3/"]');
+      if (existingScript) {
+        // Wait for it to load with a timeout
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max wait
+        const checkInterval = setInterval(() => {
+          attempts++;
+          if (typeof Stripe !== 'undefined') {
+            clearInterval(checkInterval);
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            reject(new Error('Stripe script loading timeout'));
+          }
+        }, 100);
+        return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = 'https://js.stripe.com/v3/';
+      script.async = true;
+      script.onload = () => {
+        // Double check Stripe is available
+        if (typeof Stripe !== 'undefined') {
+          resolve();
+        } else {
+          reject(new Error('Stripe script loaded but Stripe object not available'));
+        }
+      };
+      script.onerror = () => {
+        reject(new Error('Failed to load Stripe script'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+  
+  // Initialize Stripe instance
+  function getStripeInstance() {
+    // Use window.stripeInstance to avoid redeclaration issues with Turbo
+    if (!window.stripeInstance || window.stripePublishableKey !== '<%= @stripe_publishable_key %>') {
+      window.stripeInstance = Stripe('<%= @stripe_publishable_key %>');
+      window.stripePublishableKey = '<%= @stripe_publishable_key %>';
+    }
+    return window.stripeInstance;
+  }
+  
+  // Create payment intent
+  async function createPaymentIntent() {
+    try {
+      const response = await fetch(`/balance_payment/${registrationId}/create_payment_intent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create payment intent');
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        document.getElementById('card-errors').textContent = data.error;
+        return null;
+      }
+      
+      if (!data.clientSecret) {
+        document.getElementById('card-errors').textContent = 'Failed to initialize payment. Please try again.';
+        return null;
+      }
+      
+      currentClientSecret = data.clientSecret;
+      return data.clientSecret;
+    } catch (error) {
+      console.error('Error creating payment intent:', error);
+      document.getElementById('card-errors').textContent = 'An error occurred. Please refresh the page and try again.';
+      return null;
+    }
+  }
+  
+  async function initializePayment() {
+    // Prevent multiple initializations
+    if (window.balancePaymentElements && window.balancePaymentElements.isInitialized) {
+      return;
+    }
+    
+    try {
+      // Wait for DOM to be ready
+      const cardElementContainer = document.getElementById('card-element');
+      if (!cardElementContainer) {
+        // Retry after a short delay
+        setTimeout(initializePayment, 100);
+        return;
+      }
+      
+      // Load Stripe script if needed
+      await loadStripeScript();
+      
+      // Get Stripe instance
+      const stripe = getStripeInstance();
+      
+      // Check if Stripe is properly initialized
+      if (!stripe || !stripe._apiKey) {
+        document.getElementById('card-errors').textContent = 'Payment system is not properly configured. Please contact support.';
+        return;
+      }
+      
+      // Create payment intent
+      const clientSecret = await createPaymentIntent();
+      if (!clientSecret) {
+        return;
+      }
+      
+      // Check if card element still exists (might have been removed by Turbo)
+      const cardElementContainerCheck = document.getElementById('card-element');
+      if (!cardElementContainerCheck) {
+        console.error('Card element not found in DOM');
+        document.getElementById('card-errors').textContent = 'Payment form not ready. Please refresh the page.';
+        return;
+      }
+      
+      // Unmount any existing card element first
+      if (window.balancePaymentElements && window.balancePaymentElements.cardElement) {
+        try {
+          window.balancePaymentElements.cardElement.unmount();
+        } catch (e) {
+          // Ignore unmount errors
+        }
+      }
+      
+      // Initialize Stripe Elements
+      elements = stripe.elements({ clientSecret: clientSecret });
+      cardElement = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px',
+            color: '#32325d',
+            '::placeholder': {
+              color: '#aab7c4',
+            },
+          },
+          invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a',
+          },
+        },
+      });
+      
+      // Store in window scope
+      window.balancePaymentElements.elements = elements;
+      window.balancePaymentElements.cardElement = cardElement;
+      window.balancePaymentElements.currentClientSecret = clientSecret;
+      
+      // Mount the card element
+      try {
+        cardElement.mount('#card-element');
+        window.balancePaymentElements.isInitialized = true;
+      } catch (error) {
+        console.error('Error mounting card element:', error);
+        document.getElementById('card-errors').textContent = 'Failed to initialize payment form. Please refresh the page.';
+        return;
+      }
+      
+      // Handle real-time validation errors
+      cardElement.on('change', function(event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+          displayError.textContent = event.error.message;
+        } else {
+          displayError.textContent = '';
+        }
+      });
+      
+      // Handle form submission
+      const form = document.getElementById('payment-form');
+      let isProcessing = false; // Prevent duplicate submissions
+      
+      form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        // Prevent duplicate submissions
+        if (isProcessing) {
+          return;
+        }
+        
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+        
+        // Set processing flag and disable button
+        isProcessing = true;
+        submitButton.disabled = true;
+        buttonText.style.display = 'none';
+        spinner.style.display = 'inline';
+        
+        try {
+          // Get stripe instance
+          const stripe = getStripeInstance();
+          
+          // Use current client secret from window scope if available
+          const clientSecretToUse = window.balancePaymentElements?.currentClientSecret || currentClientSecret;
+          
+          // Confirm payment with Stripe
+          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecretToUse, {
+            payment_method: {
+              card: cardElement,
+              billing_details: {
+                email: '<%= @registration.guardian_1_email %>',
+                name: '<%= @registration.guardian_1_name %>',
+              },
+            },
+          });
+          
+          if (error) {
+            // Show error to customer
+            document.getElementById('card-errors').textContent = error.message;
+            submitButton.disabled = false;
+            buttonText.style.display = 'inline';
+            spinner.style.display = 'none';
+            isProcessing = false;
+          } else {
+            // Payment succeeded
+            if (paymentIntent.status === 'succeeded') {
+              // Prevent multiple redirects
+              if (isProcessing) {
+                // Redirect to success page
+                const successForm = document.createElement('form');
+                successForm.method = 'POST';
+                successForm.action = `/balance_payment/${registrationId}/payment_success`;
+                
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'authenticity_token';
+                csrfInput.value = csrfToken;
+                successForm.appendChild(csrfInput);
+                
+                const paymentIntentInput = document.createElement('input');
+                paymentIntentInput.type = 'hidden';
+                paymentIntentInput.name = 'payment_intent_id';
+                paymentIntentInput.value = paymentIntent.id;
+                successForm.appendChild(paymentIntentInput);
+                
+                document.body.appendChild(successForm);
+                successForm.submit();
+              }
+            } else {
+              // Payment not succeeded, re-enable form
+              submitButton.disabled = false;
+              buttonText.style.display = 'inline';
+              spinner.style.display = 'none';
+              isProcessing = false;
+            }
+          }
+        } catch (err) {
+          // Handle any unexpected errors
+          console.error('Payment error:', err);
+          document.getElementById('card-errors').textContent = 'An unexpected error occurred. Please try again.';
+          submitButton.disabled = false;
+          buttonText.style.display = 'inline';
+          spinner.style.display = 'none';
+          isProcessing = false;
+        }
+      });
+    } catch (error) {
+      console.error('Error initializing payment:', error);
+      document.getElementById('card-errors').textContent = 'An error occurred. Please refresh the page and try again.';
+    }
+  }
+  
+  // Initialize when page loads - handle both regular page loads and Turbo navigation
+  function startInitialization() {
+    // Reset initialization flag when page changes (but keep window scope)
+    if (window.balancePaymentElements) {
+      window.balancePaymentElements.isInitialized = false;
+    }
+    
+    // Ensure DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializePayment);
+    } else {
+      // DOM is already ready, but wait a tick to ensure everything is rendered
+      setTimeout(initializePayment, 50);
+    }
+  }
+  
+  // Start initialization
+  startInitialization();
+  
+  // Also listen for Turbo events if Turbo is available
+  if (typeof Turbo !== 'undefined') {
+    document.addEventListener('turbo:load', function() {
+      if (window.balancePaymentElements) {
+        window.balancePaymentElements.isInitialized = false;
+      }
+      setTimeout(initializePayment, 50);
+    });
+    document.addEventListener('turbo:render', function() {
+      if (!window.balancePaymentElements || !window.balancePaymentElements.isInitialized) {
+        setTimeout(initializePayment, 50);
+      }
+    });
+  }
+</script>
+
+<style>
+  #card-element {
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+  }
+  
+  #card-element:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+</style>

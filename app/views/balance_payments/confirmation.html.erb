@@ -1,0 +1,90 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Payment Confirmed!</h2>
+  </div>
+  
+  <div class="section-content">
+    <div class="form-container">
+      <!-- Success Message -->
+      <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-6 mb-6" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+        <div class="flex items-center mb-4" style="display: flex; align-items: center; margin-bottom: 16px;">
+          <svg class="mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px; margin-right: 8px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="text-2xl font-bold" style="font-size: 24px; font-weight: 700;">Thank You!</h3>
+        </div>
+        <p class="text-lg" style="font-size: 18px;">Your remaining balance has been successfully paid. Your registration is now paid in full.</p>
+      </div>
+
+      <!-- Registration Summary -->
+      <div class="border-b border-gray-200 pb-6 mb-6" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 24px; margin-bottom: 24px;">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800" style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: #1f2937;">Payment Summary</h3>
+        
+        <div class="space-y-4">
+          <!-- Payment Information -->
+          <div class="bg-gray-50 rounded-lg p-4" style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
+            <h4 class="font-semibold mb-2 text-gray-700" style="font-weight: 600; margin-bottom: 8px; color: #374151;">Payment Details</h4>
+            <div class="grid grid-cols-2 gap-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+              <span class="text-gray-600" style="color: #4b5563;">Total Amount:</span>
+              <span class="font-semibold" style="font-weight: 600;">$<%= sprintf('%.2f', @registration.calculate_total_amount) %></span>
+              <span class="text-gray-600" style="color: #4b5563;">Amount Paid:</span>
+              <span class="font-semibold" style="font-weight: 600;">$<%= sprintf('%.2f', @registration.amount_paid.to_f) %></span>
+              <span class="text-gray-600" style="color: #4b5563;">Remaining Balance:</span>
+              <span class="font-semibold text-green-600" style="font-weight: 600; color: #16a34a;">$0.00</span>
+              <span class="text-gray-600" style="color: #4b5563;">Payment Status:</span>
+              <span class="font-semibold text-green-600" style="font-weight: 600; color: #16a34a;">Paid in Full</span>
+              <span class="text-gray-600" style="color: #4b5563;">Registration ID:</span>
+              <span class="font-mono text-sm" style="font-family: monospace; font-size: 14px;">#<%= @registration.id %></span>
+            </div>
+          </div>
+
+          <!-- Guardian Information -->
+          <div class="bg-gray-50 rounded-lg p-4" style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
+            <h4 class="font-semibold mb-2 text-gray-700" style="font-weight: 600; margin-bottom: 8px; color: #374151;">Primary Guardian</h4>
+            <p class="text-gray-800" style="color: #1f2937;"><strong><%= @registration.guardian_1_name %></strong></p>
+            <p class="text-gray-600" style="color: #4b5563;"><%= @registration.guardian_1_email %></p>
+            <p class="text-gray-600" style="color: #4b5563;"><%= @registration.guardian_1_phone %></p>
+          </div>
+
+          <!-- Registered Children -->
+          <div class="bg-gray-50 rounded-lg p-4" style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
+            <h4 class="font-semibold mb-3 text-gray-700" style="font-weight: 600; margin-bottom: 12px; color: #374151;">Registered Children (<%= @registration.attendees.count %>)</h4>
+            <div class="space-y-3">
+              <% @registration.attendees.each_with_index do |attendee, index| %>
+                <div class="border-l-4 border-blue-500 pl-3" style="border-left: 4px solid #3b82f6; padding-left: 12px;">
+                  <p class="font-semibold text-gray-800" style="font-weight: 600; color: #1f2937;">
+                    <%= index + 1 %>. <%= attendee.first_name %> <%= attendee.last_name %>
+                  </p>
+                  <p class="text-sm text-gray-600" style="font-size: 14px; color: #4b5563;">
+                    Date of Birth: <%= attendee.date_of_birth.strftime('%B %d, %Y') %>
+                    <% if attendee.age %> (Age: <%= attendee.age %>)<% end %>
+                  </p>
+                  <% if attendee.gender.present? %>
+                    <p class="text-sm text-gray-600" style="font-size: 14px; color: #4b5563;">Gender: <%= attendee.gender %></p>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="border-b border-gray-200 pb-6 mb-6" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 24px; margin-bottom: 24px;">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800" style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: #1f2937;">What's Next?</h3>
+        <ul class="list-disc list-inside space-y-2 text-gray-700" style="list-style-type: disc; list-style-position: inside; margin-top: 8px; color: #374151;">
+          <li>Your registration is now complete and fully paid</li>
+          <li>You will receive a confirmation email at <strong><%= @registration.guardian_1_email %></strong></li>
+          <li>We'll be in touch with additional camp information and details</li>
+          <li>If you have any questions, please contact us using the information on our <a href="<%= attendee_info_path %>" class="text-blue-600 hover:text-blue-800 underline" style="color: #2563eb; text-decoration: underline;">Attendee Information</a> page</li>
+        </ul>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-col sm:flex-row gap-4" style="display: flex; flex-direction: column; gap: 16px;">
+        <%= link_to "Back to Home", root_path, class: "btn btn-outline flex-1", style: "flex: 1;" %>
+        <%= link_to "View Attendee Information", attendee_info_path, class: "btn btn-primary flex-1", style: "flex: 1;" %>
+      </div>
+    </div>
+  </div>
+</div>

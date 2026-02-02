@@ -17,6 +17,7 @@
         <!-- Mobile: Show as regular nav items -->
         <li class="mobile-register-item"><%= link_to "Register as Attendee", new_attendee_path, class: "nav-link" %></li>
         <li class="mobile-register-item"><%= link_to "Register as Counselor", new_counsellor_path, class: "nav-link" %></li>
+        <li class="mobile-register-item"><%= link_to "Pay Remaining Balance", balance_payment_lookup_path, class: "nav-link" %></li>
         <!-- Desktop: Show as dropdown -->
         <li class="dropdown-container desktop-dropdown">
           <button class="nav-link btn-register dropdown-toggle" id="registerDropdown" aria-haspopup="true" aria-expanded="false">
@@ -26,6 +27,7 @@
           <ul class="dropdown-menu" id="registerDropdownMenu" aria-labelledby="registerDropdown">
             <li><%= link_to "Register as Attendee", new_attendee_path, class: "dropdown-item" %></li>
             <li><%= link_to "Register as Counselor", new_counsellor_path, class: "dropdown-item" %></li>
+            <li><%= link_to "Pay Remaining Balance", balance_payment_lookup_path, class: "dropdown-item" %></li>
           </ul>
         </li>
         <li><%= link_to "Admin", admin_login_path, class: "nav-link" %></li>

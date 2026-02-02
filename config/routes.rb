@@ -66,6 +66,14 @@ Rails.application.routes.draw do
   get "rules", to: "home#rules", as: "rules"
   get "workbooks", to: "home#workbooks", as: "workbooks"
 
+  # Balance payment routes
+  get "balance_payment/lookup", to: "balance_payments#lookup", as: "balance_payment_lookup"
+  post "balance_payment/lookup", to: "balance_payments#find_registration"
+  get "balance_payment/:id", to: "balance_payments#show", as: "balance_payment"
+  get "balance_payment/:id/confirmation", to: "balance_payments#confirmation", as: "balance_payment_confirmation"
+  post "balance_payment/:id/create_payment_intent", to: "balance_payments#create_payment_intent", as: "balance_payment_create_intent"
+  post "balance_payment/:id/payment_success", to: "balance_payments#payment_success", as: "balance_payment_success"
+
   # Defines the root path route ("/")
   root "home#index"
 end

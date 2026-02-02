@@ -78,11 +78,7 @@
   </div>
 </div>
 
-<script src="https://js.stripe.com/v3/"></script>
 <script>
-  // Initialize Stripe
-  const stripe = Stripe('<%= @stripe_publishable_key %>');
-  
   // Get registration ID (temporary UUID string for new registrations, or database ID for existing)
   const registrationId = '<%= @temp_registration_id || params[:id] %>';
   const fullAmount = <%= @amount %>;
@@ -93,6 +89,44 @@
   let cardElement;
   let currentPaymentType = 'deposit';
   let currentClientSecret = null;
+  
+  // Load Stripe.js only if not already loaded
+  function loadStripeScript() {
+    return new Promise((resolve) => {
+      if (typeof Stripe !== 'undefined') {
+        resolve();
+        return;
+      }
+      
+      // Check if script is already being loaded
+      if (document.querySelector('script[src="https://js.stripe.com/v3/"]')) {
+        // Wait for it to load
+        const checkInterval = setInterval(() => {
+          if (typeof Stripe !== 'undefined') {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        }, 100);
+        return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = 'https://js.stripe.com/v3/';
+      script.async = true;
+      script.onload = resolve;
+      document.head.appendChild(script);
+    });
+  }
+  
+  // Initialize Stripe instance
+  function getStripeInstance() {
+    // Use window.stripeInstance to avoid redeclaration issues with Turbo
+    if (!window.stripeInstance || window.stripePublishableKey !== '<%= @stripe_publishable_key %>') {
+      window.stripeInstance = Stripe('<%= @stripe_publishable_key %>');
+      window.stripePublishableKey = '<%= @stripe_publishable_key %>';
+    }
+    return window.stripeInstance;
+  }
   
   // Update payment amount when payment type changes
   function updatePaymentAmount() {
@@ -169,6 +203,12 @@
   
   async function initializePayment() {
     try {
+      // Load Stripe script if needed
+      await loadStripeScript();
+      
+      // Get Stripe instance
+      const stripe = getStripeInstance();
+      
       // Check if Stripe is properly initialized
       if (!stripe || !stripe._apiKey) {
         document.getElementById('card-errors').textContent = 'Payment system is not properly configured. Please contact support.';
@@ -255,6 +295,9 @@
         spinner.style.display = 'inline';
         
         try {
+          // Get stripe instance
+          const stripe = getStripeInstance();
+          
           // Confirm payment with Stripe
           const { error, paymentIntent } = await stripe.confirmCardPayment(currentClientSecret, {
             payment_method: {
