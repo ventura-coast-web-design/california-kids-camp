@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_27_145015) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_02_065447) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -97,6 +97,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_145015) do
     t.string "state_province_region", null: false
     t.string "tshirt_size", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "donations", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "name", null: false
+    t.string "payment_status", default: "pending"
+    t.string "stripe_payment_intent_id"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_donations_on_email"
+    t.index ["stripe_payment_intent_id"], name: "index_donations_on_stripe_payment_intent_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|

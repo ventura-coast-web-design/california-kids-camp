@@ -74,6 +74,12 @@ Rails.application.routes.draw do
   post "balance_payment/:id/create_payment_intent", to: "balance_payments#create_payment_intent", as: "balance_payment_create_intent"
   post "balance_payment/:id/payment_success", to: "balance_payments#payment_success", as: "balance_payment_success"
 
+  # Donation routes
+  get "donations", to: "donations#show", as: "donations"
+  post "donations/create_payment_intent", to: "donations#create_payment_intent", as: "donations_create_payment_intent"
+  post "donations/:id/payment_success", to: "donations#payment_success", as: "donation_payment_success"
+  get "donations/:id/confirmation", to: "donations#confirmation", as: "donation_confirmation"
+
   # Defines the root path route ("/")
   root "home#index"
 end
