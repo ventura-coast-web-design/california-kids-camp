@@ -74,5 +74,7 @@ USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
+# Fly.io sets PORT environment variable automatically
+# Puma config (config/puma.rb) ensures binding to 0.0.0.0:PORT
 EXPOSE 3000
 CMD ["./bin/rails", "server"]

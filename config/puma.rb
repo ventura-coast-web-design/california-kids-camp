@@ -30,7 +30,7 @@ threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 # Bind to 0.0.0.0 to accept connections from all interfaces (required for Fly.io)
-# Use bind instead of port to ensure it listens on all interfaces
+# Fly.io sets PORT environment variable automatically - this ensures we use it
 bind "tcp://0.0.0.0:#{ENV.fetch("PORT", 3000)}"
 
 # Allow puma to be restarted by `bin/rails restart` command.
