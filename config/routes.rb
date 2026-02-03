@@ -49,7 +49,9 @@ Rails.application.routes.draw do
   get "admin", to: "admin#index", as: "admin"
   get "admin/export_attendees", to: "admin#export_attendees", as: "admin_export_attendees"
   get "admin/export_counsellors", to: "admin#export_counsellors", as: "admin_export_counsellors"
+  delete "admin/attendees/:id", to: "admin#delete_attendee", as: "admin_delete_attendee"
   get "admin/attendees/:id", to: "admin#show_attendee", as: "admin_attendee"
+  delete "admin/counsellors/:id", to: "admin#delete_counsellor", as: "admin_delete_counsellor"
   get "admin/counsellors/:id", to: "admin#show_counsellor", as: "admin_counsellor"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

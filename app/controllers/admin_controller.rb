@@ -216,6 +216,76 @@ class AdminController < ApplicationController
     @counsellor = Counsellor.find(params[:id])
   end
 
+  def delete_attendee
+    @attendee = Attendee.includes(:attendee_registration).find(params[:id])
+    @registration = @attendee.attendee_registration
+
+    # Get accurate attendee count
+    attendee_count = @registration.attendees.count
+
+    # If this is the last attendee, delete the entire registration
+    if attendee_count <= 1
+      attendee_name = "#{@attendee.first_name} #{@attendee.last_name}"
+      registration_id = @registration.id
+      
+      # Delete the attendee (which will cascade delete the registration due to dependent: :destroy)
+      # But we need to delete the registration explicitly to handle payment cleanup
+      if @attendee.destroy
+        # Registration should be deleted via dependent: :destroy, but let's ensure it's gone
+        AttendeeRegistration.find_by(id: registration_id)&.destroy
+        
+        flash[:notice] = "Attendee #{attendee_name} and their registration have been deleted successfully."
+        redirect_to admin_path
+      else
+        flash[:alert] = "Failed to delete attendee: #{@attendee.errors.full_messages.join(', ')}"
+        redirect_to admin_attendee_path(@attendee)
+      end
+      return
+    end
+
+    # Calculate per-attendee amount paid before deletion
+    per_attendee_paid = @registration.calculate_per_attendee_paid
+
+    # Delete the attendee
+    attendee_name = "#{@attendee.first_name} #{@attendee.last_name}"
+    
+    if @attendee.destroy
+      # Reload registration to get updated attendee count
+      @registration.reload
+      
+      # Adjust amount_paid by subtracting the per-attendee amount
+      # This ensures the payment amount reflects only the remaining attendees
+      new_amount_paid = (@registration.amount_paid.to_f - per_attendee_paid).round(2)
+      # Ensure amount_paid doesn't go negative
+      new_amount_paid = [new_amount_paid, 0.0].max
+      
+      @registration.update(amount_paid: new_amount_paid)
+      
+      flash[:notice] = "Attendee #{attendee_name} has been deleted successfully."
+      redirect_to admin_path
+    else
+      flash[:alert] = "Failed to delete attendee: #{@attendee.errors.full_messages.join(', ')}"
+      redirect_to admin_attendee_path(@attendee)
+    end
+  rescue ActiveRecord::RecordNotFound
+    # Attendee was already deleted or doesn't exist
+    flash[:notice] = "Attendee has been deleted."
+    redirect_to admin_path
+  end
+
+  def delete_counsellor
+    @counsellor = Counsellor.find(params[:id])
+    counsellor_name = "#{@counsellor.first_name} #{@counsellor.last_name}"
+
+    if @counsellor.destroy
+      flash[:notice] = "Counselor #{counsellor_name} has been deleted successfully."
+      redirect_to admin_path
+    else
+      flash[:alert] = "Failed to delete counselor: #{@counsellor.errors.full_messages.join(', ')}"
+      redirect_to admin_counsellor_path(@counsellor)
+    end
+  end
+
   private
 
   def require_admin_password

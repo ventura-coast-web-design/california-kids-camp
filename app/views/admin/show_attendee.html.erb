@@ -7,6 +7,16 @@
           <a href="<%= admin_path %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
             ← Back to Dashboard
           </a>
+          <%= button_to "Delete Attendee", admin_delete_attendee_path(@attendee), 
+              method: :delete, 
+              class: "btn btn-danger", 
+              style: "padding: 0.5rem 1rem;",
+              remote: false,
+              form: { data: { turbo: false } },
+              data: { 
+                confirm: "Are you sure you want to delete #{@attendee.first_name} #{@attendee.last_name}? This will adjust the registration's payment amount. This action cannot be undone.",
+                turbo: false
+              } %>
           <%= button_to "Logout", admin_logout_path, method: :delete, class: "btn btn-outline", style: "padding: 0.5rem 1rem;", data: { turbo: false } %>
         </div>
       </div>

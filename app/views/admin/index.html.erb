@@ -60,6 +60,7 @@
                 <th>Emergency Contact 1</th>
                 <th>Emergency Contact 2</th>
                 <th>Registration Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -187,6 +188,18 @@
                     <% end %>
                   </td>
                   <td><%= registration.created_at.strftime("%m/%d/%Y") %></td>
+                  <td>
+                    <%= button_to "Delete", admin_delete_attendee_path(attendee), 
+                        method: :delete, 
+                        class: "btn btn-danger", 
+                        style: "padding: 0.25rem 0.5rem; font-size: 0.875rem;",
+                        remote: false,
+                        form: { data: { turbo: false } },
+                        data: { 
+                          confirm: "Are you sure you want to delete #{attendee.first_name} #{attendee.last_name}? This will adjust the registration's payment amount. This action cannot be undone.",
+                          turbo: false
+                        } %>
+                  </td>
                 </tr>
               <% end %>
             </tbody>
@@ -217,6 +230,7 @@
                 <th>Piano</th>
                 <th>Pairing Request</th>
                 <th>Squirts</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -259,6 +273,17 @@
                     <% else %>
                       <em>None</em>
                     <% end %>
+                  </td>
+                  <td>
+                    <%= button_to "Delete", admin_delete_counsellor_path(counsellor), 
+                        method: :delete, 
+                        class: "btn btn-danger", 
+                        style: "padding: 0.25rem 0.5rem; font-size: 0.875rem;",
+                        form: { data: { turbo: false } },
+                        data: { 
+                          confirm: "Are you sure you want to delete #{counsellor.first_name} #{counsellor.last_name}? This action cannot be undone.",
+                          turbo: false
+                        } %>
                   </td>
                 </tr>
               <% end %>
