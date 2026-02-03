@@ -109,7 +109,7 @@ class AdminController < ApplicationController
           registration.emergency_contact_1_phone,
           registration.emergency_contact_2_name,
           registration.emergency_contact_2_phone,
-          registration.created_at.strftime("%m/%d/%Y")
+          registration.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y")
         ]
       end
     end
@@ -152,8 +152,8 @@ class AdminController < ApplicationController
       # Data rows - each counsellor is a separate record
       @counsellors.each do |counsellor|
         csv << [
-          counsellor.created_at.strftime("%m/%d/%Y"),
-          counsellor.created_at.strftime("%I:%M %p"),
+          counsellor.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y"),
+          counsellor.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%I:%M %p %Z"),
           counsellor.first_name,
           counsellor.last_name,
           counsellor.gender,

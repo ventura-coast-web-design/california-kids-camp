@@ -300,7 +300,7 @@
               </div>
               <div class="detail-row">
                 <span class="detail-label">Registration Date:</span>
-                <span class="detail-value"><%= @registration.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+                <span class="detail-value"><%= @registration.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%B %d, %Y at %I:%M %p %Z") %></span>
               </div>
             </div>
           </div>

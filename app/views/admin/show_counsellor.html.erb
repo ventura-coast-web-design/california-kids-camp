@@ -19,7 +19,7 @@
         </div>
       </div>
       <p style="color: #6b7280; margin-top: 0.5rem;">
-        Registered on <%= @counsellor.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+        Registered on <%= @counsellor.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%B %d, %Y at %I:%M %p %Z") %>
       </p>
     </div>
     

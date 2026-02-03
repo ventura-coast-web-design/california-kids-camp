@@ -187,7 +187,12 @@
                       <em>N/A</em>
                     <% end %>
                   </td>
-                  <td><%= registration.created_at.strftime("%m/%d/%Y") %></td>
+                  <td>
+                    <strong>
+                      <%= registration.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y") %>
+                    </strong><br>
+                    <small style="color: #6b7280;"><%= registration.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%I:%M %p %Z") %></small>
+                  </td>
                   <td>
                     <%= button_to "Delete", admin_delete_attendee_path(attendee), 
                         method: :delete, 
@@ -238,9 +243,9 @@
                 <tr>
                   <td>
                     <strong>
-                      <%= link_to counsellor.created_at.strftime("%m/%d/%Y"), admin_counsellor_path(counsellor), style: "color: #2c5f2d; text-decoration: none;", onmouseover: "this.style.textDecoration='underline'", onmouseout: "this.style.textDecoration='none'" %>
+                      <%= link_to counsellor.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y"), admin_counsellor_path(counsellor), style: "color: #2c5f2d; text-decoration: none;", onmouseover: "this.style.textDecoration='underline'", onmouseout: "this.style.textDecoration='none'" %>
                     </strong><br>
-                    <small style="color: #6b7280;"><%= counsellor.created_at.strftime("%I:%M %p") %></small>
+                    <small style="color: #6b7280;"><%= counsellor.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%I:%M %p %Z") %></small>
                   </td>
                   <td>
                     <strong><%= counsellor.first_name %> <%= counsellor.last_name %></strong>
