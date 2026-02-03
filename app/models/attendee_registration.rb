@@ -30,8 +30,8 @@ class AttendeeRegistration < ApplicationRecord
   # Set pricing type before validation if not already set
   before_validation :set_pricing_type_if_blank, on: :create
 
-  # Early bird pricing ends April 1st
-  EARLY_BIRD_END_DATE = Date.new(2026, 4, 1)
+  # Early bird pricing ends March 31st
+  EARLY_BIRD_END_DATE = Date.new(2026, 3, 31)
 
   # Payment calculation based on number of children and pricing type
   # Regular pricing: 1 child: $275, 2 children: $550, 3+ children: $650 (family max)
