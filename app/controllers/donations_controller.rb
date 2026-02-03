@@ -113,7 +113,7 @@ class DonationsController < ApplicationController
     unless @donation.succeeded?
       flash[:alert] = "Payment not completed."
       redirect_to donations_path
-      return
+      nil
     end
   end
 

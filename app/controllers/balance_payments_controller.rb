@@ -39,7 +39,7 @@ class BalancePaymentsController < ApplicationController
 
     # Check if there's a remaining balance
     remaining = @registration.remaining_balance
-    
+
     if remaining.nil? || remaining <= 0
       flash[:notice] = "This registration is already paid in full."
       render :lookup, status: :unprocessable_entity
@@ -61,7 +61,7 @@ class BalancePaymentsController < ApplicationController
 
     # Check if there's a remaining balance
     @remaining_balance = @registration.remaining_balance
-    
+
     if @remaining_balance.nil? || @remaining_balance <= 0
       flash[:notice] = "This registration is already paid in full."
       redirect_to balance_payment_lookup_path
@@ -144,7 +144,7 @@ class BalancePaymentsController < ApplicationController
 
       if payment_intent.status == "succeeded"
         # Check if payment was already processed (idempotency check)
-        if @registration.payment_status == "succeeded" && 
+        if @registration.payment_status == "succeeded" &&
            @registration.stripe_payment_intent_id == payment_intent_id &&
            @registration.remaining_balance <= 0
           redirect_to balance_payment_confirmation_path(@registration)
@@ -153,7 +153,7 @@ class BalancePaymentsController < ApplicationController
 
         # Update registration with additional payment
         new_amount_paid = (@registration.amount_paid.to_f + (payment_intent.amount / 100.0)).round(2)
-        
+
         @registration.update(
           payment_status: "succeeded",
           stripe_payment_intent_id: payment_intent_id,
@@ -174,11 +174,11 @@ class BalancePaymentsController < ApplicationController
   # GET /balance_payment/:id/confirmation
   def confirmation
     @registration = AttendeeRegistration.find(params[:id])
-    
+
     unless @registration.paid_in_full?
       flash[:alert] = "Payment not completed."
       redirect_to balance_payment_path(@registration)
-      return
+      nil
     end
   end
 

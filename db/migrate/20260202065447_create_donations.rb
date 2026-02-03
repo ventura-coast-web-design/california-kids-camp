@@ -9,7 +9,7 @@ class CreateDonations < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    
+
     add_index :donations, :stripe_payment_intent_id, unique: true
     add_index :donations, :email
   end
