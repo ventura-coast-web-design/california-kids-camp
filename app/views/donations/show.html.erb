@@ -285,14 +285,18 @@
         }
       });
       
-      // Handle form submission
-      let isProcessing = false; // Prevent duplicate submissions
+      // Handle form submission - use window scope to persist across page reloads
+      if (!window.donationProcessing) {
+        window.donationProcessing = false;
+      }
       
-      donationForm.addEventListener('submit', async function(event) {
+      // Define handler function separately so we can reference it
+      async function handleDonationSubmit(event) {
         event.preventDefault();
         
         // Prevent duplicate submissions
-        if (isProcessing) {
+        if (window.donationProcessing) {
+          console.log('Payment already processing, ignoring duplicate submission');
           return;
         }
         
@@ -316,7 +320,7 @@
         }
         
         // Set processing flag and disable button
-        isProcessing = true;
+        window.donationProcessing = true;
         submitButton.disabled = true;
         buttonText.style.display = 'none';
         spinner.style.display = 'inline';
@@ -328,7 +332,7 @@
             submitButton.disabled = false;
             buttonText.style.display = 'inline';
             spinner.style.display = 'none';
-            isProcessing = false;
+            window.donationProcessing = false;
             return;
           }
           
@@ -343,7 +347,7 @@
             submitButton.disabled = false;
             buttonText.style.display = 'inline';
             spinner.style.display = 'none';
-            isProcessing = false;
+            window.donationProcessing = false;
             return;
           }
           
@@ -363,7 +367,7 @@
             submitButton.disabled = false;
             buttonText.style.display = 'inline';
             spinner.style.display = 'none';
-            isProcessing = false;
+            window.donationProcessing = false;
             return;
           }
           
@@ -378,48 +382,58 @@
             submitButton.disabled = false;
             buttonText.style.display = 'inline';
             spinner.style.display = 'none';
-            isProcessing = false;
+            window.donationProcessing = false;
           } else {
             // Payment succeeded
             if (paymentIntent.status === 'succeeded') {
-              // Redirect to success page
-              const successForm = document.createElement('form');
-              successForm.method = 'POST';
-              successForm.action = `/donations/${currentDonationId}/payment_success`;
+              // Prevent multiple redirects - check if we've already submitted
+              if (window.donationRedirected) {
+                console.log('Redirect already initiated, ignoring duplicate');
+                return;
+              }
+              window.donationRedirected = true;
               
-              const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-              const csrfInput = document.createElement('input');
-              csrfInput.type = 'hidden';
-              csrfInput.name = 'authenticity_token';
-              csrfInput.value = csrfToken;
-              successForm.appendChild(csrfInput);
-              
-              const paymentIntentInput = document.createElement('input');
-              paymentIntentInput.type = 'hidden';
-              paymentIntentInput.name = 'payment_intent_id';
-              paymentIntentInput.value = paymentIntent.id;
-              successForm.appendChild(paymentIntentInput);
-              
-              document.body.appendChild(successForm);
-              successForm.submit();
+              // Redirect to success page - use window.location to prevent duplicate form submissions
+              window.location.href = `/donations/${currentDonationId}/payment_success?payment_intent_id=${encodeURIComponent(paymentIntent.id)}`;
             } else {
               // Payment not succeeded, re-enable form
               submitButton.disabled = false;
               buttonText.style.display = 'inline';
               spinner.style.display = 'none';
-              isProcessing = false;
+              window.donationProcessing = false;
             }
           }
         } catch (err) {
           // Handle any unexpected errors
           console.error('Payment error:', err);
-          document.getElementById('card-errors').textContent = 'An unexpected error occurred. Please try again.';
+          
+          // Check if payment actually succeeded despite the error
+          // If we have a payment intent ID, check its status
+          if (currentDonationId && window.donationElements.currentClientSecret) {
+            try {
+              const paymentIntent = await stripe.retrievePaymentIntent(window.donationElements.currentClientSecret);
+              if (paymentIntent.paymentIntent && paymentIntent.paymentIntent.status === 'succeeded') {
+                // Payment succeeded, redirect to success page
+                if (!window.donationRedirected) {
+                  window.donationRedirected = true;
+                  window.location.href = `/donations/${currentDonationId}/payment_success?payment_intent_id=${encodeURIComponent(paymentIntent.paymentIntent.id)}`;
+                  return;
+                }
+              }
+            } catch (checkError) {
+              console.error('Error checking payment status:', checkError);
+            }
+          }
+          
+          document.getElementById('card-errors').textContent = 'An unexpected error occurred. If your payment was processed, you will receive a confirmation email.';
           submitButton.disabled = false;
           buttonText.style.display = 'inline';
           spinner.style.display = 'none';
-          isProcessing = false;
+          window.donationProcessing = false;
         }
-      });
+      }
+      
+      donationForm.addEventListener('submit', handleDonationSubmit);
     } catch (error) {
       console.error('Error initializing payment:', error);
       document.getElementById('card-errors').textContent = 'An error occurred. Please refresh the page and try again.';

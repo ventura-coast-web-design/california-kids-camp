@@ -63,7 +63,7 @@ class DonationsController < ApplicationController
     end
   end
 
-  # POST /donations/:id/payment_success
+  # GET/POST /donations/:id/payment_success
   def payment_success
     payment_intent_id = params[:payment_intent_id] || @donation.stripe_payment_intent_id
 
@@ -84,21 +84,32 @@ class DonationsController < ApplicationController
       end
 
       if payment_intent.status == "succeeded"
-        # Check if payment was already processed (idempotency check)
-        if @donation.succeeded? && @donation.stripe_payment_intent_id == payment_intent_id
-          redirect_to donation_confirmation_path(@donation)
-          return
+        # Use database transaction with locking to prevent race conditions
+        @donation.with_lock do
+          # Reload to get latest state
+          @donation.reload
+          
+          # Check if payment was already processed (idempotency check)
+          if @donation.succeeded? && @donation.stripe_payment_intent_id == payment_intent_id
+            redirect_to donation_confirmation_path(@donation)
+            return
+          end
+
+          # Update donation with successful payment atomically
+          @donation.update!(
+            payment_status: "succeeded",
+            stripe_payment_intent_id: payment_intent_id,
+            amount: payment_intent.amount / 100.0
+          )
         end
 
-        # Update donation with successful payment
-        @donation.update(
-          payment_status: "succeeded",
-          stripe_payment_intent_id: payment_intent_id,
-          amount: payment_intent.amount / 100.0
-        )
-
-        # Send receipt email
-        DonationMailer.donation_receipt(@donation).deliver_later
+        # Send receipt email (outside transaction to avoid blocking)
+        begin
+          DonationMailer.donation_receipt(@donation.reload).deliver_later
+        rescue => e
+          # Log error but don't fail the request - payment is already recorded
+          Rails.logger.error "Failed to send donation receipt email: #{e.message}"
+        end
 
         redirect_to donation_confirmation_path(@donation)
       else
@@ -106,7 +117,17 @@ class DonationsController < ApplicationController
         redirect_to donations_path
       end
     rescue Stripe::StripeError => e
+      Rails.logger.error "Stripe error processing donation #{@donation.id}: #{e.message}"
       flash[:alert] = "There was an error processing your payment: #{e.message}"
+      redirect_to donations_path
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Database error processing donation #{@donation.id}: #{e.message}"
+      flash[:alert] = "There was an error saving your donation. Please contact support."
+      redirect_to donations_path
+    rescue => e
+      Rails.logger.error "Unexpected error processing donation #{@donation.id}: #{e.class} - #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      flash[:alert] = "An unexpected error occurred. Please contact support if the payment was processed."
       redirect_to donations_path
     end
   end

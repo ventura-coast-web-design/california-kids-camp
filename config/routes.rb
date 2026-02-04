@@ -79,7 +79,8 @@ Rails.application.routes.draw do
   # Donation routes
   get "donations", to: "donations#show", as: "donations"
   post "donations/create_payment_intent", to: "donations#create_payment_intent", as: "donations_create_payment_intent"
-  post "donations/:id/payment_success", to: "donations#payment_success", as: "donation_payment_success"
+  get "donations/:id/payment_success", to: "donations#payment_success", as: "donation_payment_success"
+  post "donations/:id/payment_success", to: "donations#payment_success"
   get "donations/:id/confirmation", to: "donations#confirmation", as: "donation_confirmation"
 
   # Defines the root path route ("/")
