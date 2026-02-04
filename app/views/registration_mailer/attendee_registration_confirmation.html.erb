@@ -1,0 +1,68 @@
+<h1>Registration Confirmation</h1>
+
+<p>Dear <%= @guardian_name %>,</p>
+
+<p>Thank you for registering your child(ren) for California Kids Camp! We're excited to have them join us.</p>
+
+<% if @attendee_registration.paid? %>
+  <div class="receipt-box">
+    <h2>Payment Receipt</h2>
+    
+    <div class="receipt-row">
+      <span class="receipt-label">Payment Date:</span>
+      <span class="receipt-value"><%= @attendee_registration.updated_at.strftime("%B %d, %Y") %></span>
+    </div>
+    
+    <div class="receipt-row">
+      <span class="receipt-label">Payment Type:</span>
+      <span class="receipt-value"><%= @attendee_registration.payment_type == "deposit" ? "Deposit" : "Full Payment" %></span>
+    </div>
+    
+    <div class="receipt-row">
+      <span class="receipt-label">Pricing Type:</span>
+      <span class="receipt-value"><%= @attendee_registration.pricing_type_display %></span>
+    </div>
+    
+    <div class="receipt-row">
+      <span class="receipt-label">Number of Attendees:</span>
+      <span class="receipt-value"><%= @attendee_registration.attendees.count %></span>
+    </div>
+    
+    <div class="receipt-row">
+      <span class="receipt-label">Total Amount:</span>
+      <span class="receipt-value">$<%= sprintf("%.2f", @attendee_registration.calculate_total_amount) %></span>
+    </div>
+    
+    <div class="receipt-row">
+      <span class="receipt-label">Amount Paid:</span>
+      <span class="receipt-value">$<%= sprintf("%.2f", @attendee_registration.amount_paid || 0) %></span>
+    </div>
+    
+    <% if @attendee_registration.remaining_balance > 0 %>
+      <div class="receipt-row">
+        <span class="receipt-label">Remaining Balance:</span>
+        <span class="receipt-value">$<%= sprintf("%.2f", @attendee_registration.remaining_balance) %></span>
+      </div>
+    <% end %>
+    
+    <div class="receipt-row">
+      <span class="receipt-label">Payment Status:</span>
+      <span class="receipt-value"><%= @attendee_registration.payment_status_display %></span>
+    </div>
+    
+  </div>
+<% end %>
+
+<h2>Registered Attendees</h2>
+<ul>
+  <% @attendee_registration.attendees.each do |attendee| %>
+    <li><strong><%= attendee.first_name %> <%= attendee.last_name %></strong> - Age <%= attendee.age %></li>
+  <% end %>
+</ul>
+
+<p>If you have any questions or need to make changes to your registration, please don't hesitate to contact us.</p>
+
+<p>We look forward to seeing you at camp!</p>
+
+<p>Best regards,<br>
+California Kids Camp Team</p>

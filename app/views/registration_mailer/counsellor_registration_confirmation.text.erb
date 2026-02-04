@@ -1,0 +1,24 @@
+Registration Confirmation
+
+Dear <%= @counsellor_name %>,
+
+Thank you for registering as a counsellor for California Kids Camp! We're thrilled to have you join our team.
+
+REGISTRATION DETAILS
+====================
+
+Registration Date: <%= @counsellor.created_at.strftime("%B %d, %Y") %>
+Name: <%= @counsellor.first_name %> <%= @counsellor.last_name %>
+Email: <%= @counsellor.email %>
+Phone: <%= @counsellor.phone %>
+Ecclesia: <%= @counsellor.ecclesia %>
+T-Shirt Size: <%= @counsellor.tshirt_size %>
+
+We'll be reviewing your registration and will be in touch soon with next steps.
+
+If you have any questions or need to make changes to your registration, please don't hesitate to contact us.
+
+Thank you for your commitment to serving at camp!
+
+Best regards,
+California Kids Camp Team

@@ -160,6 +160,9 @@ class BalancePaymentsController < ApplicationController
           amount_paid: new_amount_paid
         )
 
+        # Send updated confirmation email with new payment details
+        RegistrationMailer.attendee_registration_confirmation(@registration).deliver_later
+
         redirect_to balance_payment_confirmation_path(@registration)
       else
         flash[:alert] = "Payment was not successful. Please try again."

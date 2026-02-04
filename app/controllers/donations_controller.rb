@@ -97,6 +97,9 @@ class DonationsController < ApplicationController
           amount: payment_intent.amount / 100.0
         )
 
+        # Send receipt email
+        DonationMailer.donation_receipt(@donation).deliver_later
+
         redirect_to donation_confirmation_path(@donation)
       else
         flash[:alert] = "Payment was not successful. Please try again."

@@ -1,0 +1,50 @@
+<h1>Donation Receipt</h1>
+
+<p>Dear <%= @donor_name %>,</p>
+
+<p>Thank you for your generous donation to California Kids Camp! Your support helps make our camp possible.</p>
+
+<div class="receipt-box">
+  <h2>Donation Details</h2>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Donation ID:</span>
+    <span class="receipt-value">#<%= @donation.id %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Donation Date:</span>
+    <span class="receipt-value"><%= @payment_date.strftime("%B %d, %Y") %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Donor Name:</span>
+    <span class="receipt-value"><%= @donor_name %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Donor Email:</span>
+    <span class="receipt-value"><%= @donor_email %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Payment Status:</span>
+    <span class="receipt-value"><%= @donation.payment_status.capitalize %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Donation Amount:</span>
+    <span class="receipt-value">$<%= sprintf("%.2f", @amount) %></span>
+  </div>
+</div>
+
+<p>This receipt serves as confirmation of your donation. Please keep this email for your records.</p>
+
+<p>Your generosity makes a real difference in the lives of the children who attend camp. Thank you again for your support!</p>
+
+<p>Best regards,<br>
+California Kids Camp Team</p>
+
+<p style="font-size: 12px; color: #666666; margin-top: 30px;">
+  <em>California Kids Camp is a registered organization. This receipt may be used for tax purposes.</em>
+</p>

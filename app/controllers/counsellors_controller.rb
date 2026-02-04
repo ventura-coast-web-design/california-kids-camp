@@ -92,6 +92,11 @@ class CounsellorsController < ApplicationController
     end
 
     if errors.empty? && created_counselors.any?
+      # Send confirmation emails to all registered counselors
+      created_counselors.each do |counsellor|
+        RegistrationMailer.counsellor_registration_confirmation(counsellor).deliver_later
+      end
+
       # Store count of registered counselors in flash for display on confirmation page
       flash[:notice] = "Registration submitted successfully! We'll be in touch soon."
       flash[:counsellors_count] = created_counselors.count if created_counselors.count > 1

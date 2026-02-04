@@ -48,24 +48,41 @@ Rails.application.configure do
   # 3. Real SMTP (Gmail, SendGrid, etc.)
 
   # Option 1: Letter Opener (uncomment after adding gem)
-  config.action_mailer.delivery_method = :letter_opener
-  config.action_mailer.perform_deliveries = true
+  # config.action_mailer.delivery_method = :letter_opener
+  # config.action_mailer.perform_deliveries = true
 
   # Option 2: Mailcatcher
   # config.action_mailer.delivery_method = :smtp
   # config.action_mailer.smtp_settings = { address: 'localhost', port: 1025 }
 
   # Option 3: Gmail/Real SMTP (requires ENV variables)
-  # config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.smtp_settings = {
-  #   address: 'smtp.gmail.com',
-  #   port: 587,
-  #   domain: 'californiacamping.com',
-  #   user_name: ENV['SMTP_USERNAME'],
-  #   password: ENV['SMTP_PASSWORD'],
-  #   authentication: 'plain',
-  #   enable_starttls_auto: true
-  # }
+  if ENV['GMAIL_USERNAME'].present? && ENV['GMAIL_APP_PASSWORD'].present?
+    config.action_mailer.delivery_method = :smtp
+    # Try port 465 with SSL first (more reliable), fallback to 587 with STARTTLS
+    smtp_port = ENV.fetch('SMTP_PORT', '587').to_i
+    smtp_settings = {
+      address: 'smtp.gmail.com',
+      port: smtp_port,
+      domain: 'gmail.com',
+      user_name: ENV['GMAIL_USERNAME'],
+      password: ENV['GMAIL_APP_PASSWORD'],
+      authentication: 'plain',
+      openssl_verify_mode: 'none' # Disable SSL verification for development
+    }
+    
+    if smtp_port == 465
+      # Port 465 uses SSL directly
+      smtp_settings[:ssl] = true
+    else
+      # Port 587 uses STARTTLS
+      smtp_settings[:enable_starttls_auto] = true
+    end
+    
+    config.action_mailer.smtp_settings = smtp_settings
+  else
+    # Fallback to letter_opener if Gmail credentials not set
+    config.action_mailer.delivery_method = :letter_opener
+  end
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

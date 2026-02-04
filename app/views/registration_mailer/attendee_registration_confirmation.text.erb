@@ -1,0 +1,35 @@
+Registration Confirmation
+
+Dear <%= @guardian_name %>,
+
+Thank you for registering your child(ren) for California Kids Camp! We're excited to have them join us.
+
+<% if @attendee_registration.paid? %>
+PAYMENT RECEIPT
+===============
+
+Payment Date: <%= @attendee_registration.updated_at.strftime("%B %d, %Y") %>
+Payment Type: <%= @attendee_registration.payment_type == "deposit" ? "Deposit" : "Full Payment" %>
+Pricing Type: <%= @attendee_registration.pricing_type_display %>
+Number of Attendees: <%= @attendee_registration.attendees.count %>
+Total Amount: $<%= sprintf("%.2f", @attendee_registration.calculate_total_amount) %>
+Amount Paid: $<%= sprintf("%.2f", @attendee_registration.amount_paid || 0) %>
+<% if @attendee_registration.remaining_balance > 0 %>
+Remaining Balance: $<%= sprintf("%.2f", @attendee_registration.remaining_balance) %>
+<% end %>
+Payment Status: <%= @attendee_registration.payment_status_display %>
+
+<% end %>
+
+REGISTERED ATTENDEES
+====================
+<% @attendee_registration.attendees.each do |attendee| %>
+- <%= attendee.first_name %> <%= attendee.last_name %> - Age <%= attendee.age %>
+<% end %>
+
+If you have any questions or need to make changes to your registration, please don't hesitate to contact us.
+
+We look forward to seeing you at camp!
+
+Best regards,
+California Kids Camp Team

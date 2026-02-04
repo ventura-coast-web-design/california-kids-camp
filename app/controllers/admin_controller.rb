@@ -227,13 +227,13 @@ class AdminController < ApplicationController
     if attendee_count <= 1
       attendee_name = "#{@attendee.first_name} #{@attendee.last_name}"
       registration_id = @registration.id
-      
+
       # Delete the attendee (which will cascade delete the registration due to dependent: :destroy)
       # But we need to delete the registration explicitly to handle payment cleanup
       if @attendee.destroy
         # Registration should be deleted via dependent: :destroy, but let's ensure it's gone
         AttendeeRegistration.find_by(id: registration_id)&.destroy
-        
+
         flash[:notice] = "Attendee #{attendee_name} and their registration have been deleted successfully."
         redirect_to admin_path
       else
@@ -248,19 +248,19 @@ class AdminController < ApplicationController
 
     # Delete the attendee
     attendee_name = "#{@attendee.first_name} #{@attendee.last_name}"
-    
+
     if @attendee.destroy
       # Reload registration to get updated attendee count
       @registration.reload
-      
+
       # Adjust amount_paid by subtracting the per-attendee amount
       # This ensures the payment amount reflects only the remaining attendees
       new_amount_paid = (@registration.amount_paid.to_f - per_attendee_paid).round(2)
       # Ensure amount_paid doesn't go negative
-      new_amount_paid = [new_amount_paid, 0.0].max
-      
+      new_amount_paid = [ new_amount_paid, 0.0 ].max
+
       @registration.update(amount_paid: new_amount_paid)
-      
+
       flash[:notice] = "Attendee #{attendee_name} has been deleted successfully."
       redirect_to admin_path
     else

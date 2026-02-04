@@ -2,12 +2,112 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       /* Email styles need to be inline */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333333;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+      }
+      .email-header {
+        background-color: #ffffff;
+        padding: 30px 20px;
+        text-align: center;
+        border-bottom: 2px solid #e0e0e0;
+      }
+      .email-header img {
+        max-width: 200px;
+        height: auto;
+      }
+      .email-body {
+        padding: 30px 20px;
+      }
+      .email-footer {
+        background-color: #f9f9f9;
+        padding: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #666666;
+        border-top: 1px solid #e0e0e0;
+      }
+      .receipt-box {
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .receipt-row:last-child {
+        border-bottom: none;
+        font-weight: bold;
+        font-size: 18px;
+        padding-top: 10px;
+        margin-top: 10px;
+        border-top: 2px solid #333333;
+      }
+      .receipt-label {
+        color: #666666;
+      }
+      .receipt-value {
+        color: #333333;
+        font-weight: 500;
+      }
+      h1 {
+        color: #333333;
+        font-size: 24px;
+        margin-top: 0;
+      }
+      h2 {
+        color: #333333;
+        font-size: 20px;
+        margin-top: 20px;
+      }
+      p {
+        margin: 10px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #007bff;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
     </style>
   </head>
 
   <body>
-    <%= yield %>
+    <div class="email-container">
+      <div class="email-header">
+        <% if attachments['logo-black.png'] %>
+          <%= image_tag attachments['logo-black.png'].url, alt: 'California Kids Camp Logo' %>
+        <% else %>
+          <h1 style="color: #333333; margin: 0;">California Kids Camp</h1>
+        <% end %>
+      </div>
+      <div class="email-body">
+        <%= yield %>
+      </div>
+      <div class="email-footer">
+        <p>California Kids Camp</p>
+        <p>Thank you for your support!</p>
+      </div>
+    </div>
   </body>
 </html>

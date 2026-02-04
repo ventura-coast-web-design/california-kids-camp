@@ -1,0 +1,23 @@
+Donation Receipt
+
+Dear <%= @donor_name %>,
+
+Thank you for your generous donation to California Kids Camp! Your support helps make our camp possible.
+
+DONATION DETAILS
+================
+
+Donation Date: <%= @payment_date.strftime("%B %d, %Y") %>
+Donor Name: <%= @donor_name %>
+Donor Email: <%= @donor_email %>
+Payment Status: <%= @donation.payment_status.capitalize %>
+Donation Amount: $<%= sprintf("%.2f", @amount) %>
+
+This receipt serves as confirmation of your donation. Please keep this email for your records.
+
+Your generosity makes a real difference in the lives of the children who attend camp. Thank you again for your support!
+
+Best regards,
+California Kids Camp Team
+
+California Kids Camp is a registered organization. This receipt may be used for tax purposes.

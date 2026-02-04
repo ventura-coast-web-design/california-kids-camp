@@ -300,6 +300,9 @@ class AttendeeRegistrationsController < ApplicationController
             # Clear session data
             session.delete(:pending_registration)
 
+            # Send confirmation email
+            RegistrationMailer.attendee_registration_confirmation(@attendee_registration).deliver_later
+
             redirect_to attendee_registration_path(@attendee_registration)
           else
             flash[:alert] = "There was an error saving your registration. Please contact support."
@@ -337,7 +340,9 @@ class AttendeeRegistrationsController < ApplicationController
 
         if payment_intent.status == "succeeded"
           # Check if payment was already processed (idempotency check)
-          if @attendee_registration.payment_status == "succeeded" && @attendee_registration.stripe_payment_intent_id == payment_intent_id
+          was_already_paid = @attendee_registration.payment_status == "succeeded" && @attendee_registration.stripe_payment_intent_id == payment_intent_id
+          
+          if was_already_paid
             redirect_to attendee_registration_path(@attendee_registration)
             return
           end
@@ -351,6 +356,9 @@ class AttendeeRegistrationsController < ApplicationController
             amount_paid: payment_intent.amount / 100.0,
             payment_type: payment_type
           )
+
+          # Send confirmation email
+          RegistrationMailer.attendee_registration_confirmation(@attendee_registration).deliver_later
 
           redirect_to attendee_registration_path(@attendee_registration)
         else

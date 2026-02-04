@@ -1,0 +1,49 @@
+<h1>Registration Confirmation</h1>
+
+<p>Dear <%= @counsellor_name %>,</p>
+
+<p>Thank you for registering as a counsellor for California Kids Camp! We're thrilled to have you join our team.</p>
+
+<h2>Registration Details</h2>
+
+<div class="receipt-box">
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Registration Date:</span>
+    <span class="receipt-value"><%= @counsellor.created_at.strftime("%B %d, %Y") %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Name:</span>
+    <span class="receipt-value"><%= @counsellor.first_name %> <%= @counsellor.last_name %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Email:</span>
+    <span class="receipt-value"><%= @counsellor.email %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Phone:</span>
+    <span class="receipt-value"><%= @counsellor.phone %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">Ecclesia:</span>
+    <span class="receipt-value"><%= @counsellor.ecclesia %></span>
+  </div>
+  
+  <div class="receipt-row">
+    <span class="receipt-label">T-Shirt Size:</span>
+    <span class="receipt-value"><%= @counsellor.tshirt_size %></span>
+  </div>
+</div>
+
+<p>We'll be reviewing your registration and will be in touch soon with next steps.</p>
+
+<p>If you have any questions or need to make changes to your registration, please don't hesitate to contact us.</p>
+
+<p>Thank you for your commitment to serving at camp!</p>
+
+<p>Best regards,<br>
+California Kids Camp Team</p>
