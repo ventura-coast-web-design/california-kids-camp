@@ -7,6 +7,9 @@ app = 'california-kids-camp'
 primary_region = 'sjc'
 console_command = '/rails/bin/rails console'
 
+[deploy]
+  release_command = "bundle exec rails db:migrate"
+
 [build]
 
 [http_service]
