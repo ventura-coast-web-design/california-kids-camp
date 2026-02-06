@@ -77,4 +77,6 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 # Fly.io sets PORT environment variable automatically
 # Puma config (config/puma.rb) ensures binding to 0.0.0.0:PORT
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+# Explicitly start Rails server binding to 0.0.0.0 to accept external connections
+# Rails will read PORT from environment variable set by Fly.io
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]
