@@ -7,14 +7,25 @@
           <a href="<%= admin_path %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
             ← Back to Dashboard
           </a>
-          <%= button_to "Delete Counselor", admin_delete_counsellor_path(@counsellor), 
-              method: :delete, 
-              class: "btn btn-danger", 
-              style: "padding: 0.5rem 1rem;",
-              data: { 
-                turbo_confirm: "Are you sure you want to delete #{@counsellor.first_name} #{@counsellor.last_name}? This action cannot be undone.",
-                turbo: false 
-              } %>
+          <% if @counsellor.archived? %>
+            <%= button_to "Delete Counselor", admin_delete_counsellor_path(@counsellor), 
+                method: :delete, 
+                class: "btn btn-danger", 
+                style: "padding: 0.5rem 1rem;",
+                data: { 
+                  turbo_confirm: "Are you sure you want to PERMANENTLY DELETE #{@counsellor.first_name} #{@counsellor.last_name}? This action CANNOT be undone. Make sure refunds have been processed.",
+                  turbo: false 
+                } %>
+          <% else %>
+            <%= button_to "Archive Counselor", admin_archive_counsellor_path(@counsellor), 
+                method: :post, 
+                class: "btn btn-warning", 
+                style: "padding: 0.5rem 1rem;",
+                data: { 
+                  turbo_confirm: "Are you sure you want to archive #{@counsellor.first_name} #{@counsellor.last_name}? They will be moved to the archived list where they can be permanently deleted after refunds are processed.",
+                  turbo: false 
+                } %>
+          <% end %>
           <%= button_to "Logout", admin_logout_path, method: :delete, class: "btn btn-outline", style: "padding: 0.5rem 1rem;", data: { turbo: false } %>
         </div>
       </div>

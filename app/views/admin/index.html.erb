@@ -17,6 +17,12 @@
         <button class="admin-tab" data-tab="counsellors" onclick="switchTab('counsellors')">
           Counselors (<%= @counsellors.count %>)
         </button>
+        <button class="admin-tab" data-tab="archived-attendees" onclick="switchTab('archived-attendees')">
+          Archived Attendees (<%= @archived_attendees.count %>)
+        </button>
+        <button class="admin-tab" data-tab="archived-counsellors" onclick="switchTab('archived-counsellors')">
+          Archived Counselors (<%= @archived_counsellors.count %>)
+        </button>
       </div>
       <div style="display: flex; gap: 0.5rem;">
         <a href="<%= admin_export_attendees_path(format: :csv) %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
@@ -194,14 +200,14 @@
                     <small style="color: #6b7280;"><%= registration.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%I:%M %p %Z") %></small>
                   </td>
                   <td>
-                    <%= button_to "Delete", admin_delete_attendee_path(attendee), 
-                        method: :delete, 
-                        class: "btn btn-danger", 
+                    <%= button_to "Archive", admin_archive_attendee_path(attendee), 
+                        method: :post, 
+                        class: "btn btn-warning", 
                         style: "padding: 0.25rem 0.5rem; font-size: 0.875rem;",
                         remote: false,
                         form: { data: { turbo: false } },
                         data: { 
-                          confirm: "Are you sure you want to delete #{attendee.first_name} #{attendee.last_name}? This will adjust the registration's payment amount. This action cannot be undone.",
+                          confirm: "Are you sure you want to archive #{attendee.first_name} #{attendee.last_name}? They will be moved to the archived list where they can be permanently deleted after refunds are processed.",
                           turbo: false
                         } %>
                   </td>
@@ -280,13 +286,14 @@
                     <% end %>
                   </td>
                   <td>
-                    <%= button_to "Delete", admin_delete_counsellor_path(counsellor), 
-                        method: :delete, 
-                        class: "btn btn-danger", 
+                    <%= button_to "Archive", admin_archive_counsellor_path(counsellor), 
+                        method: :post, 
+                        class: "btn btn-warning", 
                         style: "padding: 0.25rem 0.5rem; font-size: 0.875rem;",
+                        remote: false,
                         form: { data: { turbo: false } },
                         data: { 
-                          confirm: "Are you sure you want to delete #{counsellor.first_name} #{counsellor.last_name}? This action cannot be undone.",
+                          confirm: "Are you sure you want to archive #{counsellor.first_name} #{counsellor.last_name}? They will be moved to the archived list where they can be permanently deleted after refunds are processed.",
                           turbo: false
                         } %>
                   </td>
@@ -297,6 +304,280 @@
         </div>
       <% else %>
         <p class="text-gray-600">No counselor registrations yet.</p>
+      <% end %>
+    </div>
+
+    <!-- Archived Attendees Tab Content -->
+    <div id="archived-attendees-tab" class="admin-tab-content">
+      <h3 style="margin-bottom: 1.5rem;">Archived Attendees</h3>
+      <p class="text-gray-600" style="margin-bottom: 1rem;">These attendees have been archived. Review payment information before permanent deletion.</p>
+      
+      <% if @archived_attendees.any? %>
+        <div class="admin-table-container" style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Payment Status</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>T-Shirt Size</th>
+                <th>Ecclesia</th>
+                <th>Piano</th>
+                <th>Address</th>
+                <th>Medical Conditions</th>
+                <th>Dietary Restrictions</th>
+                <th>Allergies</th>
+                <th>Special Needs</th>
+                <th>Notes</th>
+                <th>Guardian 1</th>
+                <th>Guardian 1 Contact</th>
+                <th>Guardian 2</th>
+                <th>Guardian 2 Contact</th>
+                <th>Emergency Contact 1</th>
+                <th>Emergency Contact 2</th>
+                <th>Registration Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @archived_attendees.each do |attendee| %>
+                <% registration = attendee.attendee_registration %>
+                <tr>
+                  <td>
+                    <strong>
+                      <%= link_to "#{attendee.first_name} #{attendee.last_name}", admin_attendee_path(attendee), style: "color: #2c5f2d; text-decoration: none;", onmouseover: "this.style.textDecoration='underline'", onmouseout: "this.style.textDecoration='none'" %>
+                    </strong>
+                  </td>
+                  <td>
+                    <% if registration.paid? %>
+                      <% if registration.paid_in_full? %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Paid in Full
+                        </span>
+                        <div class="text-xs text-gray-500 mt-1">
+                          Paid: $<%= sprintf('%.2f', registration.calculate_per_attendee_paid) %><br>
+                          Total: $<%= sprintf('%.2f', registration.calculate_per_attendee_total) %>
+                          <% if registration.pricing_type == 'early_bird' %>
+                            <br><span class="text-green-600">Early Bird</span>
+                          <% end %>
+                        </div>
+                      <% elsif registration.paid_deposit? %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          Deposit Paid
+                        </span>
+                        <div class="text-xs text-gray-500 mt-1">
+                          Paid: $<%= sprintf('%.2f', registration.calculate_per_attendee_paid) %><br>
+                          Balance: $<%= sprintf('%.2f', registration.calculate_per_attendee_balance) %><br>
+                          Total: $<%= sprintf('%.2f', registration.calculate_per_attendee_total) %>
+                          <% if registration.pricing_type == 'early_bird' %>
+                            <br><span class="text-green-600">Early Bird</span>
+                          <% end %>
+                        </div>
+                      <% else %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          Paid
+                        </span>
+                        <div class="text-xs text-gray-500 mt-1">
+                          Paid: $<%= sprintf('%.2f', registration.calculate_per_attendee_paid) %><br>
+                          Total: $<%= sprintf('%.2f', registration.calculate_per_attendee_total) %>
+                          <% if registration.pricing_type == 'early_bird' %>
+                            <br><span class="text-green-600">Early Bird</span>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Not Paid
+                      </span>
+                      <div class="text-xs text-gray-500 mt-1">
+                        Total: $<%= sprintf('%.2f', registration.calculate_per_attendee_total) %>
+                        <% if registration.pricing_type == 'early_bird' %>
+                          <br><span class="text-green-600">Early Bird</span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </td>
+                  <td><%= attendee.date_of_birth&.strftime("%m/%d/%Y") %></td>
+                  <td><%= attendee.age %></td>
+                  <td><%= attendee.gender %></td>
+                  <td><%= attendee.phone %></td>
+                  <td><%= attendee.email %></td>
+                  <td><%= attendee.tshirt_size %></td>
+                  <td><%= attendee.ecclesia %></td>
+                  <td><%= attendee.piano ? "Yes" : "No" %></td>
+                  <td>
+                    <% if attendee.address_line_1.present? %>
+                      <%= attendee.address_line_1 %><br>
+                      <% if attendee.address_line_2.present? %><%= attendee.address_line_2 %><br><% end %>
+                      <%= [attendee.city, attendee.state, attendee.zip].compact.join(", ") %>
+                    <% else %>
+                      <em>Same as Guardian</em>
+                    <% end %>
+                  </td>
+                  <td><%= attendee.medical_conditions %></td>
+                  <td><%= attendee.dietary_restrictions %></td>
+                  <td><%= attendee.allergies %></td>
+                  <td><%= attendee.special_needs %></td>
+                  <td><%= attendee.notes %></td>
+                  <td>
+                    <%= registration.guardian_1_name %><br>
+                    <%= registration.guardian_1_email %><br>
+                    <%= registration.guardian_1_phone %>
+                  </td>
+                  <td>
+                    <%= registration.guardian_1_address_line_1 %><br>
+                    <% if registration.guardian_1_address_line_2.present? %><%= registration.guardian_1_address_line_2 %><br><% end %>
+                    <%= registration.guardian_1_city %>, <%= registration.guardian_1_state %> <%= registration.guardian_1_zip %>
+                  </td>
+                  <td>
+                    <% if registration.guardian_2_name.present? %>
+                      <%= registration.guardian_2_name %><br>
+                      <%= registration.guardian_2_email %><br>
+                      <%= registration.guardian_2_phone %>
+                    <% else %>
+                      <em>N/A</em>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if registration.guardian_2_name.present? %>
+                      <% if registration.guardian_2_same_address %>
+                        <em>Same as Guardian 1</em>
+                      <% else %>
+                        <%= registration.guardian_2_address_line_1 %><br>
+                        <% if registration.guardian_2_address_line_2.present? %><%= registration.guardian_2_address_line_2 %><br><% end %>
+                        <%= registration.guardian_2_city %>, <%= registration.guardian_2_state %> <%= registration.guardian_2_zip %>
+                      <% end %>
+                    <% else %>
+                      <em>N/A</em>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= registration.emergency_contact_1_name %><br>
+                    <%= registration.emergency_contact_1_phone %>
+                  </td>
+                  <td>
+                    <% if registration.emergency_contact_2_name.present? %>
+                      <%= registration.emergency_contact_2_name %><br>
+                      <%= registration.emergency_contact_2_phone %>
+                    <% else %>
+                      <em>N/A</em>
+                    <% end %>
+                  </td>
+                  <td>
+                    <strong>
+                      <%= registration.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y") %>
+                    </strong><br>
+                    <small style="color: #6b7280;"><%= registration.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%I:%M %p %Z") %></small>
+                  </td>
+                  <td>
+                    <%= button_to "Delete", admin_delete_attendee_path(attendee), 
+                        method: :delete, 
+                        class: "btn btn-danger", 
+                        style: "padding: 0.25rem 0.5rem; font-size: 0.875rem;",
+                        remote: false,
+                        form: { data: { turbo: false } },
+                        data: { 
+                          confirm: "Are you sure you want to PERMANENTLY DELETE #{attendee.first_name} #{attendee.last_name}? This will adjust the registration's payment amount. This action CANNOT be undone. Make sure refunds have been processed.",
+                          turbo: false
+                        } %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-600">No archived attendees.</p>
+      <% end %>
+    </div>
+
+    <!-- Archived Counsellors Tab Content -->
+    <div id="archived-counsellors-tab" class="admin-tab-content">
+      <h3 style="margin-bottom: 1.5rem;">Archived Counselors</h3>
+      <p class="text-gray-600" style="margin-bottom: 1rem;">These counselors have been archived. Review payment information before permanent deletion.</p>
+      
+      <% if @archived_counsellors.any? %>
+        <div class="admin-table-container" style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Registration Date</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Ecclesia</th>
+                <th>T-Shirt Size</th>
+                <th>Piano</th>
+                <th>Pairing Request</th>
+                <th>Squirts</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @archived_counsellors.each do |counsellor| %>
+                <tr>
+                  <td>
+                    <strong>
+                      <%= link_to counsellor.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%m/%d/%Y"), admin_counsellor_path(counsellor), style: "color: #2c5f2d; text-decoration: none;", onmouseover: "this.style.textDecoration='underline'", onmouseout: "this.style.textDecoration='none'" %>
+                    </strong><br>
+                    <small style="color: #6b7280;"><%= counsellor.created_at.in_time_zone("Pacific Time (US & Canada)").strftime("%I:%M %p %Z") %></small>
+                  </td>
+                  <td>
+                    <strong><%= counsellor.first_name %> <%= counsellor.last_name %></strong>
+                  </td>
+                  <td><%= counsellor.gender %></td>
+                  <td>
+                    <%= counsellor.address_line_1 %><br>
+                    <%= counsellor.city %>, <%= counsellor.state_province_region %> <%= counsellor.postal_code %><br>
+                    <%= counsellor.country %>
+                  </td>
+                  <td><%= counsellor.phone %></td>
+                  <td><%= counsellor.email %></td>
+                  <td><%= counsellor.ecclesia %></td>
+                  <td><%= counsellor.tshirt_size %></td>
+                  <td><%= counsellor.piano %></td>
+                  <td>
+                    <% if counsellor.requested_pairing_name.present? %>
+                      <% if counsellor.requested_pairing_with.present? %>
+                        Registered together: <strong><%= counsellor.requested_pairing_name %></strong>
+                      <% else %>
+                        Requested: <strong><%= counsellor.requested_pairing_name %></strong>
+                      <% end %>
+                    <% else %>
+                      <em>None</em>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if counsellor.squirts.present? %>
+                      <%= counsellor.squirts_display %>
+                    <% else %>
+                      <em>None</em>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= button_to "Delete", admin_delete_counsellor_path(counsellor), 
+                        method: :delete, 
+                        class: "btn btn-danger", 
+                        style: "padding: 0.25rem 0.5rem; font-size: 0.875rem;",
+                        form: { data: { turbo: false } },
+                        data: { 
+                          confirm: "Are you sure you want to PERMANENTLY DELETE #{counsellor.first_name} #{counsellor.last_name}? This action CANNOT be undone. Make sure refunds have been processed.",
+                          turbo: false
+                        } %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-600">No archived counselors.</p>
       <% end %>
     </div>
     </div>

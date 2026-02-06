@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_065447) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_060200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_065447) do
     t.string "address_line_2"
     t.integer "age"
     t.text "allergies"
+    t.boolean "archived", default: false, null: false
     t.bigint "attendee_registration_id", null: false
     t.string "city"
     t.datetime "created_at", null: false
@@ -78,6 +79,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_065447) do
 
   create_table "counsellors", force: :cascade do |t|
     t.string "address_line_1", null: false
+    t.boolean "archived", default: false, null: false
     t.string "city", null: false
     t.string "country", default: "United States of America", null: false
     t.datetime "created_at", null: false

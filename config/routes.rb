@@ -49,8 +49,10 @@ Rails.application.routes.draw do
   get "admin", to: "admin#index", as: "admin"
   get "admin/export_attendees", to: "admin#export_attendees", as: "admin_export_attendees"
   get "admin/export_counsellors", to: "admin#export_counsellors", as: "admin_export_counsellors"
+  post "admin/attendees/:id/archive", to: "admin#archive_attendee", as: "admin_archive_attendee"
   delete "admin/attendees/:id", to: "admin#delete_attendee", as: "admin_delete_attendee"
   get "admin/attendees/:id", to: "admin#show_attendee", as: "admin_attendee"
+  post "admin/counsellors/:id/archive", to: "admin#archive_counsellor", as: "admin_archive_counsellor"
   delete "admin/counsellors/:id", to: "admin#delete_counsellor", as: "admin_delete_counsellor"
   get "admin/counsellors/:id", to: "admin#show_counsellor", as: "admin_counsellor"
 

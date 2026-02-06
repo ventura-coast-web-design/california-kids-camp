@@ -7,16 +7,29 @@
           <a href="<%= admin_path %>" class="btn btn-outline" style="padding: 0.5rem 1rem;">
             ← Back to Dashboard
           </a>
-          <%= button_to "Delete Attendee", admin_delete_attendee_path(@attendee), 
-              method: :delete, 
-              class: "btn btn-danger", 
-              style: "padding: 0.5rem 1rem;",
-              remote: false,
-              form: { data: { turbo: false } },
-              data: { 
-                confirm: "Are you sure you want to delete #{@attendee.first_name} #{@attendee.last_name}? This will adjust the registration's payment amount. This action cannot be undone.",
-                turbo: false
-              } %>
+          <% if @attendee.archived? %>
+            <%= button_to "Delete Attendee", admin_delete_attendee_path(@attendee), 
+                method: :delete, 
+                class: "btn btn-danger", 
+                style: "padding: 0.5rem 1rem;",
+                remote: false,
+                form: { data: { turbo: false } },
+                data: { 
+                  confirm: "Are you sure you want to PERMANENTLY DELETE #{@attendee.first_name} #{@attendee.last_name}? This will adjust the registration's payment amount. This action CANNOT be undone. Make sure refunds have been processed.",
+                  turbo: false
+                } %>
+          <% else %>
+            <%= button_to "Archive Attendee", admin_archive_attendee_path(@attendee), 
+                method: :post, 
+                class: "btn btn-warning", 
+                style: "padding: 0.5rem 1rem;",
+                remote: false,
+                form: { data: { turbo: false } },
+                data: { 
+                  confirm: "Are you sure you want to archive #{@attendee.first_name} #{@attendee.last_name}? They will be moved to the archived list where they can be permanently deleted after refunds are processed.",
+                  turbo: false
+                } %>
+          <% end %>
           <%= button_to "Logout", admin_logout_path, method: :delete, class: "btn btn-outline", style: "padding: 0.5rem 1rem;", data: { turbo: false } %>
         </div>
       </div>

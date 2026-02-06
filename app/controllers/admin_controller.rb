@@ -6,12 +6,14 @@ class AdminController < ApplicationController
   before_action :require_admin_password, except: [ :login, :authenticate, :logout ]
 
   def index
-    @attendees = Attendee.includes(:attendee_registration).order(created_at: :desc)
-    @counsellors = Counsellor.order(created_at: :desc)
+    @attendees = Attendee.includes(:attendee_registration).where(archived: false).order(created_at: :desc)
+    @counsellors = Counsellor.where(archived: false).order(created_at: :desc)
+    @archived_attendees = Attendee.includes(:attendee_registration).where(archived: true).order(created_at: :desc)
+    @archived_counsellors = Counsellor.where(archived: true).order(created_at: :desc)
   end
 
   def export_attendees
-    @attendees = Attendee.includes(:attendee_registration).order(created_at: :desc)
+    @attendees = Attendee.includes(:attendee_registration).where(archived: false).order(created_at: :desc)
 
     csv_data = CSV.generate do |csv|
       # Header row
@@ -124,7 +126,7 @@ class AdminController < ApplicationController
   end
 
   def export_counsellors
-    @counsellors = Counsellor.order(created_at: :desc)
+    @counsellors = Counsellor.where(archived: false).order(created_at: :desc)
 
     csv_data = CSV.generate do |csv|
       # Header row
@@ -216,8 +218,32 @@ class AdminController < ApplicationController
     @counsellor = Counsellor.find(params[:id])
   end
 
+  def archive_attendee
+    @attendee = Attendee.includes(:attendee_registration).find(params[:id])
+    attendee_name = "#{@attendee.first_name} #{@attendee.last_name}"
+
+    if @attendee.update(archived: true)
+      flash[:notice] = "Attendee #{attendee_name} has been archived successfully."
+      redirect_to admin_path
+    else
+      flash[:alert] = "Failed to archive attendee: #{@attendee.errors.full_messages.join(', ')}"
+      redirect_to admin_attendee_path(@attendee)
+    end
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = "Attendee not found."
+    redirect_to admin_path
+  end
+
   def delete_attendee
     @attendee = Attendee.includes(:attendee_registration).find(params[:id])
+    
+    # Only allow deletion of archived records
+    unless @attendee.archived?
+      flash[:alert] = "Only archived attendees can be permanently deleted. Please archive the attendee first."
+      redirect_to admin_path
+      return
+    end
+
     @registration = @attendee.attendee_registration
 
     # Get accurate attendee count
@@ -234,11 +260,11 @@ class AdminController < ApplicationController
         # Registration should be deleted via dependent: :destroy, but let's ensure it's gone
         AttendeeRegistration.find_by(id: registration_id)&.destroy
 
-        flash[:notice] = "Attendee #{attendee_name} and their registration have been deleted successfully."
+        flash[:notice] = "Attendee #{attendee_name} and their registration have been permanently deleted."
         redirect_to admin_path
       else
         flash[:alert] = "Failed to delete attendee: #{@attendee.errors.full_messages.join(', ')}"
-        redirect_to admin_attendee_path(@attendee)
+        redirect_to admin_path
       end
       return
     end
@@ -261,11 +287,11 @@ class AdminController < ApplicationController
 
       @registration.update(amount_paid: new_amount_paid)
 
-      flash[:notice] = "Attendee #{attendee_name} has been deleted successfully."
+      flash[:notice] = "Attendee #{attendee_name} has been permanently deleted."
       redirect_to admin_path
     else
       flash[:alert] = "Failed to delete attendee: #{@attendee.errors.full_messages.join(', ')}"
-      redirect_to admin_attendee_path(@attendee)
+      redirect_to admin_path
     end
   rescue ActiveRecord::RecordNotFound
     # Attendee was already deleted or doesn't exist
@@ -273,17 +299,44 @@ class AdminController < ApplicationController
     redirect_to admin_path
   end
 
-  def delete_counsellor
+  def archive_counsellor
     @counsellor = Counsellor.find(params[:id])
     counsellor_name = "#{@counsellor.first_name} #{@counsellor.last_name}"
 
+    if @counsellor.update(archived: true)
+      flash[:notice] = "Counselor #{counsellor_name} has been archived successfully."
+      redirect_to admin_path
+    else
+      flash[:alert] = "Failed to archive counselor: #{@counsellor.errors.full_messages.join(', ')}"
+      redirect_to admin_counsellor_path(@counsellor)
+    end
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = "Counselor not found."
+    redirect_to admin_path
+  end
+
+  def delete_counsellor
+    @counsellor = Counsellor.find(params[:id])
+    
+    # Only allow deletion of archived records
+    unless @counsellor.archived?
+      flash[:alert] = "Only archived counselors can be permanently deleted. Please archive the counselor first."
+      redirect_to admin_path
+      return
+    end
+
+    counsellor_name = "#{@counsellor.first_name} #{@counsellor.last_name}"
+
     if @counsellor.destroy
-      flash[:notice] = "Counselor #{counsellor_name} has been deleted successfully."
+      flash[:notice] = "Counselor #{counsellor_name} has been permanently deleted."
       redirect_to admin_path
     else
       flash[:alert] = "Failed to delete counselor: #{@counsellor.errors.full_messages.join(', ')}"
-      redirect_to admin_counsellor_path(@counsellor)
+      redirect_to admin_path
     end
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = "Counselor not found."
+    redirect_to admin_path
   end
 
   private
