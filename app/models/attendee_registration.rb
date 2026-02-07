@@ -27,8 +27,8 @@ class AttendeeRegistration < ApplicationRecord
   # Validate at least one attendee
   validate :must_have_at_least_one_attendee
 
-  # Set pricing type before validation if not already set
-  before_validation :set_pricing_type_if_blank, on: :create
+  # Set pricing type before validation on create
+  before_validation :set_pricing_type, on: :create
 
   # Early bird pricing ends March 31st
   EARLY_BIRD_END_DATE = Date.new(2026, 3, 31)
@@ -149,8 +149,9 @@ class AttendeeRegistration < ApplicationRecord
 
   private
 
-  def set_pricing_type_if_blank
-    self.pricing_type = early_bird_eligible? ? "early_bird" : "regular" if pricing_type.blank?
+  def set_pricing_type
+    # Always set pricing type on create based on eligibility, regardless of default value
+    self.pricing_type = early_bird_eligible? ? "early_bird" : "regular"
   end
 
   def must_have_at_least_one_attendee
