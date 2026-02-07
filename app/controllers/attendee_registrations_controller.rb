@@ -4,6 +4,7 @@ class AttendeeRegistrationsController < ApplicationController
   # Set Stripe API key
   before_action :set_stripe_key
   before_action :check_stripe_configured, only: [ :payment, :create_payment_intent ]
+  before_action :cleanup_old_pending_registrations, only: [ :payment ]
 
   # GET /attendees/register
   def new
@@ -27,47 +28,40 @@ class AttendeeRegistrationsController < ApplicationController
   # POST /attendee_registrations
   def create
     @attendee_registration = AttendeeRegistration.new(attendee_registration_params)
+    @attendee_registration.payment_status = "pending"
 
-    # Validate without saving
-    if @attendee_registration.valid?
-      # Clear any existing pending registration to prevent stale data
-      old_registration_data = session[:pending_registration]
-
-      # Cancel any existing payment intents from previous registration attempts
-      if old_registration_data
-        old_payment_intent_id = old_registration_data[:stripe_payment_intent_id] || old_registration_data["stripe_payment_intent_id"]
-        if old_payment_intent_id.present?
-          begin
-            old_payment_intent = Stripe::PaymentIntent.retrieve(old_payment_intent_id)
-            # Cancel payment intent if it's still in a cancellable state
-            if [ "requires_payment_method", "requires_confirmation" ].include?(old_payment_intent.status)
-              Stripe::PaymentIntent.cancel(old_payment_intent_id)
+    # Clean up any old pending registration from this session before creating a new one
+    old_registration_data = session[:pending_registration]
+    if old_registration_data
+      old_registration_id = old_registration_data[:id] || old_registration_data["id"]
+      if old_registration_id.present?
+        old_registration = AttendeeRegistration.find_by(id: old_registration_id)
+        if old_registration && old_registration.payment_status == "pending"
+          # Cancel any associated payment intents
+          if old_registration.stripe_payment_intent_id.present?
+            begin
+              old_payment_intent = Stripe::PaymentIntent.retrieve(old_registration.stripe_payment_intent_id)
+              if [ "requires_payment_method", "requires_confirmation" ].include?(old_payment_intent.status)
+                Stripe::PaymentIntent.cancel(old_registration.stripe_payment_intent_id)
+              end
+            rescue Stripe::StripeError => e
+              Rails.logger.warn "Failed to cancel old payment intent #{old_registration.stripe_payment_intent_id}: #{e.message}"
             end
-          rescue Stripe::StripeError => e
-            # Log error but don't fail the registration
-            Rails.logger.warn "Failed to cancel old payment intent #{old_payment_intent_id}: #{e.message}"
           end
+          # Delete the old pending registration
+          old_registration.destroy
         end
       end
+    end
 
-      session.delete(:pending_registration)
-
-      # Store registration data in session temporarily
-      # Convert to hash and ensure nested attributes are preserved
-      temp_id = SecureRandom.uuid
-      registration_params_hash = attendee_registration_params.to_unsafe_h
-
-      # Set pricing_type before storing in session
-      pricing_type = @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
-      registration_params_hash["pricing_type"] = pricing_type
-
+    # Save registration to database immediately to avoid cookie overflow
+    if @attendee_registration.save
+      # Store only the registration ID in session (much smaller than full data)
       session[:pending_registration] = {
-        "id" => temp_id,
-        "data" => registration_params_hash,
-        "created_at" => Time.current.to_s
+        "id" => @attendee_registration.id.to_s
       }
 
-      redirect_to payment_attendee_registration_path(temp_id)
+      redirect_to payment_attendee_registration_path(@attendee_registration)
     else
       flash.now[:alert] = "There was an error with your registration. Please check the form and try again."
       render :new, status: :unprocessable_entity
@@ -76,45 +70,39 @@ class AttendeeRegistrationsController < ApplicationController
 
   # GET /attendee_registrations/:id/payment
   def payment
-    # Check if this is a temporary ID (UUID) or a real database ID
-    temp_id = params[:id]
+    registration_id = params[:id]
     registration_data = session[:pending_registration]
 
-    # Check if it's a UUID format
-    is_uuid = temp_id.match?(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i)
-
-    # If it's a UUID, we expect session data
-    if is_uuid
-      # Handle both symbol and string keys for session data
-      reg_id = registration_data&.dig(:id) || registration_data&.dig("id")
-
-      if registration_data.nil? || reg_id != temp_id
-        flash[:alert] = "Registration session expired. Please start over."
-        redirect_to new_attendee_path
-        return
-      end
-
-      # Load registration from session - handle both symbol and string keys
-      reg_data = registration_data[:data] || registration_data["data"]
-      @attendee_registration = AttendeeRegistration.new(reg_data.with_indifferent_access)
-      # Set pricing_type if not already set (will be set by before_validation callback, but ensure it's set for calculations)
-      @attendee_registration.pricing_type ||= @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
-      @temp_registration_id = temp_id
-    else
-      # Not a UUID, try to find existing registration (backward compatibility)
-      @attendee_registration = AttendeeRegistration.find_by(id: temp_id)
-      if @attendee_registration.nil?
-        flash[:alert] = "Registration not found."
-        redirect_to new_attendee_path
-        return
-      end
-
-      if @attendee_registration.paid?
-        flash[:notice] = "Payment already completed for this registration."
-        redirect_to root_path
-        return
-      end
+    # Load registration from database
+    @attendee_registration = AttendeeRegistration.find_by(id: registration_id)
+    
+    if @attendee_registration.nil?
+      flash[:alert] = "Registration not found or expired. Please start over."
+      redirect_to new_attendee_path
+      return
     end
+
+    # Verify this registration belongs to the current session (security check)
+    session_reg_id = registration_data&.dig(:id) || registration_data&.dig("id")
+    if session_reg_id != registration_id.to_s
+      # Registration doesn't belong to this session - delete it if it's still pending
+      if @attendee_registration.payment_status == "pending"
+        @attendee_registration.destroy
+      end
+      flash[:alert] = "Registration session expired. Please start over."
+      redirect_to new_attendee_path
+      return
+    end
+
+    # Check if already paid
+    if @attendee_registration.paid?
+      flash[:notice] = "Payment already completed for this registration."
+      redirect_to attendee_registration_path(@attendee_registration)
+      return
+    end
+
+    # Ensure payment_status is pending
+    @attendee_registration.update(payment_status: "pending") unless @attendee_registration.payment_status == "pending"
 
     # Check if Stripe is configured
     unless ENV["STRIPE_API_KEY"].present? && ENV["STRIPE_PUBLISHABLE_KEY"].present?
@@ -132,31 +120,32 @@ class AttendeeRegistrationsController < ApplicationController
 
   # POST /attendee_registrations/:id/create_payment_intent
   def create_payment_intent
-    temp_id = params[:id]
+    registration_id = params[:id]
     registration_data = session[:pending_registration]
 
-    # Check if it's a UUID format
-    is_uuid = temp_id.match?(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i)
+    # Load registration from database
+    @attendee_registration = AttendeeRegistration.find_by(id: registration_id)
+    
+    unless @attendee_registration
+      render json: { error: "Registration not found or expired." }, status: :unprocessable_entity
+      return
+    end
 
-    # Load registration from session
-    if is_uuid && registration_data
-      reg_id = registration_data[:id] || registration_data["id"]
-      if reg_id == temp_id
-        reg_data = registration_data[:data] || registration_data["data"]
-        @attendee_registration = AttendeeRegistration.new(reg_data.with_indifferent_access)
-        # Set pricing_type if not already set
-        @attendee_registration.pricing_type ||= @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
-      else
-        render json: { error: "Registration session expired. Please start over." }, status: :unprocessable_entity
-        return
+    # Verify this registration belongs to the current session (security check)
+    session_reg_id = registration_data&.dig(:id) || registration_data&.dig("id")
+    if session_reg_id != registration_id.to_s
+      # Registration doesn't belong to this session - delete it if it's still pending
+      if @attendee_registration.payment_status == "pending"
+        @attendee_registration.destroy
       end
-    else
-      # Fallback: try to find existing registration (for backward compatibility)
-      @attendee_registration = AttendeeRegistration.find_by(id: temp_id)
-      unless @attendee_registration
-        render json: { error: "Registration session expired. Please start over." }, status: :unprocessable_entity
-        return
-      end
+      render json: { error: "Registration session expired. Please start over." }, status: :unprocessable_entity
+      return
+    end
+
+    # Check if registration is still pending (shouldn't happen, but safety check)
+    unless @attendee_registration.payment_status == "pending"
+      render json: { error: "Registration is no longer pending payment." }, status: :unprocessable_entity
+      return
     end
 
     begin
@@ -170,70 +159,36 @@ class AttendeeRegistrationsController < ApplicationController
                           @attendee_registration.amount_in_cents
       end
 
-      # Store payment intent ID in session for temporary registrations
-      reg_id = registration_data&.dig(:id) || registration_data&.dig("id")
-      if is_uuid && registration_data && reg_id == temp_id
-        # Check if payment intent already exists in session
-        existing_intent_id = registration_data[:stripe_payment_intent_id] || registration_data["stripe_payment_intent_id"]
-        if existing_intent_id.present?
-          payment_intent = Stripe::PaymentIntent.retrieve(existing_intent_id)
+      # Check if payment intent already exists for this registration
+      if @attendee_registration.stripe_payment_intent_id.present?
+        payment_intent = Stripe::PaymentIntent.retrieve(@attendee_registration.stripe_payment_intent_id)
 
-          # If payment intent is still in a processable state and matches the requested amount, reuse it
-          if [ "requires_payment_method", "requires_confirmation" ].include?(payment_intent.status) &&
-             payment_intent.amount == amount_in_cents
-            render json: {
-              clientSecret: payment_intent.client_secret
-            }
-            return
-          end
-        end
-
-        # Create new payment intent
-        payment_intent = Stripe::PaymentIntent.create(
-          amount: amount_in_cents,
-          currency: "usd",
-          metadata: {
-            temp_registration_id: temp_id,
-            guardian_email: @attendee_registration.guardian_1_email,
-            payment_type: payment_type
+        # If payment intent is still in a processable state and matches the requested amount, reuse it
+        if [ "requires_payment_method", "requires_confirmation" ].include?(payment_intent.status) &&
+           payment_intent.amount == amount_in_cents
+          render json: {
+            clientSecret: payment_intent.client_secret
           }
-        )
-
-        # Update session with payment intent ID (handle both string and symbol keys)
-        session[:pending_registration] ||= {}
-        session[:pending_registration]["stripe_payment_intent_id"] = payment_intent.id
-        session[:pending_registration]["payment_type"] = payment_type
-        session[:pending_registration][:stripe_payment_intent_id] = payment_intent.id
-        session[:pending_registration][:payment_type] = payment_type
-      else
-        # Existing registration flow (backward compatibility)
-        if @attendee_registration.stripe_payment_intent_id.present?
-          payment_intent = Stripe::PaymentIntent.retrieve(@attendee_registration.stripe_payment_intent_id)
-
-          if [ "requires_payment_method", "requires_confirmation" ].include?(payment_intent.status) &&
-             payment_intent.amount == amount_in_cents
-            render json: {
-              clientSecret: payment_intent.client_secret
-            }
-            return
-          end
+          return
         end
-
-        payment_intent = Stripe::PaymentIntent.create(
-          amount: amount_in_cents,
-          currency: "usd",
-          metadata: {
-            attendee_registration_id: @attendee_registration.id,
-            guardian_email: @attendee_registration.guardian_1_email,
-            payment_type: payment_type
-          }
-        )
-
-        @attendee_registration.update(
-          stripe_payment_intent_id: payment_intent.id,
-          payment_type: payment_type
-        )
       end
+
+      # Create new payment intent
+      payment_intent = Stripe::PaymentIntent.create(
+        amount: amount_in_cents,
+        currency: "usd",
+        metadata: {
+          attendee_registration_id: @attendee_registration.id,
+          guardian_email: @attendee_registration.guardian_1_email,
+          payment_type: payment_type
+        }
+      )
+
+      # Store payment intent ID in database
+      @attendee_registration.update(
+        stripe_payment_intent_id: payment_intent.id,
+        payment_type: payment_type
+      )
 
       render json: {
         clientSecret: payment_intent.client_secret
@@ -245,130 +200,83 @@ class AttendeeRegistrationsController < ApplicationController
 
   # POST /attendee_registrations/:id/payment_success
   def payment_success
-    temp_id = params[:id]
+    registration_id = params[:id]
     registration_data = session[:pending_registration]
     payment_intent_id = params[:payment_intent_id]
 
-    # Check if this is a UUID (temporary registration)
-    is_uuid = temp_id.match?(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i)
+    # Load registration from database
+    @attendee_registration = AttendeeRegistration.find_by(id: registration_id)
+    
+    unless @attendee_registration
+      flash[:alert] = "Registration not found or expired. Please start over."
+      redirect_to new_attendee_path
+      return
+    end
 
-    # Check if this is a temporary registration or existing one
-    reg_id = registration_data&.dig(:id) || registration_data&.dig("id")
-    if is_uuid && registration_data && reg_id == temp_id
-      payment_intent_id ||= registration_data[:stripe_payment_intent_id] || registration_data["stripe_payment_intent_id"]
-
-      return redirect_to payment_attendee_registration_path(temp_id) unless payment_intent_id
-
-      begin
-        payment_intent = Stripe::PaymentIntent.retrieve(payment_intent_id)
-
-        # Verify this payment intent belongs to this temporary registration
-        unless payment_intent.metadata["temp_registration_id"] == temp_id
-          flash[:alert] = "Invalid payment. Please try again."
-          redirect_to payment_attendee_registration_path(temp_id)
-          return
-        end
-
-        if payment_intent.status == "succeeded"
-          # Check if a registration with this payment intent already exists (idempotency check)
-          existing_registration = AttendeeRegistration.find_by(stripe_payment_intent_id: payment_intent_id)
-          if existing_registration
-            # Payment already processed, redirect to existing registration
-            session.delete(:pending_registration)
-            redirect_to attendee_registration_path(existing_registration)
-            return
-          end
-
-          # Get payment_type from metadata first (source of truth), then session, then params, default to 'full'
-          payment_type = payment_intent.metadata["payment_type"] ||
-                        registration_data[:payment_type] ||
-                        registration_data["payment_type"] ||
-                        params[:payment_type] ||
-                        "full"
-
-          # Create the actual registration record now that payment succeeded
-          reg_data = registration_data[:data] || registration_data["data"]
-          @attendee_registration = AttendeeRegistration.new(reg_data.with_indifferent_access)
-          @attendee_registration.payment_status = "succeeded"
-          @attendee_registration.stripe_payment_intent_id = payment_intent_id
-          @attendee_registration.amount_paid = payment_intent.amount / 100.0
-          @attendee_registration.payment_type = payment_type
-          # Set pricing_type if not already set (will be set by before_validation callback, but ensure it's preserved)
-          @attendee_registration.pricing_type ||= @attendee_registration.early_bird_eligible? ? "early_bird" : "regular"
-
-          if @attendee_registration.save
-            # Clear session data
-            session.delete(:pending_registration)
-
-            # Send confirmation email
-            RegistrationMailer.attendee_registration_confirmation(@attendee_registration).deliver_later
-
-            redirect_to attendee_registration_path(@attendee_registration)
-          else
-            flash[:alert] = "There was an error saving your registration. Please contact support."
-            redirect_to new_attendee_path
-          end
-        else
-          flash[:alert] = "Payment was not successful. Please try again."
-          redirect_to payment_attendee_registration_path(temp_id)
-        end
-      rescue Stripe::StripeError => e
-        flash[:alert] = "There was an error processing your payment: #{e.message}"
-        redirect_to payment_attendee_registration_path(temp_id)
+    # Verify this registration belongs to the current session (security check)
+    session_reg_id = registration_data&.dig(:id) || registration_data&.dig("id")
+    if session_reg_id != registration_id.to_s
+      # Registration doesn't belong to this session - delete it if it's still pending
+      if @attendee_registration.payment_status == "pending"
+        @attendee_registration.destroy
       end
-    else
-      # Existing registration flow (backward compatibility)
-      @attendee_registration = AttendeeRegistration.find_by(id: temp_id)
-      unless @attendee_registration
-        flash[:alert] = "Registration not found."
-        redirect_to new_attendee_path
+      flash[:alert] = "Registration session expired. Please start over."
+      redirect_to new_attendee_path
+      return
+    end
+
+    payment_intent_id ||= @attendee_registration.stripe_payment_intent_id
+    return redirect_to payment_attendee_registration_path(@attendee_registration) unless payment_intent_id
+
+    begin
+      payment_intent = Stripe::PaymentIntent.retrieve(payment_intent_id)
+
+      # Verify this payment intent belongs to this registration
+      unless payment_intent.metadata["attendee_registration_id"].to_i == @attendee_registration.id
+        flash[:alert] = "Invalid payment. Please try again."
+        redirect_to payment_attendee_registration_path(@attendee_registration)
         return
       end
 
-      payment_intent_id ||= @attendee_registration.stripe_payment_intent_id
-      return redirect_to payment_attendee_registration_path(@attendee_registration) unless payment_intent_id
-
-      begin
-        payment_intent = Stripe::PaymentIntent.retrieve(payment_intent_id)
-
-        # Verify this payment intent belongs to this registration
-        unless payment_intent.metadata["attendee_registration_id"].to_i == @attendee_registration.id
-          flash[:alert] = "Invalid payment. Please try again."
-          redirect_to payment_attendee_registration_path(@attendee_registration)
+      if payment_intent.status == "succeeded"
+        # Check if payment was already processed (idempotency check)
+        was_already_paid = @attendee_registration.payment_status == "succeeded" && @attendee_registration.stripe_payment_intent_id == payment_intent_id
+        
+        if was_already_paid
+          redirect_to attendee_registration_path(@attendee_registration)
           return
         end
 
-        if payment_intent.status == "succeeded"
-          # Check if payment was already processed (idempotency check)
-          was_already_paid = @attendee_registration.payment_status == "succeeded" && @attendee_registration.stripe_payment_intent_id == payment_intent_id
-          
-          if was_already_paid
-            redirect_to attendee_registration_path(@attendee_registration)
-            return
-          end
+        # Get payment_type from metadata first (source of truth), then params, then registration, default to 'full'
+        payment_type = payment_intent.metadata["payment_type"] || params[:payment_type] || @attendee_registration.payment_type || "full"
 
-          # Get payment_type from metadata first (source of truth), then params, then registration, default to 'full'
-          payment_type = payment_intent.metadata["payment_type"] || params[:payment_type] || @attendee_registration.payment_type || "full"
+        @attendee_registration.update(
+          payment_status: "succeeded",
+          stripe_payment_intent_id: payment_intent_id,
+          amount_paid: payment_intent.amount / 100.0,
+          payment_type: payment_type
+        )
 
-          @attendee_registration.update(
-            payment_status: "succeeded",
-            stripe_payment_intent_id: payment_intent_id,
-            amount_paid: payment_intent.amount / 100.0,
-            payment_type: payment_type
-          )
+        # Clear session data
+        session.delete(:pending_registration)
 
-          # Send confirmation email
-          RegistrationMailer.attendee_registration_confirmation(@attendee_registration).deliver_later
+        # Send confirmation email
+        RegistrationMailer.attendee_registration_confirmation(@attendee_registration).deliver_later
 
-          redirect_to attendee_registration_path(@attendee_registration)
-        else
-          flash[:alert] = "Payment was not successful. Please try again."
-          redirect_to payment_attendee_registration_path(@attendee_registration)
-        end
-      rescue Stripe::StripeError => e
-        flash[:alert] = "There was an error processing your payment: #{e.message}"
-        redirect_to payment_attendee_registration_path(@attendee_registration)
+        redirect_to attendee_registration_path(@attendee_registration)
+      else
+        # Payment failed - delete the pending registration
+        flash[:alert] = "Payment was not successful. Please try again."
+        @attendee_registration.destroy
+        session.delete(:pending_registration)
+        redirect_to new_attendee_path
       end
+    rescue Stripe::StripeError => e
+      # Payment error - delete the pending registration
+      flash[:alert] = "There was an error processing your payment: #{e.message}"
+      @attendee_registration.destroy
+      session.delete(:pending_registration)
+      redirect_to new_attendee_path
     end
   end
 
@@ -383,6 +291,29 @@ class AttendeeRegistrationsController < ApplicationController
       Rails.logger.error "Stripe configuration missing. STRIPE_API_KEY present: #{ENV['STRIPE_API_KEY'].present?}, STRIPE_PUBLISHABLE_KEY present: #{ENV['STRIPE_PUBLISHABLE_KEY'].present?}"
       flash[:alert] = "Payment system is not configured. Please ensure STRIPE_API_KEY and STRIPE_PUBLISHABLE_KEY are set in your .env file and restart the server."
       redirect_to root_path
+    end
+  end
+
+  # Clean up old pending registrations that were never paid (older than 1 hour)
+  def cleanup_old_pending_registrations
+    old_pending = AttendeeRegistration.where(payment_status: "pending")
+                                      .where("created_at < ?", 1.hour.ago)
+    
+    old_pending.find_each do |registration|
+      # Cancel any associated payment intents
+      if registration.stripe_payment_intent_id.present?
+        begin
+          payment_intent = Stripe::PaymentIntent.retrieve(registration.stripe_payment_intent_id)
+          if [ "requires_payment_method", "requires_confirmation" ].include?(payment_intent.status)
+            Stripe::PaymentIntent.cancel(registration.stripe_payment_intent_id)
+          end
+        rescue Stripe::StripeError => e
+          Rails.logger.warn "Failed to cancel payment intent #{registration.stripe_payment_intent_id}: #{e.message}"
+        end
+      end
+      
+      # Delete the registration
+      registration.destroy
     end
   end
 
