@@ -18,6 +18,8 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # Fail fast on checkout so stale connections (e.g. after Fly machine sleep) don't hang
+  checkout_timeout: 5
 
 
 development:

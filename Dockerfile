@@ -64,6 +64,9 @@ RUN apt-get update -qq && \
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
+# Release script must be executable for fly deploy release_command
+RUN chmod +x /rails/bin/fly-release
+
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
@@ -75,8 +78,6 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 # Fly.io sets PORT environment variable automatically
-# Puma config (config/puma.rb) ensures binding to 0.0.0.0:PORT
+# Use Puma directly so config/puma.rb is applied (binds to 0.0.0.0:PORT for Fly.io)
 EXPOSE 3000
-# Explicitly start Rails server binding to 0.0.0.0 to accept external connections
-# Rails will read PORT from environment variable set by Fly.io
-CMD ["./bin/rails", "server", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

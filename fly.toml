@@ -8,7 +8,7 @@ primary_region = 'sjc'
 console_command = '/rails/bin/rails console'
 
 [deploy]
-  release_command = "bundle exec rails db:migrate"
+  release_command = "/rails/bin/fly-release"
 
 [build]
 
@@ -19,6 +19,14 @@ console_command = '/rails/bin/rails console'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
+
+  # Give the app time to start before first health check (entrypoint only runs db:prepare)
+  [[http_service.checks]]
+  grace_period = "15s"
+  interval = "15s"
+  timeout = "2s"
+  method = "GET"
+  path = "/"
 
 [[vm]]
   memory = '1gb'

@@ -1,42 +1,10 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  echo "Starting database setup..."
-  
-  # Prepare primary database (creates if needed, runs migrations)
-  ./bin/rails db:prepare || {
-    echo "Warning: db:prepare failed, continuing anyway..."
-  }
-  
-  # Create additional databases for solid_cache, solid_queue, and solid_cable if they don't exist
-  if [ -n "$DATABASE_URL" ]; then
-    echo "Setting up additional databases..."
-    # Extract database name and create base URL for connecting to postgres database
-    DB_NAME=$(echo "$DATABASE_URL" | sed -n 's/.*\/\([^?]*\).*/\1/p')
-    BASE_URL=$(echo "$DATABASE_URL" | sed 's/\/[^\/]*$/\/postgres/')
-    
-    if [ -n "$DB_NAME" ] && [ -n "$BASE_URL" ]; then
-      # Create cache database if it doesn't exist (with timeout)
-      timeout 10 psql "$BASE_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}_cache'" 2>/dev/null | grep -q 1 || \
-        timeout 10 psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_cache;" 2>/dev/null || echo "Warning: Could not create cache database"
-      
-      # Create queue database if it doesn't exist (with timeout)
-      timeout 10 psql "$BASE_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}_queue'" 2>/dev/null | grep -q 1 || \
-        timeout 10 psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_queue;" 2>/dev/null || echo "Warning: Could not create queue database"
-      
-      # Create cable database if it doesn't exist (with timeout)
-      timeout 10 psql "$BASE_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}_cable'" 2>/dev/null | grep -q 1 || \
-        timeout 10 psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_cable;" 2>/dev/null || echo "Warning: Could not create cable database"
-      
-      # Run migrations for additional databases (with timeout)
-      timeout 30 ./bin/rails db:migrate:cache 2>/dev/null || echo "Warning: Cache migrations failed"
-      timeout 30 ./bin/rails db:migrate:queue 2>/dev/null || echo "Warning: Queue migrations failed"
-      timeout 30 ./bin/rails db:migrate:cable 2>/dev/null || echo "Warning: Cable migrations failed"
-    fi
-  fi
-  
-  echo "Database setup complete, starting server..."
+# If running the web server, run only db:prepare so we listen quickly.
+# Full migrations and extra DBs (cache/queue/cable) run in release_command (bin/fly-release).
+if ( [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ] ) || \
+   ( [ "$1" == "bundle" ] && [ "$2" == "exec" ] && [ "$3" == "puma" ] ); then
+  ./bin/rails db:prepare || true
 fi
 
 exec "${@}"
