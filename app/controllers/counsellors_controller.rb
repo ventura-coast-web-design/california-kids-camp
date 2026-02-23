@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class CounsellorsController < ApplicationController
+  before_action :reject_counsellor_spam_submission, only: [ :create ]
+
   # GET /counsellors/register
   def new
     @counsellors = [ Counsellor.new ] # Start with one counselor form
@@ -15,7 +17,12 @@ class CounsellorsController < ApplicationController
   def create
     counselors_data = params[:counsellors]
     return redirect_to new_counsellor_path, alert: "No counselor data submitted." unless counselors_data.present?
-    
+
+    # Reject submissions with spammy content in name fields (URLs, scam phrases)
+    if counsellor_params_contain_spam?(counselors_data)
+      return redirect_to new_counsellor_path, alert: "Your submission could not be processed. Please check the name fields and try again."
+    end
+
     # Convert ActionController::Parameters hash to array, sorted by numeric index
     # When form submits counsellors[0][first_name], Rails creates a hash with string keys "0", "1", etc.
     # Convert to hash first to ensure consistent access, then convert back to Parameters for each counselor
@@ -110,6 +117,39 @@ class CounsellorsController < ApplicationController
   end
 
   private
+
+  def reject_counsellor_spam_submission
+    # Honeypot: bot filled a hidden field
+    if params[:fax].present?
+      redirect_to new_counsellor_path, alert: "Your submission could not be processed." and return
+    end
+
+    # Rate limit: 5 submissions per hour per IP
+    key = "counsellor_submit:#{request.remote_ip}"
+    count = Rails.cache.read(key) || 0
+    if count >= 5
+      redirect_to new_counsellor_path, alert: "Too many registration attempts. Please try again later." and return
+    end
+    Rails.cache.write(key, count + 1, expires_in: 1.hour)
+  end
+
+  def counsellor_params_contain_spam?(counselors_data)
+    hash = counselors_data.is_a?(ActionController::Parameters) ? counselors_data.to_unsafe_h : counselors_data
+    return false unless hash.is_a?(Hash)
+
+    spam_pattern = /\b(https?:\/\/|www\.|\.(com|net|org|ua|pp\.ua|nl)\b|💳|credit to your account|confirm the (transfer|transaction|operation)|salary payment|received a \$\d)/i
+    max_name_length = 80
+
+    hash.each_value do |data|
+      h = data.is_a?(ActionController::Parameters) ? data.to_unsafe_h : data
+      next unless h.is_a?(Hash)
+      first = (h["first_name"] || h[:first_name]).to_s
+      last  = (h["last_name"] || h[:last_name]).to_s
+      return true if first.length > max_name_length || last.length > max_name_length
+      return true if first.match?(spam_pattern) || last.match?(spam_pattern)
+    end
+    false
+  end
 
   def counsellor_params_for(data)
     return {} unless data.present?

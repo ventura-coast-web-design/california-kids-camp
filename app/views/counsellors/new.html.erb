@@ -21,6 +21,11 @@
   <div class="section-content">
     <div class="form-container">
       <%= form_with(url: counsellors_path, data: {turbo: false, initial_counsellor_count: @counsellors.length}, id: "counsellor-registration-form") do |f| %>
+        <%# Honeypot: hidden from users; bots often fill it — reject submission if present %>
+        <div class="hp" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
+          <label for="counsellor_fax">Leave this blank</label>
+          <input type="text" name="fax" id="counsellor_fax" tabindex="-1" autocomplete="off">
+        </div>
         <% if flash[:alert] %>
           <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
             <p style="margin: 0;"><%= flash[:alert] %></p>

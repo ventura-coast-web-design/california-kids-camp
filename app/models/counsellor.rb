@@ -1,6 +1,7 @@
 class Counsellor < ApplicationRecord
   # Validations
   validates :first_name, :last_name, :gender, presence: true
+  validates :first_name, :last_name, length: { maximum: 80 }
   validates :address_line_1, :city, :state_province_region, presence: true
   validates :postal_code, :country, presence: true
   validates :phone, :email, presence: true
