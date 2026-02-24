@@ -234,6 +234,22 @@ class AdminController < ApplicationController
     redirect_to admin_path
   end
 
+  def unarchive_attendee
+    @attendee = Attendee.includes(:attendee_registration).find(params[:id])
+    attendee_name = "#{@attendee.first_name} #{@attendee.last_name}"
+
+    if @attendee.update_column(:archived, false)
+      flash[:notice] = "Attendee #{attendee_name} has been restored from archive."
+      redirect_to admin_path, status: :see_other
+    else
+      flash[:alert] = "Failed to unarchive attendee."
+      redirect_to admin_path, status: :see_other
+    end
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = "Attendee not found."
+    redirect_to admin_path, status: :see_other
+  end
+
   def delete_attendee
     @attendee = Attendee.includes(:attendee_registration).find(params[:id])
     
@@ -309,6 +325,22 @@ class AdminController < ApplicationController
       redirect_to admin_path, status: :see_other
     else
       flash[:alert] = "Failed to archive counselor."
+      redirect_to admin_path, status: :see_other
+    end
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = "Counselor not found."
+    redirect_to admin_path, status: :see_other
+  end
+
+  def unarchive_counsellor
+    @counsellor = Counsellor.find(params[:id])
+    counsellor_name = "#{@counsellor.first_name} #{@counsellor.last_name}"
+
+    if @counsellor.update_column(:archived, false)
+      flash[:notice] = "Counselor #{counsellor_name} has been restored from archive."
+      redirect_to admin_path, status: :see_other
+    else
+      flash[:alert] = "Failed to unarchive counselor."
       redirect_to admin_path, status: :see_other
     end
   rescue ActiveRecord::RecordNotFound
