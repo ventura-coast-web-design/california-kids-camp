@@ -56,9 +56,9 @@ Rails.application.routes.draw do
   delete "admin/counsellors/:id", to: "admin#delete_counsellor", as: "admin_delete_counsellor"
   get "admin/counsellors/:id", to: "admin#show_counsellor", as: "admin_counsellor"
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # Lightweight /up for Fly.io: 200 as soon as app is listening (no DB check).
+  # Avoids health timeouts when Postgres is asleep on cold start.
+  get "up" => "health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

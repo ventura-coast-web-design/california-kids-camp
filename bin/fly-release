@@ -1,22 +1,43 @@
 #!/bin/bash -e
 # Run during fly deploy release_command. Creates DBs and runs all migrations
 # so the app entrypoint only needs db:prepare and can start the server quickly.
+# Retries on connection failure (Fly Postgres can be briefly unreachable).
 
 echo "Running release: migrations and extra DBs..."
 
-# Create solid_cache, solid_queue, solid_cable databases before migrations
+# Brief wait for Postgres to be reachable after release VM starts
+sleep 5
+
+# Create solid_cache, solid_queue, solid_cable databases (retry on connection failure)
 if [ -n "$DATABASE_URL" ]; then
   DB_NAME=$(echo "$DATABASE_URL" | sed -n 's|.*/\([^/?]*\).*|\1|p')
   BASE_URL=$(echo "$DATABASE_URL" | sed 's|/[^/]*$|/postgres|')
   if [ -n "$DB_NAME" ] && [ -n "$BASE_URL" ]; then
-    for suffix in cache queue cable; do
-      psql "$BASE_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}_${suffix}'" 2>/dev/null | grep -q 1 || \
-        psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_${suffix};" || true
+    for attempt in 1 2 3; do
+      if psql "$BASE_URL" -tc "SELECT 1" 2>/dev/null | grep -q 1; then
+        for suffix in cache queue cable; do
+          psql "$BASE_URL" -tc "SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}_${suffix}'" 2>/dev/null | grep -q 1 || \
+            psql "$BASE_URL" -c "CREATE DATABASE ${DB_NAME}_${suffix};" || true
+        done
+        break
+      fi
+      [ "$attempt" -eq 3 ] && { echo "Could not connect to Postgres to create DBs."; exit 1; }
+      echo "Postgres not ready, retrying in 10s..."
+      sleep 10
     done
   fi
 fi
 
-bundle exec rails db:migrate
+# Run migrations with retries (connection can fail when Postgres is waking)
+for attempt in 1 2 3; do
+  if bundle exec rails db:migrate; then
+    break
+  fi
+  [ "$attempt" -eq 3 ] && { echo "db:migrate failed after 3 attempts."; exit 1; }
+  echo "db:migrate failed, retrying in 15s..."
+  sleep 15
+done
+
 bundle exec rails db:migrate:cache 2>/dev/null || true
 bundle exec rails db:migrate:queue 2>/dev/null || true
 bundle exec rails db:migrate:cable 2>/dev/null || true

@@ -1,10 +1,9 @@
 #!/bin/bash -e
 
-# If running the web server, run only db:prepare so we listen quickly.
-# Full migrations and extra DBs (cache/queue/cable) run in release_command (bin/fly-release).
-if ( [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ] ) || \
-   ( [ "$1" == "bundle" ] && [ "$2" == "exec" ] && [ "$3" == "puma" ] ); then
-  ./bin/rails db:prepare || true
-fi
+# Do not run db:prepare here when starting the web server. On Fly.io the DB may
+# be asleep when the machine starts, so db:prepare can block and we never reach
+# Puma — health checks then fail (app not listening on 0.0.0.0:3000). Migrations
+# and schema setup run in release_command (bin/fly-release). Start Puma immediately
+# so we listen on 0.0.0.0:PORT; ConnectionRetry middleware handles transient DB issues.
 
 exec "${@}"
