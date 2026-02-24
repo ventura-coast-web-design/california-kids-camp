@@ -23,5 +23,9 @@ module CaliforniaKidsCamp
     #
     config.time_zone = "Pacific Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Retry requests once on stale PostgreSQL connection (e.g. after Fly.io machine sleep)
+    require Rails.root.join("lib/middleware/connection_retry")
+    config.middleware.use Middleware::ConnectionRetry
   end
 end

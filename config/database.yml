@@ -90,6 +90,9 @@ production:
   primary: &primary_production
     <<: *default
     url: <%= ENV.fetch("DATABASE_URL") { "postgres://localhost/california_kids_camp_production" } %>
+    # Fail fast on connect; reap idle connections more often (Fly.io + scale-to-zero)
+    connect_timeout: 10
+    reaping_frequency: 30
   cache:
     <<: *primary_production
     url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV.fetch("DATABASE_URL", "postgres://localhost/california_kids_camp_production").sub(%r{/[^/]+$}, "/california_kids_camp_production_cache") } %>
