@@ -1,3 +1,31 @@
+namespace :counsellors do
+  SPAM_EMOJI = "💳"
+
+  desc "Delete counsellor records where first_name or last_name contains 💳 (spam). Dry run unless CONFIRM=1"
+  task delete_spam: :environment do
+    scope = Counsellor.where("first_name LIKE ? OR last_name LIKE ?", "%#{SPAM_EMOJI}%", "%#{SPAM_EMOJI}%")
+    count = scope.count
+
+    if count.zero?
+      puts "No counsellor records found with 💳 in name. Nothing to do."
+      next
+    end
+
+    if ENV["CONFIRM"] != "1"
+      puts "DRY RUN: Would delete #{count} counsellor(s) with 💳 in first_name or last_name."
+      scope.limit(10).pluck(:id, :first_name, :last_name, :created_at).each do |id, first, last, created|
+        puts "  id=#{id}  first_name=#{first.inspect}  last_name=#{last.inspect}  created_at=#{created}"
+      end
+      puts "  ... and #{[ count - 10, 0 ].max} more." if count > 10
+      puts "Run with CONFIRM=1 to actually delete: CONFIRM=1 bundle exec rake counsellors:delete_spam"
+      next
+    end
+
+    deleted = scope.destroy_all
+    puts "Deleted #{deleted.size} counsellor spam record(s)."
+  end
+end
+
 namespace :registrations do
   desc "Clean up old pending attendee registrations that were never paid (older than 1 hour)"
   task cleanup_pending: :environment do
