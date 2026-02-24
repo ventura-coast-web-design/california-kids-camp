@@ -38,7 +38,7 @@
               ] %>
               
               <% workbook_types.each do |type| %>
-                <% file_path = "https://california-kids-camp-workbooks.b-cdn.net/files/workbook/#{workbook[:year]}/#{type[:filename]}.pdf" %>
+                <% file_path = "https://california-kids-camp-workbooks-pull-zone.b-cdn.net/workbook/#{workbook[:year]}/#{type[:filename]}.pdf" %>
                 <%= link_to type[:name], file_path, class: "workbook-link", target: "_blank", rel: "noopener noreferrer" %>
               <% end %>
             </div>
