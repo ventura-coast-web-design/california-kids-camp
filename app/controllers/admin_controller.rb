@@ -303,16 +303,17 @@ class AdminController < ApplicationController
     @counsellor = Counsellor.find(params[:id])
     counsellor_name = "#{@counsellor.first_name} #{@counsellor.last_name}"
 
-    if @counsellor.update(archived: true)
+    # Use update_column so we don't re-run validations (e.g. spam/legacy records may be invalid)
+    if @counsellor.update_column(:archived, true)
       flash[:notice] = "Counselor #{counsellor_name} has been archived successfully."
-      redirect_to admin_path
+      redirect_to admin_path, status: :see_other
     else
-      flash[:alert] = "Failed to archive counselor: #{@counsellor.errors.full_messages.join(', ')}"
-      redirect_to admin_counsellor_path(@counsellor)
+      flash[:alert] = "Failed to archive counselor."
+      redirect_to admin_path, status: :see_other
     end
   rescue ActiveRecord::RecordNotFound
     flash[:alert] = "Counselor not found."
-    redirect_to admin_path
+    redirect_to admin_path, status: :see_other
   end
 
   def delete_counsellor
