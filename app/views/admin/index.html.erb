@@ -285,16 +285,14 @@
                       <em>None</em>
                     <% end %>
                   </td>
-                  <td>
+                  <td onclick="event.stopPropagation()">
                     <%= button_to "Archive", admin_archive_counsellor_path(counsellor), 
                         method: :post, 
                         class: "btn btn-warning", 
                         style: "padding: 0.25rem 0.5rem; font-size: 0.875rem;",
-                        remote: false,
                         form: { data: { turbo: false } },
                         data: { 
-                          confirm: "Are you sure you want to archive #{counsellor.first_name} #{counsellor.last_name}? They will be moved to the archived list where they can be permanently deleted after refunds are processed.",
-                          turbo: false
+                          turbo_confirm: "Are you sure you want to archive #{counsellor.first_name} #{counsellor.last_name}? They will be moved to the archived list where they can be permanently deleted after refunds are processed."
                         } %>
                   </td>
                 </tr>
