@@ -57,7 +57,7 @@ class CounsellorsController < ApplicationController
       permitted_params = counsellor_params_for(counsellor_data)
       counsellor = Counsellor.new(permitted_params)
 
-      # Handle squirts (format: "name|gender|age,name|gender|age")
+      # Handle squirts (format: "name|gender|age|tshirt_size,name|gender|age|tshirt_size")
       if squirts_data.present?
         # Convert to hash if it's ActionController::Parameters
         squirts_hash = squirts_data.is_a?(ActionController::Parameters) ? squirts_data.to_unsafe_h : squirts_data
@@ -72,7 +72,8 @@ class CounsellorsController < ApplicationController
             next if name.blank?
             gender = (squirt_hash[:gender] || squirt_hash["gender"]).to_s.strip
             age = (squirt_hash[:age] || squirt_hash["age"]).to_s.strip
-            squirts_array << "#{name}|#{gender}|#{age}" if name.present?
+            tshirt_size = (squirt_hash[:tshirt_size] || squirt_hash["tshirt_size"]).to_s.strip
+            squirts_array << "#{name}|#{gender}|#{age}|#{tshirt_size}" if name.present?
           end
           counsellor.squirts = squirts_array.join(",") if squirts_array.any?
         end

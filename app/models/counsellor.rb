@@ -11,7 +11,7 @@ class Counsellor < ApplicationRecord
   validates :ecclesia, :tshirt_size, :piano, presence: true
   validates :gender, inclusion: { in: %w[Male Female], message: "must be Male or Female" }
 
-  # Parse squirts data (stored as delimited: "name|gender|age,name|gender|age")
+  # Parse squirts data (stored as delimited: "name|gender|age|tshirt_size,..."; older rows may omit tshirt_size)
   def squirts_array
     return [] if squirts.blank?
     squirts.split(",").map do |squirt_data|
@@ -19,7 +19,8 @@ class Counsellor < ApplicationRecord
       {
         name: parts[0]&.strip,
         gender: parts[1]&.strip,
-        age: parts[2]&.strip&.to_i
+        age: parts[2]&.strip&.to_i,
+        tshirt_size: parts[3]&.strip
       }
     end
   end
@@ -27,7 +28,10 @@ class Counsellor < ApplicationRecord
   # Format squirts for display
   def squirts_display
     return "None" if squirts.blank?
-    squirts_array.map { |s| "#{s[:name]} (#{s[:gender]}, Age #{s[:age]})" }.join(", ")
+    squirts_array.map do |s|
+      base = "#{s[:name]} (#{s[:gender]}, Age #{s[:age]})"
+      s[:tshirt_size].present? ? "#{base}, T-shirt #{s[:tshirt_size]}" : base
+    end.join(", ")
   end
 
   # Find counselors in the same pairing group

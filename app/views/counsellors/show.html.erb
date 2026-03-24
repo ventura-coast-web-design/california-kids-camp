@@ -96,7 +96,7 @@
                       <%= index + 1 %>. <%= squirt[:name] %>
                     </p>
                     <p class="text-sm text-gray-600">
-                      Gender: <%= squirt[:gender] %>, Age: <%= squirt[:age] %>
+                      Gender: <%= squirt[:gender] %>, Age: <%= squirt[:age] %><% if squirt[:tshirt_size].present? %>, T-shirt: <%= squirt[:tshirt_size] %><% end %>
                     </p>
                   </div>
                 <% end %>
