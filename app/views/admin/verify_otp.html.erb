@@ -1,0 +1,49 @@
+<div class="content-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Verify admin access</h2>
+      <p class="text-gray-600 mt-2">Enter the <%= User::OTP_LENGTH %>-digit code sent to <%= @admin_otp_email %></p>
+    </div>
+
+    <div class="section-content">
+      <div class="form-container" style="max-width: 400px; margin: 0 auto;">
+        <% if flash[:notice] %>
+          <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4 mb-4">
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
+        <% if flash[:alert] %>
+          <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 mb-4">
+            <%= flash[:alert] %>
+          </div>
+        <% end %>
+
+        <%= form_with url: admin_verify_otp_path, method: :post, class: "space-y-6", data: { turbo: false } do |f| %>
+          <div class="form-group">
+            <%= f.label :otp_code, "Verification code", class: "form-label" %>
+            <%= f.text_field :otp_code,
+                  class: "form-control",
+                  required: true,
+                  autofocus: true,
+                  autocomplete: "one-time-code",
+                  inputmode: "numeric",
+                  maxlength: User::OTP_LENGTH,
+                  placeholder: "000000" %>
+          </div>
+
+          <div class="form-actions">
+            <%= f.submit "Continue", class: "btn btn-primary w-full" %>
+          </div>
+        <% end %>
+
+        <%= form_with url: admin_resend_otp_path, method: :post, class: "mt-4", data: { turbo: false } do %>
+          <%= submit_tag "Resend code", class: "btn btn-secondary w-full" %>
+        <% end %>
+
+        <div class="auth-links mt-6 text-center">
+          <%= button_to "Cancel and start over", admin_cancel_otp_path, method: :post, class: "text-gray-600 hover:text-gray-800 bg-transparent border-0 underline cursor-pointer p-0", form: { data: { turbo: false } } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

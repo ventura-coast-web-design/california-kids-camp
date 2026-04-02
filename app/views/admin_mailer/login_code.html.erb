@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 30px;
+        border: 1px solid #e0e0e0;
+      }
+      .otp-code {
+        font-size: 32px;
+        font-weight: bold;
+        color: #2c3e50;
+        text-align: center;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        border: 2px dashed #3498db;
+        margin: 20px 0;
+        letter-spacing: 5px;
+      }
+      .warning {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        font-size: 12px;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Admin area verification</h2>
+
+      <p>Someone entered the admin password for Kids Camp California. Use this code to finish signing in to the admin dashboard:</p>
+
+      <div class="otp-code">
+        <%= @otp_code %>
+      </div>
+
+      <p style="text-align: center; color: #666;">
+        This code expires in <strong><%= @expiry_minutes %> minutes</strong>.
+      </p>
+
+      <div class="warning">
+        <strong>Security notice:</strong><br>
+        If no one on your team tried to access admin, change the admin password and review who has inbox access to this email address.
+      </div>
+
+      <div class="footer">
+        <p>This is an automated message from Kids Camp California. Please do not reply to this email.</p>
+      </div>
+    </div>
+  </body>
+</html>

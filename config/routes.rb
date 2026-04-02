@@ -42,9 +42,13 @@ Rails.application.routes.draw do
   get "counsellors/register", to: "counsellors#new", as: "new_counsellor"
   resources :counsellors, only: [ :create, :show ]
 
-  # Admin routes (password protected)
+  # Admin routes (password + email OTP)
   get "admin/login", to: "admin#login", as: "admin_login"
   post "admin/authenticate", to: "admin#authenticate", as: "admin_authenticate"
+  get "admin/verify_otp", to: "admin#verify_otp", as: "admin_verify_otp"
+  post "admin/verify_otp", to: "admin#submit_verify_otp"
+  post "admin/resend_otp", to: "admin#resend_otp", as: "admin_resend_otp"
+  post "admin/cancel_otp", to: "admin#cancel_otp", as: "admin_cancel_otp"
   delete "admin/logout", to: "admin#logout", as: "admin_logout"
   get "admin", to: "admin#index", as: "admin"
   get "admin/export_attendees", to: "admin#export_attendees", as: "admin_export_attendees"

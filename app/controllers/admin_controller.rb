@@ -3,7 +3,10 @@
 require "csv"
 
 class AdminController < ApplicationController
-  before_action :require_admin_password, except: [ :login, :authenticate, :logout ]
+  before_action :require_admin_password, except: [
+    :login, :authenticate, :logout,
+    :verify_otp, :submit_verify_otp, :resend_otp, :cancel_otp
+  ]
 
   def index
     @attendees = Attendee.includes(:attendee_registration).where(archived: false).order(created_at: :desc)
@@ -186,9 +189,8 @@ class AdminController < ApplicationController
   end
 
   def login
-    # GET request - show login form
-    # If already authenticated, redirect to admin dashboard
-    redirect_to admin_path if session[:admin_authenticated]
+    return redirect_to admin_path if session[:admin_authenticated]
+    return redirect_to admin_verify_otp_path if session[:admin_otp_pending]
   end
 
   def authenticate
@@ -196,16 +198,88 @@ class AdminController < ApplicationController
     admin_password = ENV.fetch("ADMIN_PASSWORD", "CampArnaz2026")
 
     if password == admin_password
-      session[:admin_authenticated] = true
-      redirect_to admin_path, notice: "Successfully authenticated"
+      session[:admin_otp_pending] = true
+      code = generate_and_store_admin_otp
+      begin
+        AdminMailer.login_code(code).deliver_now
+        redirect_to admin_verify_otp_path,
+          notice: "A verification code was sent to #{admin_otp_email}. Enter it below to continue."
+      rescue StandardError => e
+        Rails.logger.error("Admin OTP email failed: #{e.class}: #{e.message}")
+        clear_admin_otp_session
+        flash[:alert] = "Could not send the verification email. Try again later or check mail settings."
+        redirect_to admin_login_path
+      end
     else
       flash.now[:alert] = "Invalid password"
       render :login, status: :unauthorized
     end
   end
 
+  def verify_otp
+    unless session[:admin_otp_pending]
+      redirect_to admin_login_path, alert: "Please sign in with the admin password first."
+      return
+    end
+    if admin_otp_expired?
+      clear_admin_otp_session
+      redirect_to admin_login_path, alert: "That code has expired. Please sign in again."
+      return
+    end
+    @admin_otp_email = admin_otp_email
+  end
+
+  def submit_verify_otp
+    unless session[:admin_otp_pending]
+      redirect_to admin_login_path, alert: "Please sign in with the admin password first."
+      return
+    end
+    if admin_otp_expired?
+      clear_admin_otp_session
+      redirect_to admin_login_path, alert: "That code has expired. Please sign in again."
+      return
+    end
+    code = params[:otp_code].to_s.gsub(/\s+/, "")
+    if verify_admin_otp_submitted(code)
+      clear_admin_otp_session
+      session[:admin_authenticated] = true
+      redirect_to admin_path, notice: "Successfully authenticated"
+    else
+      @admin_otp_email = admin_otp_email
+      flash.now[:alert] = "Invalid verification code. Try again or request a new code."
+      render :verify_otp, status: :unprocessable_entity
+    end
+  end
+
+  def resend_otp
+    unless session[:admin_otp_pending]
+      redirect_to admin_login_path, alert: "Please sign in with the admin password first."
+      return
+    end
+    last = session[:admin_otp_last_resend_at]
+    if last.present? && Time.at(last) > 1.minute.ago
+      redirect_to admin_verify_otp_path, alert: "Please wait a minute before requesting another code."
+      return
+    end
+    code = generate_and_store_admin_otp
+    session[:admin_otp_last_resend_at] = Time.current.to_i
+    begin
+      AdminMailer.login_code(code).deliver_now
+      redirect_to admin_verify_otp_path, notice: "A new verification code was sent to #{admin_otp_email}."
+    rescue StandardError => e
+      Rails.logger.error("Admin OTP resend failed: #{e.class}: #{e.message}")
+      redirect_to admin_verify_otp_path, alert: "Could not send the email. Try again in a moment."
+    end
+  end
+
+  def cancel_otp
+    clear_admin_otp_session
+    redirect_to admin_login_path, notice: "Sign-in cancelled."
+  end
+
   def logout
     session[:admin_authenticated] = nil
+    clear_admin_otp_session
     redirect_to admin_login_path, notice: "Logged out successfully"
   end
 
@@ -373,6 +447,44 @@ class AdminController < ApplicationController
   end
 
   private
+
+  def admin_otp_email
+    ENV.fetch("ADMIN_OTP_EMAIL", "kidscampcalifornia@gmail.com")
+  end
+
+  def admin_otp_hmac_key_material
+    "admin_login_otp/v1/#{Rails.application.secret_key_base}"
+  end
+
+  def generate_and_store_admin_otp
+    code = rand(100_000..999_999).to_s
+    digest = OpenSSL::HMAC.hexdigest("SHA256", admin_otp_hmac_key_material, code)
+    session[:admin_otp_digest] = digest
+    session[:admin_otp_sent_at] = Time.current.to_i
+    code
+  end
+
+  def admin_otp_expired?
+    sent = session[:admin_otp_sent_at]
+    return true if sent.blank?
+
+    Time.zone.at(sent) < User::OTP_EXPIRY_TIME.ago
+  end
+
+  def verify_admin_otp_submitted(code)
+    return false if session[:admin_otp_digest].blank? || code.blank?
+    return false if admin_otp_expired?
+
+    expected = OpenSSL::HMAC.hexdigest("SHA256", admin_otp_hmac_key_material, code)
+    ActiveSupport::SecurityUtils.secure_compare(session[:admin_otp_digest], expected)
+  end
+
+  def clear_admin_otp_session
+    session.delete(:admin_otp_digest)
+    session.delete(:admin_otp_sent_at)
+    session.delete(:admin_otp_pending)
+    session.delete(:admin_otp_last_resend_at)
+  end
 
   def require_admin_password
     unless session[:admin_authenticated]
