@@ -190,7 +190,7 @@ class AdminController < ApplicationController
 
   def login
     return redirect_to admin_path if session[:admin_authenticated]
-    return redirect_to admin_verify_otp_path if session[:admin_otp_pending]
+    redirect_to admin_verify_otp_path if session[:admin_otp_pending]
   end
 
   def authenticate
@@ -203,7 +203,7 @@ class AdminController < ApplicationController
       begin
         AdminMailer.login_code(code).deliver_now
         redirect_to admin_verify_otp_path,
-          notice: "A verification code was sent to #{admin_otp_email}. Enter it below to continue."
+          notice: "A verification code was sent to the admin inbox. Enter it below to continue."
       rescue StandardError => e
         Rails.logger.error("Admin OTP email failed: #{e.class}: #{e.message}")
         clear_admin_otp_session
@@ -326,7 +326,7 @@ class AdminController < ApplicationController
 
   def delete_attendee
     @attendee = Attendee.includes(:attendee_registration).find(params[:id])
-    
+
     # Only allow deletion of archived records
     unless @attendee.archived?
       flash[:alert] = "Only archived attendees can be permanently deleted. Please archive the attendee first."
@@ -424,7 +424,7 @@ class AdminController < ApplicationController
 
   def delete_counsellor
     @counsellor = Counsellor.find(params[:id])
-    
+
     # Only allow deletion of archived records
     unless @counsellor.archived?
       flash[:alert] = "Only archived counselors can be permanently deleted. Please archive the counselor first."
