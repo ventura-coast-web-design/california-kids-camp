@@ -13,6 +13,15 @@
     }
   }
   
+  .workbooks-current {
+    max-width: 900px;
+    margin: 0 auto $spacing-xl;
+    
+    @include mobile {
+      margin-bottom: $spacing-lg;
+    }
+  }
+  
   .page-title {
     text-align: center;
     font-size: $font-size-h1;
@@ -58,6 +67,27 @@
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    &--current {
+      background-color: color.mix($primary-color, $background-white, 9%);
+      border-left: 4px solid $primary-light;
+      
+      .workbook-title {
+        margin-bottom: $spacing-sm;
+      }
+    }
+  }
+  
+  .workbook-topic {
+    color: $text-dark;
+    font-size: $font-size-large;
+    line-height: $line-height-base;
+    margin: 0 0 $spacing-md;
+    font-weight: $font-weight-medium;
+    
+    @include mobile {
+      font-size: $font-size-base;
     }
   }
   

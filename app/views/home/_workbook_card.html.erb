@@ -1,0 +1,18 @@
+<div class="workbook-card<%= " workbook-card--current" if is_current_year %>">
+  <h2 class="workbook-title">
+    <% if is_current_year %>
+      Current year (<%= workbook[:year] %>)
+    <% else %>
+      <%= workbook[:topic] %> (<%= workbook[:year] %>)
+    <% end %>
+  </h2>
+  <% if is_current_year %>
+    <p class="workbook-topic"><%= workbook[:topic] %></p>
+  <% end %>
+  <div class="workbook-links">
+    <% workbook_types.each do |type| %>
+      <% file_path = "https://california-kids-camp-workbooks-pull-zone.b-cdn.net/workbook/#{workbook[:year]}/#{type[:filename]}.pdf" %>
+      <%= link_to type[:name], file_path, class: "workbook-link", target: "_blank", rel: "noopener noreferrer" %>
+    <% end %>
+  </div>
+</div>
