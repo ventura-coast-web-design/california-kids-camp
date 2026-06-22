@@ -78,26 +78,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_060200) do
   end
 
   create_table "counsellors", force: :cascade do |t|
-    t.string "address_line_1", null: false
+    t.string "address_line_1"
     t.boolean "archived", default: false, null: false
-    t.string "city", null: false
-    t.string "country", default: "United States of America", null: false
+    t.string "city"
+    t.string "country", default: "United States of America"
     t.datetime "created_at", null: false
-    t.string "ecclesia", null: false
-    t.string "email", null: false
-    t.string "first_name", null: false
-    t.string "gender", null: false
-    t.string "last_name", null: false
+    t.string "ecclesia"
+    t.string "email"
+    t.string "first_name"
+    t.string "gender"
+    t.string "last_name"
     t.string "pairing_group_id"
     t.integer "pairing_index"
-    t.string "phone", null: false
-    t.string "piano", null: false
-    t.string "postal_code", null: false
+    t.string "phone"
+    t.string "piano"
+    t.string "postal_code"
     t.string "requested_pairing_name"
     t.text "requested_pairing_with"
     t.text "squirts"
-    t.string "state_province_region", null: false
-    t.string "tshirt_size", null: false
+    t.string "state_province_region"
+    t.string "tshirt_size"
     t.datetime "updated_at", null: false
   end
 
